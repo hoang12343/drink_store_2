@@ -1,306 +1,325 @@
-/* Reset CSS */
+/* Variables (giữ nguyên từ file gốc) */
+:root {
+    --cognac-brown: #8B4513;
+    --wine-red: #722F37;
+    --wine-red-dark: #5E2630;
+    --whisky-gold: #D4AF37;
+    --off-white: #ffffff;
+}
+
+/* Reset cơ bản */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-/* Biến màu */
-:root {
-    --wine-red: #8B1E3F;         /* Đỏ rượu vang đậm */
-    --wine-red-dark: #6B152F;    /* Đỏ rượu vang tối hơn */
-    --whisky-gold: #D4A017;      /* Vàng whisky */
-    --cognac-brown: #2E1A0F;     /* Nâu cognac đậm */
-    --light-cream: #F8EDE3;      /* Màu kem nhạt */
-    --off-white: #FFF8F0;        /* Trắng ngà */
-    --soft-brown: #7A5A3E;       /* Nâu nhạt */
-    --border-brown: #C9A68A;     /* Nâu cam nhạt */
-    --shadow: rgba(46, 26, 15, 0.2); /* Bóng đổ nâu nhạt */
-}
-
-/* Body */
-body {
-    background: var(--light-cream);
-    color: var(--cognac-brown);
-    line-height: 1.6;
-    min-height: 100vh;
 }
 
 /* Main Banner */
 .main-banner {
-    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('/api/placeholder/1200/400');
-    background-size: cover;
-    background-position: center;
-    color: white;
-    padding: 80px 0;
+    background: linear-gradient(135deg, var(--cognac-brown), #4A2C1A);
+    padding: 60px 20px;
     text-align: center;
-    margin-bottom: 40px;
-}
-
-.banner-content {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 0 20px;
+    color: var(--off-white);
 }
 
 .banner-content h1 {
     font-size: 2.5rem;
-    margin-bottom: 20px;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    margin-bottom: 15px;
+    font-weight: bold;
 }
 
 .banner-content p {
     font-size: 1.2rem;
-    margin-bottom: 30px;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    margin-bottom: 25px;
 }
 
 .btn-shop-now {
     display: inline-block;
-    background-color: var(--wine-red);
-    color: white;
-    padding: 12px 30px;
-    border-radius: 4px;
+    padding: 12px 25px;
+    background: var(--wine-red);
+    color: var(--off-white);
     text-decoration: none;
-    font-weight: bold;
-    transition: background-color 0.3s, transform 0.3s;
-    border: 2px solid var(--wine-red);
+    border-radius: 6px;
+    font-size: 1.1rem;
+    transition: background 0.3s ease;
 }
 
 .btn-shop-now:hover {
-    background-color: var(--wine-red-dark);
-    transform: translateY(-3px);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    background: var(--wine-red-dark);
 }
 
 /* Home Content */
 .home-content {
-    max-width: 1500px;
-    margin: 0 auto;
-    padding: 0 20px;
+    padding: 40px 20px;
+    background: var(--off-white);
 }
 
-.category-section {
-    margin-bottom: 50px;
-}
-
-.section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    padding-bottom: 10px;
-    border-bottom: 2px solid var(--wine-red);
-}
-
-.section-header h2 {
-    font-size: 1.5rem;
-    color: var(--wine-red);
-    margin: 0;
-}
-
-.view-all {
-    color: var(--wine-red);
-    text-decoration: none;
+.category-title {
+    text-align: center;
+    font-size: 2rem;
+    margin-bottom: 30px;
+    color: var(--cognac-brown);
     font-weight: bold;
-    display: flex;
-    align-items: center;
-    transition: color 0.3s;
 }
 
-.view-all i {
-    margin-left: 5px;
-    font-size: 0.8rem;
-    transition: transform 0.3s;
-}
-
-.view-all:hover {
-    color: var(--wine-red-dark);
-}
-
-.view-all:hover i {
-    transform: translateX(3px);
-}
-
-/* Products Grid */
-.products-grid {
+.categories-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr); /* Grid 4 cột */
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
-@media (max-width: 1024px) {
-    .products-grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
-}
-
-@media (max-width: 768px) {
-    .products-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (max-width: 480px) {
-    .products-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-/* Product Card */
-.product-card {
-    display: flex;
-    flex-direction: column;
-    border: 1px solid #eee;
+/* Category Card */
+.category-card {
+    background: #fff;
     border-radius: 8px;
     overflow: hidden;
-    transition: transform 0.3s, box-shadow 0.3s;
-    min-height: 500px; /* Chiều cao tối thiểu của card */
-    position: relative;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.product-card:hover {
+.category-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
 }
 
-.product-card img {
+.category-img img {
     width: 100%;
-    height: 350px; /* Chiều cao hình ảnh lớn hơn */
+    height: 180px;
     object-fit: cover;
+    display: block;
 }
 
-.product-info {
+.category-info {
     padding: 15px;
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-}
-
-.product-info h3 {
-    margin-top: 0;
-    font-size: 16px;
-    height: 40px;
-    overflow: hidden;
-}
-
-.product-price {
-    font-weight: bold;
-    color: var(--wine-red);
-    margin: 10px 0;
-}
-
-.old-price {
-    text-decoration: line-through;
-    color: #999;
-    font-weight: normal;
-    margin-left: 8px;
-    font-size: 14px;
-}
-
-.product-actions {
-    display: flex;
-    gap: 10px;
-    margin-top: auto;
-}
-
-.view-btn, .add-to-cart-btn {
-    flex: 1;
-    padding: 8px 10px;
-    border-radius: 4px;
-    font-size: 0.9rem;
     text-align: center;
-    text-decoration: none;
-    transition: background-color 0.3s, transform 0.3s;
-    cursor: pointer;
+}
+
+.category-info h3 {
+    font-size: 1.3rem;
+    color: var(--cognac-brown);
+    margin-bottom: 10px;
+}
+
+.category-info p {
+    font-size: 0.95rem;
+    color: #666;
+    margin-bottom: 15px;
 }
 
 .view-btn {
-    background-color: #f5f5f5;
-    color: #333;
-    border: 1px solid #ddd;
+    display: inline-block;
+    padding: 8px 20px;
+    background: var(--wine-red);
+    color: var(--off-white);
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    transition: background 0.3s ease;
 }
 
 .view-btn:hover {
-    background-color: #eee;
-}
-
-.add-to-cart-btn {
-    background-color: var(--wine-red);
-    color: white;
-    border: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.add-to-cart-btn i {
-    margin-right: 5px;
-}
-
-.add-to-cart-btn:hover {
-    background-color: var(--wine-red-dark);
-}
-
-.discount-badge {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    background-color: var(--wine-red);
-    color: white;
-    padding: 5px 8px;
-    border-radius: 4px;
-    font-size: 12px;
-    font-weight: bold;
+    background: var(--wine-red-dark);
 }
 
 /* Features Section */
 .features {
-    background-color: #f9f9f9;
-    padding: 50px 0;
-    margin-top: 30px;
+    padding: 40px 20px;
+    background: #f9f9f9;
 }
 
 .features .container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
     max-width: 1200px;
     margin: 0 auto;
-    padding: 0 20px;
 }
 
 .feature-item {
-    flex: 1;
-    min-width: 200px;
     text-align: center;
     padding: 20px;
-    margin: 10px;
 }
 
 .feature-item i {
-    font-size: 2.5rem;
-    color: var(--wine-red);
+    font-size: 2rem;
+    color: var(--whisky-gold);
     margin-bottom: 15px;
 }
 
 .feature-item h3 {
     font-size: 1.2rem;
+    color: var(--cognac-brown);
     margin-bottom: 10px;
 }
 
 .feature-item p {
-    color: #666;
     font-size: 0.9rem;
+    color: #777;
+}
+
+/* Wine Dropdown (hàng ngang) */
+.wine-dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: var(--wine-red-dark);
+    width: 900px; /* Độ rộng lớn hơn để chứa hàng ngang */
+    padding: 15px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    border-radius: 0 0 4px 4px;
+    border-top: 2px solid var(--whisky-gold);
+    z-index: 1000;
+}
+
+.main-nav .has-dropdown:hover .wine-dropdown {
+    display: block; /* Hiển thị khi hover */
+    animation: fadeIn 0.3s ease;
+}
+
+.dropdown-section {
+    margin-bottom: 15px;
+}
+
+.dropdown-section h4 {
+    color: var(--whisky-gold);
+    font-size: 1rem;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+}
+
+.horizontal-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px; /* Khoảng cách giữa các mục */
+}
+
+.horizontal-list li {
+    flex: 0 0 auto;
+}
+
+.horizontal-list li a {
+    display: block;
+    padding: 5px 10px;
+    color: var(--off-white);
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: color 0.2s ease, background 0.2s ease;
+}
+
+.horizontal-list li a:hover {
+    color: var(--whisky-gold);
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .categories-grid {
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    }
+
+    .banner-content h1 {
+        font-size: 2rem;
+    }
+
+    .banner-content p {
+        font-size: 1rem;
+    }
 }
 
 @media (max-width: 768px) {
-    .features .container {
-        flex-direction: column;
+    .main-banner {
+        padding: 40px 15px;
     }
-    
+
+    .category-title {
+        font-size: 1.8rem;
+    }
+
+    .categories-grid {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+
     .feature-item {
-        margin: 10px 0;
+        padding: 15px;
+    }
+
+    .feature-item i {
+        font-size: 1.8rem;
+    }
+    .wine-dropdown {
+        width: 100%;
+        flex-direction: column;
+        position: static;
+        background: rgba(0, 0, 0, 0.15);
+        box-shadow: none;
+        border-top: none;
+        padding: 10px 0;
+    }
+
+    .main-nav .has-dropdown:hover .wine-dropdown {
+        display: none; /* Tắt hover trên mobile */
+    }
+
+    .main-nav .dropdown-active .wine-dropdown {
+        display: block; /* Hiển thị khi active trên mobile */
+    }
+
+    .dropdown-column {
+        padding: 5px 20px;
+    }
+
+    .dropdown-column h4 {
+        font-size: 0.95rem;
+    }
+
+    .dropdown-column ul li a {
+        padding: 6px 0;
+    }
+}
+
+@media (max-width: 576px) {
+    .main-banner {
+        padding: 30px 10px;
+    }
+
+    .banner-content h1 {
+        font-size: 1.5rem;
+    }
+
+    .banner-content p {
+        font-size: 0.9rem;
+    }
+
+    .btn-shop-now {
+        padding: 10px 20px;
+        font-size: 0.95rem;
+    }
+
+    .category-title {
+        font-size: 1.5rem;
+        margin-bottom: 20px;
+    }
+
+    .categories-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .category-info h3 {
+        font-size: 1.1rem;
+    }
+
+    .category-info p {
+        font-size: 0.85rem;
+    }
+
+    .features .container {
+        grid-template-columns: 1fr;
     }
 }

@@ -125,7 +125,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 });
 
-                if (isValid) {
+ 
+   
+            if (isValid) {
                     utils.showMessage(message, 'Thông tin đăng nhập không chính xác!', 'error');
                 }
             });
@@ -141,41 +143,29 @@ document.addEventListener('DOMContentLoaded', () => {
             const menuToggle = utils.$('#menuToggle');
             const navWrapper = utils.$('#navWrapper');
             if (!menuToggle || !navWrapper) return;
-
+    
             menuToggle.addEventListener('click', () => {
                 navWrapper.classList.toggle('active');
                 menuToggle.innerHTML = navWrapper.classList.contains('active')
                     ? '<i class="fas fa-times"></i>'
                     : '<i class="fas fa-bars"></i>';
             });
-
-            // Setup dropdown for mobile
-            const dropdownToggles = utils.$$('.has-dropdown .dropdown-toggle');
-            dropdownToggles.forEach(toggle => {
-                toggle.addEventListener('click', function(e) {
-                    // Only prevent default on mobile view
-                    if (window.innerWidth <= 768) {
-                        e.preventDefault();
-                        const parent = this.closest('.has-dropdown');
-                        parent.classList.toggle('dropdown-active');
-                        
-                        // Close other open dropdowns
-                        dropdownToggles.forEach(otherToggle => {
-                            const otherParent = otherToggle.closest('.has-dropdown');
-                            if (otherParent !== parent && otherParent.classList.contains('dropdown-active')) {
-                                otherParent.classList.remove('dropdown-active');
-                            }
-                        });
-                    }
-                });
-            });
-
+    
             // Close menu when clicking outside
             document.addEventListener('click', (e) => {
                 if (!e.target.closest('.menu-container') && !e.target.closest('#menuToggle')) {
                     navWrapper.classList.remove('active');
                     menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
                 }
+            });
+
+            // Đảm bảo trạng thái active được áp dụng đúng
+            const navItems = utils.$$('.main-nav li a');
+            navItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    navItems.forEach(i => i.classList.remove('active'));
+                    item.classList.add('active');
+                });
             });
         }
     };
@@ -332,4 +322,50 @@ document.addEventListener('DOMContentLoaded', () => {
     slider.init();
     cart.init();
     lazyLoad.init();
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Toggle main menu
+    const menuToggle = document.getElementById('menuToggle');
+    const navWrapper = document.getElementById('navWrapper');
+    
+    if (menuToggle) {
+        menuToggle.addEventListener('click', function() {
+            this.classList.toggle('active');
+            const mainNav = navWrapper.querySelector('.main-nav');
+            if (mainNav) {
+                mainNav.classList.toggle('active');
+            }
+        });
+    }
+    
+    // Handle dropdowns on mobile
+    const dropdownItems = document.querySelectorAll('.has-dropdown');
+    
+    if (window.innerWidth <= 768) {
+        dropdownItems.forEach(item => {
+            item.addEventListener('click', function(e) {
+                if (e.target === this || e.target === this.querySelector('a')) {
+                    e.preventDefault();
+                    this.classList.toggle('active');
+                }
+            });
+        });
+    }
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Đảm bảo dropdown menu nằm trong viewport
+    const wineDropdown = document.querySelector('.wine-dropdown');
+    const wineMenuItem = document.querySelector('.main-nav > li:nth-child(3)');
+    
+    if (wineDropdown && wineMenuItem) {
+        const menuRect = wineMenuItem.getBoundingClientRect();
+        const viewportWidth = window.innerWidth;
+        
+        if (menuRect.left + 780 > viewportWidth) {
+            wineDropdown.style.left = 'auto';
+            wineDropdown.style.right = '0';
+        }
+    }
 });

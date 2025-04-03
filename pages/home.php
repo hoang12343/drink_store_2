@@ -6,85 +6,54 @@ if (!defined('APP_START')) {
 <link rel="stylesheet" href="assets/css/home.css">
 
 <?php
-// Hàm lấy danh sách sản phẩm
-function get_products($category = 'all', $limit = 4)
+// Hàm lấy thông tin danh mục (mô phỏng sản phẩm tiêu biểu hoặc thông tin tổng quan)
+function get_category_info($category)
 {
-    $all_products = [
-        ['id' => 1, 'name' => 'Rượu vang đỏ Pháp', 'price' => '1200000', 'display_price' => '1.200.000 ₫', 'image' => '/api/placeholder/220/180', 'category' => 'wine'],
-        ['id' => 2, 'name' => 'Whisky Scotland 12 năm', 'price' => '1850000', 'display_price' => '1.850.000 ₫', 'image' => '/api/placeholder/220/180', 'category' => 'whisky'],
-        ['id' => 3, 'name' => 'Vodka Nga', 'price' => '950000', 'display_price' => '950.000 ₫', 'image' => '/api/placeholder/220/180', 'category' => 'vodka'],
-        ['id' => 4, 'name' => 'Cognac Pháp', 'price' => '2300000', 'display_price' => '2.300.000 ₫', 'image' => '/api/placeholder/220/180', 'category' => 'wine'],
-        ['id' => 5, 'name' => 'Rum Jamaica', 'price' => '780000', 'display_price' => '780.000 ₫', 'image' => '/api/placeholder/220/180', 'category' => 'other'],
-        ['id' => 6, 'name' => 'Rượu vang trắng Ý', 'price' => '950000', 'display_price' => '950.000 ₫', 'image' => '/api/placeholder/220/180', 'category' => 'wine'],
-        ['id' => 7, 'name' => 'Champagne Pháp', 'price' => '2100000', 'display_price' => '2.100.000 ₫', 'image' => '/api/placeholder/220/180', 'category' => 'wine'],
-        ['id' => 8, 'name' => 'Whisky Ireland', 'price' => '1400000', 'display_price' => '1.400.000 ₫', 'image' => '/api/placeholder/220/180', 'category' => 'whisky'],
-        ['id' => 9, 'name' => 'Gin London', 'price' => '950000', 'display_price' => '950.000 ₫', 'image' => '/api/placeholder/220/180', 'category' => 'gin'],
-        ['id' => 10, 'name' => 'Sake Nhật Bản', 'price' => '1100000', 'display_price' => '1.100.000 ₫', 'image' => '/api/placeholder/220/180', 'category' => 'other'],
-        ['id' => 11, 'name' => 'Rượu vang Chile', 'price' => '640000', 'display_price' => '640.000 ₫', 'old_price' => '800.000 ₫', 'discount' => '-20%', 'image' => '/api/placeholder/220/180', 'category' => 'wine', 'promotion' => true],
-        ['id' => 12, 'name' => 'Tequila Mexico', 'price' => '750000', 'display_price' => '750.000 ₫', 'old_price' => '1.000.000 ₫', 'discount' => '-25%', 'image' => '/api/placeholder/220/180', 'category' => 'other', 'promotion' => true],
-        ['id' => 13, 'name' => 'Whisky Mỹ', 'price' => '880000', 'display_price' => '880.000 ₫', 'old_price' => '1.100.000 ₫', 'discount' => '-20%', 'image' => '/api/placeholder/220/180', 'category' => 'whisky', 'promotion' => true],
-        ['id' => 14, 'name' => 'Brandy Tây Ban Nha', 'price' => '600000', 'display_price' => '600.000 ₫', 'old_price' => '750.000 ₫', 'discount' => '-20%', 'image' => '/api/placeholder/220/180', 'category' => 'other', 'promotion' => true],
-        ['id' => 15, 'name' => 'Rượu vang Úc', 'price' => '550000', 'display_price' => '550.000 ₫', 'old_price' => '690.000 ₫', 'discount' => '-20%', 'image' => '/api/placeholder/220/180', 'category' => 'wine', 'promotion' => true],
+    $category_data = [
+        'promotion' => ['name' => 'Sản phẩm khuyến mãi', 'description' => 'Ưu đãi đặc biệt, giảm giá hấp dẫn', 'image' => '/api/placeholder/220/180', 'link' => '?page=products&category=promotion'],
+        'wine' => ['name' => 'Rượu vang', 'description' => 'Rượu vang cao cấp ', 'image' => '/api/placeholder/220/180', 'link' => '?page=products&category=wine'],
+        'brandy' => ['name' => 'Rượu mạnh', 'description' => 'Cognac và Brandy thượng hạng', 'image' => '/api/placeholder/220/180', 'link' => '?page=products&category=brandy'],
+        'vodka' => ['name' => 'Vodka', 'description' => 'Vodka tinh khiết từ Nga', 'image' => '/api/placeholder/220/180', 'link' => '?page=products&category=vodka'],
+        'beer' => ['name' => 'Bia', 'description' => 'Bia nhập khẩu từ Bỉ, Hà Lan', 'image' => '/api/placeholder/220/180', 'link' => '?page=products&category=beer'],
+        'gift' => ['name' => 'Quà tặng', 'description' => 'Hộp quà rượu sang trọng', 'image' => '/api/placeholder/220/180', 'link' => '?page=products&category=gift'],
     ];
 
-    if ($category !== 'all') {
-        $filtered_products = array_filter($all_products, function ($product) use ($category) {
-            if ($category === 'promotion' && isset($product['promotion']) && $product['promotion']) {
-                return true;
-            }
-            return $product['category'] === $category;
-        });
-    } else {
-        $filtered_products = $all_products;
-    }
-
-    return array_slice($filtered_products, 0, $limit);
+    return $category_data[$category] ?? null;
 }
 
-// Hàm hiển thị sản phẩm
-function display_product(array $product): string
+// Hàm hiển thị card danh mục
+function display_category_card($category): string
 {
-    $product = array_merge(['old_price' => '', 'discount' => ''], $product);
+    $info = get_category_info($category);
+    if (!$info) return '';
+
     ob_start();
 ?>
-<article class="product-card">
-    <div class="product-img">
-        <?php if (!empty($product['discount'])): ?>
-        <span class="discount-badge"><?= htmlspecialchars($product['discount']) ?></span>
-        <?php endif; ?>
-        <img src="<?= htmlspecialchars($product['image']) ?>" alt="<?= htmlspecialchars($product['name']) ?>"
-            loading="lazy">
-    </div>
-    <div class="product-info">
-        <h3><?= htmlspecialchars($product['name']) ?></h3>
-        <div class="product-price">
-            <?= htmlspecialchars($product['display_price']) ?>
-            <?php if (!empty($product['old_price'])): ?>
-            <span class="old-price"><?= htmlspecialchars($product['old_price']) ?></span>
-            <?php endif; ?>
+    <article class="category-card">
+        <div class="category-img">
+            <img src="<?= htmlspecialchars($info['image']) ?>" alt="<?= htmlspecialchars($info['name']) ?>" loading="lazy">
         </div>
-        <div class="product-actions">
-            <a href="?page=product_detail&code=<?= htmlspecialchars($product['code'] ?? $product['id']) ?>"
-                class="view-btn">Chi tiết</a>
-            <button class="add-to-cart-btn"
-                data-product-code="<?= htmlspecialchars($product['code'] ?? $product['id']) ?>">
-                <i class="fas fa-shopping-cart"></i> Thêm vào giỏ
-            </button>
+        <div class="category-info">
+            <h3><?= htmlspecialchars($info['name']) ?></h3>
+            <p><?= htmlspecialchars($info['description']) ?></p>
+            <a href="<?= htmlspecialchars($info['link']) ?>" class="view-btn">Khám phá ngay</a>
         </div>
-    </div>
-</article>
+    </article>
 <?php
     return ob_get_clean();
 }
 
-// Danh mục chính
+// Danh mục chính (đồng bộ với main-navigation)
 $main_categories = [
     'promotion' => 'Sản phẩm khuyến mãi',
-    'wine' => 'Rượu vang',
+    'wine' => 'Rượu vang nhập khẩu',
+    'brandy' => 'Rượu mạnh',
     'whisky' => 'Whisky',
     'vodka' => 'Vodka',
     'gin' => 'Gin',
-    'other' => 'Sản phẩm khác'
+    'beer' => 'Bia',
+    'cocktail' => 'Cocktail',
+
 ];
 ?>
 
@@ -97,26 +66,14 @@ $main_categories = [
     </div>
 </section>
 
-<!-- Các danh mục sản phẩm -->
+<!-- Danh mục sản phẩm tổng hợp -->
 <section class="home-content">
-    <?php foreach ($main_categories as $category => $title): ?>
-    <?php
-        $category_products = get_products($category, 4); // Lấy 4 sản phẩm mỗi danh mục
-        if (empty($category_products)) continue;
-        ?>
-    <div class="category-section">
-        <div class="section-header">
-            <h2><?= htmlspecialchars($title) ?></h2>
-            <a href="?page=products&category=<?= $category ?>" class="view-all">Xem tất cả <i
-                    class="fas fa-chevron-right"></i></a>
-        </div>
-        <div class="products-grid">
-            <?php foreach ($category_products as $product): ?>
-            <?= display_product($product) ?>
-            <?php endforeach; ?>
-        </div>
+    <h2 class="category-title">Danh mục sản phẩm</h2>
+    <div class="categories-grid">
+        <?php foreach ($main_categories as $category => $title): ?>
+            <?= display_category_card($category) ?>
+        <?php endforeach; ?>
     </div>
-    <?php endforeach; ?>
 </section>
 
 <!-- Tính năng nổi bật -->
@@ -144,35 +101,3 @@ $main_categories = [
         </div>
     </div>
 </section>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const addToCartButtons = document.querySelectorAll('.add-to-cart-btn');
-    addToCartButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const productCode = this.getAttribute('data-product-code');
-            fetch('processes/add_to_cart.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: 'product_code=' + encodeURIComponent(productCode) + '&quantity=1'
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        document.getElementById('cartCount').textContent = data.cart_count;
-                        alert('Sản phẩm đã được thêm vào giỏ hàng!');
-                    } else {
-                        alert(data.message ||
-                            'Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng.');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng.');
-                });
-        });
-    });
-});
-</script>
