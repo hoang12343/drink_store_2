@@ -1,0 +1,43 @@
+/* Reset CSS */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Biến màu - Giữ nguyên màu gốc */
+:root {
+    --wine-red: #8B1E3F;         /* Đỏ rượu vang đậm */
+    --wine-red-dark: #6B152F;    /* Đỏ rượu vang tối hơn */
+    --whisky-gold: #D4A017;      /* Vàng whisky */
+    --cognac-brown: #2E1A0F;     /* Nâu cognac đậm */
+    --light-cream: #F8EDE3;      /* Màu kem nhạt */
+    --off-white: #FFF8F0;        /* Trắng ngà */
+    --soft-brown: #7A5A3E;       /* Nâu nhạt */
+    --border-brown: #C9A68A;     /* Nâu cam nhạt */
+    --shadow: rgba(46, 26, 15, 0.2); /* Bóng đổ nâu nhạt */
+    --success-green: #3D6B2F;    /* Xanh lá đậm */
+    --error-red: #A93226;        /* Đỏ lỗi */
+}
+
+/* Body */
+body {
+    background: var(--light-cream);
+    color: var(--cognac-brown);
+    line-height: 1.6;
+    min-height: 100vh;
+}
+
+.wrapper {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+    width: 100%;
+}

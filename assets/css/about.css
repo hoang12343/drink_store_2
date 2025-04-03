@@ -1,0 +1,45 @@
+.content#aboutPage {
+    padding: 40px 0;
+}
+
+.about-section {
+    max-width: 800px;
+    margin: 0 auto;
+    background: var(--off-white);
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+}
+
+.about-section h2 {
+    font-size: 2rem;
+    color: var(--cognac-brown);
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.about-section h3 {
+    font-size: 1.5rem;
+    color: var(--cognac-brown);
+    margin: 20px 0 10px;
+}
+
+.about-section p {
+    margin-bottom: 15px;
+    color: var(--soft-brown);
+}
+
+.about-section strong {
+    color: var(--wine-red);
+}
+
+.about-section ul {
+    list-style: disc;
+    margin-left: 20px;
+    margin-bottom: 15px;
+}
+
+.about-section li {
+    margin-bottom: 10px;
+    color: var(--soft-brown);
+}

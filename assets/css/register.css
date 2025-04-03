@@ -1,0 +1,104 @@
+.content#registerPage {
+    padding: 40px 0;
+}
+
+.form-container {
+    max-width: 500px;
+    margin: 0 auto;
+    background: var(--off-white);
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+}
+
+.form-title {
+    font-size: 1.8rem;
+    color: var(--cognac-brown);
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: var(--cognac-brown);
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid var(--border-brown);
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: border-color 0.3s;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--wine-red);
+}
+
+.form-group input.invalid {
+    border-color: var(--error-red);
+}
+
+.error {
+    color: var(--error-red);
+    font-size: 0.85rem;
+    margin-top: 5px;
+    display: none;
+}
+
+.form-submit {
+    width: 100%;
+    padding: 14px;
+    background: var(--wine-red);
+    color: var(--off-white);
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.form-submit:hover {
+    background: var(--wine-red-dark);
+}
+
+.form-message {
+    text-align: center;
+    padding: 10px;
+    border-radius: 6px;
+    margin: 15px 0;
+    display: none;
+}
+
+.form-message.success {
+    background: rgba(61, 107, 47, 0.1);
+    color: var(--success-green);
+    border: 1px solid var(--success-green);
+}
+
+.form-message.error {
+    background: rgba(169, 50, 38, 0.1);
+    color: var(--error-red);
+    border: 1px solid var(--error-red);
+}
+
+.form-link {
+    text-align: center;
+    margin-top: 20px;
+    color: var(--soft-brown);
+}
+
+.form-link a {
+    color: var(--wine-red);
+    text-decoration: none;
+    font-weight: 500;
+}
