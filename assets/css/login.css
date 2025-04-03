@@ -79,6 +79,12 @@
     display: none;
 }
 
+.form-message.success {
+    background: rgba(61, 107, 47, 0.1);
+    color: var(--success-green);
+    border: 1px solid var(--success-green);
+}
+
 .form-message.error {
     background: rgba(169, 50, 38, 0.1);
     color: var(--error-red);

@@ -26,14 +26,16 @@ if (!defined('APP_START')) {
                     <a href="tel:1900299232"><i class="fas fa-phone"></i> 1900 299 232</a>
                     <a href="mailto:contact@cuahangdouong.vn"><i class="fas fa-envelope"></i>
                         contact@cuahangdouong.vn</a>
+                    <a href="?page=about"><i class="fas fa-info-circle"></i> Giới thiệu</a>
+                    <a href="?page=contact"><i class="fas fa-address-book"></i> Liên hệ</a>
                 </div>
                 <div class="user-actions">
                     <?php if (isset($_SESSION['logged_in']) && $_SESSION['logged_in']): ?>
-                    <a href="?page=account"><i class="fas fa-user-circle"></i> Tài khoản</a>
-                    <a href="processes/logout.php"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a>
+                        <a href="?page=account"><i class="fas fa-user-circle"></i> Tài khoản</a>
+                        <a href="processes/logout.php"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a>
                     <?php else: ?>
-                    <a href="?page=login"><i class="fas fa-user"></i> Đăng nhập</a>
-                    <a href="?page=register"><i class="fas fa-user-plus"></i> Đăng ký</a>
+                        <a href="?page=login"><i class="fas fa-user"></i> Đăng nhập</a>
+                        <a href="?page=register"><i class="fas fa-user-plus"></i> Đăng ký</a>
                     <?php endif; ?>
                 </div>
             </div>
@@ -87,9 +89,7 @@ if (!defined('APP_START')) {
                                 'promotion' => 'Khuyến mãi'
                             ]
                         ],
-                        'promotion' => 'Khuyến mãi',
-                        'about' => 'Giới thiệu',
-                        'contact' => 'Liên hệ'
+                        'promotion' => 'Khuyến mãi'
                     ];
 
                     $current_page = isset($_GET['page']) ? $_GET['page'] : 'home';

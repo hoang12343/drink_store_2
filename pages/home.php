@@ -48,10 +48,10 @@ function display_product(array $product): string
     ob_start();
 ?>
 <article class="product-card">
-    <?php if (!empty($product['discount'])): ?>
-    <span class="discount-badge"><?= htmlspecialchars($product['discount']) ?></span>
-    <?php endif; ?>
     <div class="product-img">
+        <?php if (!empty($product['discount'])): ?>
+        <span class="discount-badge"><?= htmlspecialchars($product['discount']) ?></span>
+        <?php endif; ?>
         <img src="<?= htmlspecialchars($product['image']) ?>" alt="<?= htmlspecialchars($product['name']) ?>"
             loading="lazy">
     </div>
@@ -133,17 +133,16 @@ $main_categories = [
             <p>Cam kết hàng chính hãng, nhập khẩu trực tiếp</p>
         </div>
         <div class="feature-item">
-            <div class="feature-item">
-                <i class="fas fa-certificate"></i>
-                <h3>Bảo đảm hoàn tiền</h3>
-                <p>Hoàn tiền 100% nếu không đúng cam kết</p>
-            </div>
-            <div class="feature-item">
-                <i class="fas fa-headset"></i>
-                <h3>Hỗ trợ 24/7</h3>
-                <p>Đội ngũ hỗ trợ chuyên nghiệp, nhiệt tình</p>
-            </div>
+            <i class="fas fa-certificate"></i>
+            <h3>Bảo đảm hoàn tiền</h3>
+            <p>Hoàn tiền 100% nếu không đúng cam kết</p>
         </div>
+        <div class="feature-item">
+            <i class="fas fa-headset"></i>
+            <h3>Hỗ trợ 24/7</h3>
+            <p>Đội ngũ hỗ trợ chuyên nghiệp, nhiệt tình</p>
+        </div>
+    </div>
 </section>
 
 <script>
