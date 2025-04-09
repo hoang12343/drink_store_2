@@ -16,9 +16,10 @@ document.addEventListener('DOMContentLoaded', () => {
             element.textContent = message;
             element.className = `form-message ${type}`;
             element.style.display = 'block';
-            setTimeout(() => (element.style.display = 'none'), 3000);
+            setTimeout(() => element.style.display = 'none', 3000);
         },
         validateField(field, test, errorElement, errorMessage) {
+            if (!field) return false;
             const isValid = test(field.value);
             this.showError(errorElement, errorMessage, !isValid);
             return isValid;
@@ -29,16 +30,27 @@ document.addEventListener('DOMContentLoaded', () => {
         registerPage: utils.$('#registerPage'),
         loginPage: utils.$('#loginPage'),
         init() {
+            if (!this.registerPage || !this.loginPage) {
+                console.error('Register or Login page not found in DOM');
+                return;
+            }
             const links = utils.$$('.form-link a');
             links.forEach(link => {
                 link.addEventListener('click', (e) => {
                     e.preventDefault();
-                    const targetPage = link.getAttribute('href').substring(1);
+                    const targetPage = link.getAttribute('href').includes('register') ? 'registerPage' : 'loginPage';
                     this.switchTo(targetPage);
                 });
             });
+            // Khởi tạo trạng thái ban đầu dựa trên URL
+            const currentPage = window.location.search.includes('page=register') ? 'registerPage' : 'loginPage';
+            this.switchTo(currentPage);
         },
         switchTo(pageId) {
+            if (!this.registerPage || !this.loginPage) {
+                console.error('Cannot switch: One or both pages are missing');
+                return;
+            }
             if (pageId === 'registerPage') {
                 this.registerPage.style.display = 'block';
                 this.loginPage.style.display = 'none';
@@ -79,21 +91,25 @@ document.addEventListener('DOMContentLoaded', () => {
             };
 
             form.addEventListener('submit', (e) => {
-                e.preventDefault();
                 let isValid = true;
-
                 Object.entries(validations).forEach(([fieldName, { test, errorId, message }]) => {
                     const field = form.querySelector(`[name="${fieldName}"]`);
                     const errorElement = utils.$(`#${errorId}`);
                     if (!utils.validateField(field, test, errorElement, message)) {
                         isValid = false;
-                        field.classList.add('invalid');
+                        field?.classList.add('invalid');
                     } else {
-                        field.classList.remove('invalid');
+                        field?.classList.remove('invalid');
                     }
                 });
 
-                if (isValid) {
+                if (!isValid) {
+                    e.preventDefault();
+                } else if (!message) {
+                    // Nếu không có message element, gửi form bình thường
+                    form.submit();
+                } else {
+                    e.preventDefault();
                     utils.showMessage(message, 'Đăng ký thành công! Vui lòng đăng nhập.', 'success');
                     form.reset();
                     setTimeout(() => formSwitch.switchTo('loginPage'), 2000);
@@ -111,23 +127,24 @@ document.addEventListener('DOMContentLoaded', () => {
             };
 
             form.addEventListener('submit', (e) => {
-                e.preventDefault();
                 let isValid = true;
-
                 Object.entries(validations).forEach(([fieldName, { test, errorId, message }]) => {
                     const field = form.querySelector(`[name="${fieldName}"]`);
                     const errorElement = utils.$(`#${errorId}`);
                     if (!utils.validateField(field, test, errorElement, message)) {
                         isValid = false;
-                        field.classList.add('invalid');
+                        field?.classList.add('invalid');
                     } else {
-                        field.classList.remove('invalid');
+                        field?.classList.remove('invalid');
                     }
                 });
 
- 
-   
-            if (isValid) {
+                if (!isValid) {
+                    e.preventDefault();
+                } else if (!message) {
+                    form.submit();
+                } else {
+                    e.preventDefault();
                     utils.showMessage(message, 'Thông tin đăng nhập không chính xác!', 'error');
                 }
             });
@@ -138,37 +155,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    const navigation = {
-        init() {
-            const menuToggle = utils.$('#menuToggle');
-            const navWrapper = utils.$('#navWrapper');
-            if (!menuToggle || !navWrapper) return;
     
-            menuToggle.addEventListener('click', () => {
-                navWrapper.classList.toggle('active');
-                menuToggle.innerHTML = navWrapper.classList.contains('active')
-                    ? '<i class="fas fa-times"></i>'
-                    : '<i class="fas fa-bars"></i>';
-            });
     
-            // Close menu when clicking outside
-            document.addEventListener('click', (e) => {
-                if (!e.target.closest('.menu-container') && !e.target.closest('#menuToggle')) {
-                    navWrapper.classList.remove('active');
-                    menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
-                }
-            });
-
-            // Đảm bảo trạng thái active được áp dụng đúng
-            const navItems = utils.$$('.main-nav li a');
-            navItems.forEach(item => {
-                item.addEventListener('click', () => {
-                    navItems.forEach(i => i.classList.remove('active'));
-                    item.classList.add('active');
-                });
-            });
-        }
-    };
 
     const slider = {
         container: utils.$('.slider'),
@@ -264,8 +252,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     const productCard = e.target.closest('.product-card, .product-detail');
                     if (!productCard) return;
                     const productId = productCard.dataset.id || productCard.getAttribute('data-code');
-                    const productName = productCard.dataset.name || productCard.querySelector('h3').textContent;
-                    const price = productCard.dataset.price || productCard.querySelector('.product-price').textContent;
+                    const productName = productCard.dataset.name || productCard.querySelector('h3')?.textContent;
+                    const price = productCard.dataset.price || productCard.querySelector('.product-price')?.textContent;
                     this.addToCart(productId, productName, price);
                 });
             });
@@ -318,54 +306,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     formSwitch.init();
     forms.init();
-    navigation.init();
+   
     slider.init();
     cart.init();
     lazyLoad.init();
-});
-
-document.addEventListener('DOMContentLoaded', function() {
-    // Toggle main menu
-    const menuToggle = document.getElementById('menuToggle');
-    const navWrapper = document.getElementById('navWrapper');
-    
-    if (menuToggle) {
-        menuToggle.addEventListener('click', function() {
-            this.classList.toggle('active');
-            const mainNav = navWrapper.querySelector('.main-nav');
-            if (mainNav) {
-                mainNav.classList.toggle('active');
-            }
-        });
-    }
-    
-    // Handle dropdowns on mobile
-    const dropdownItems = document.querySelectorAll('.has-dropdown');
-    
-    if (window.innerWidth <= 768) {
-        dropdownItems.forEach(item => {
-            item.addEventListener('click', function(e) {
-                if (e.target === this || e.target === this.querySelector('a')) {
-                    e.preventDefault();
-                    this.classList.toggle('active');
-                }
-            });
-        });
-    }
-});
-
-document.addEventListener('DOMContentLoaded', function() {
-    // Đảm bảo dropdown menu nằm trong viewport
-    const wineDropdown = document.querySelector('.wine-dropdown');
-    const wineMenuItem = document.querySelector('.main-nav > li:nth-child(3)');
-    
-    if (wineDropdown && wineMenuItem) {
-        const menuRect = wineMenuItem.getBoundingClientRect();
-        const viewportWidth = window.innerWidth;
-        
-        if (menuRect.left + 780 > viewportWidth) {
-            wineDropdown.style.left = 'auto';
-            wineDropdown.style.right = '0';
-        }
-    }
 });

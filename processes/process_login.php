@@ -2,23 +2,23 @@
 session_start();
 define('APP_START', true);
 
-if ($_SERVER["REQUEST_METHOD"] !== "POST") {
-    header('Location: index.php?page=login');
+require_once '../includes/db_connect.php';
+
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    header('Location: ../index.php?page=login');
     exit;
 }
 
-require_once 'db_connect.php';
-
 $username = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_STRING) ?? '';
-$password = $_POST['password'] ?? '';
+$password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_STRING) ?? '';
 
-if (empty($username) || empty($password)) {
-    header('Location: index.php?page=login&error=empty');
+if (!$username || !$password) {
+    header('Location: ../index.php?page=login&error=empty');
     exit;
 }
 
 try {
-    $stmt = $pdo->prepare("SELECT id, username, password, is_admin FROM users WHERE username = ?");
+    $stmt = $pdo->prepare('SELECT id, username, password, is_admin FROM users WHERE username = ?');
     $stmt->execute([$username]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -28,13 +28,13 @@ try {
         $_SESSION['is_admin'] = $user['is_admin'] ?? 0;
         $_SESSION['logged_in'] = true;
         $_SESSION['last_activity'] = time();
-
-        header('Location: index.php?page=home');
+        header('Location: ../index.php?page=home');
     } else {
-        header('Location: index.php?page=login&error=invalid');
+        header('Location: ../index.php?page=login&error=invalid');
     }
+    exit;
 } catch (PDOException $e) {
-    error_log("Login error: " . $e->getMessage());
-    header('Location: index.php?page=login&error=system');
+    error_log('Login error: ' . $e->getMessage());
+    header('Location: ../index.php?page=login&error=system');
+    exit;
 }
-exit;

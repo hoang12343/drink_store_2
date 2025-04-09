@@ -1,25 +1,32 @@
 <link rel="stylesheet" href="assets/css/login.css">
-<div class="content" id="loginPage">
+<div class="content" id="loginPage" style="display: none;">
     <div class="form-container">
-        <h2 class="form-title">Đăng nhập</h2>
-        <?php if (isset($_GET['error']) && $_GET['error'] == 1): ?>
-            <div class="form-message error">Tên đăng nhập hoặc mật khẩu không chính xác!</div>
-        <?php elseif (isset($_GET['logout']) && $_GET['logout'] == 1): ?>
-            <div class="form-message success">Đăng xuất thành công!</div>
+        <h2>Đăng nhập</h2>
+        <?php if (isset($_GET['success']) && $_GET['success'] === 'registered'): ?>
+            <div class="form-message success">Đăng ký thành công! Vui lòng đăng nhập.</div>
+        <?php elseif (isset($_GET['error'])): ?>
+            <div class="form-message error">
+                <?php
+                echo match ($_GET['error']) {
+                    'empty' => 'Vui lòng nhập đầy đủ thông tin.',
+                    'invalid' => 'Tên đăng nhập hoặc mật khẩu không đúng.',
+                    'system' => 'Lỗi hệ thống, vui lòng thử lại sau.',
+                    default => 'Lỗi không xác định.'
+                };
+                ?>
+            </div>
         <?php endif; ?>
-        <form id="loginForm" method="POST" action="processes/process_login.php">
+        <form method="POST" action="processes/process_login.php">
             <div class="form-group">
-                <label for="username">Tên đăng nhập</label>
-                <input type="text" id="username" name="username" placeholder="Nhập tên đăng nhập" required>
-                <div class="error" id="usernameError"></div>
+                <label>Tên đăng nhập</label>
+                <input type="text" name="username" required>
             </div>
             <div class="form-group">
-                <label for="password">Mật khẩu</label>
-                <input type="password" id="password" name="password" placeholder="Nhập mật khẩu" required>
-                <div class="error" id="passwordError"></div>
+                <label>Mật khẩu</label>
+                <input type="password" name="password" required>
             </div>
-            <button type="submit" class="form-submit">Đăng nhập</button>
+            <button type="submit">Đăng nhập</button>
         </form>
-        <p class="form-link">Chưa có tài khoản? <a href="?page=register">Đăng ký ngay</a></p>
+        <p>Chưa có tài khoản? <a href="?page=register" onclick="switchTo('register'); return false;">Đăng ký</a></p>
     </div>
 </div>
