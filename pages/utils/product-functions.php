@@ -3,17 +3,111 @@ if (!defined('APP_START')) {
     exit('No direct access');
 }
 
-// Fetch products with filtering
 function get_products($category = 'all', $search = '', $sort = 'default', $limit = 12, $filters = [])
 {
-    // Sample product data (replace with database query in a real application)
     $all_products = [
-        ['id' => 1, 'name' => 'Rượu vang đỏ Pháp', 'code' => 'RV001', 'price' => '1200000', 'display_price' => '1.200.000 ₫', 'image' => '/api/placeholder/220/180', 'category' => 'wine', 'stock' => 25, 'rating' => 4.5, 'country' => 'Pháp', 'type' => 'Đỏ', 'volume' => '750ml', 'grape' => 'Cabernet Sauvignon'],
-        ['id' => 4, 'name' => 'Cognac Pháp', 'code' => 'CG001', 'price' => '2300000', 'display_price' => '2.300.000 ₫', 'image' => '/api/placeholder/220/180', 'category' => 'wine', 'stock' => 12, 'rating' => 4.9, 'country' => 'Pháp', 'type' => 'Đỏ', 'volume' => '700ml', 'grape' => 'Merlot'],
-        ['id' => 6, 'name' => 'Rượu vang trắng Ý', 'code' => 'RV045', 'price' => '950000', 'display_price' => '950.000 ₫', 'image' => '/api/placeholder/220/180', 'category' => 'wine', 'stock' => 15, 'rating' => 4.2, 'country' => 'Ý', 'type' => 'Trắng', 'volume' => '750ml', 'grape' => 'Chardonnay'],
-        ['id' => 7, 'name' => 'Champagne Pháp', 'code' => 'CH001', 'price' => '2100000', 'display_price' => '2.100.000 ₫', 'image' => '/api/placeholder/220/180', 'category' => 'wine', 'stock' => 10, 'rating' => 4.7, 'country' => 'Pháp', 'type' => 'Sủi', 'volume' => '750ml', 'grape' => 'Pinot Noir'],
-        ['id' => 11, 'name' => 'Rượu vang Chile', 'code' => 'RV023', 'price' => '640000', 'display_price' => '640.000 ₫', 'old_price' => '800.000 ₫', 'discount' => '-20%', 'image' => '/api/placeholder/220/180', 'category' => 'wine', 'stock' => 28, 'rating' => 4.1, 'promotion' => true, 'country' => 'Chile', 'type' => 'Đỏ', 'volume' => '750ml', 'grape' => 'Syrah'],
-        ['id' => 15, 'name' => 'Rượu vang Úc', 'code' => 'RV056', 'price' => '550000', 'display_price' => '550.000 ₫', 'old_price' => '690.000 ₫', 'discount' => '-20%', 'image' => '/api/placeholder/220/180', 'category' => 'wine', 'stock' => 20, 'rating' => 4.2, 'promotion' => true, 'country' => 'Úc', 'type' => 'Trắng', 'volume' => '750ml', 'grape' => 'Sauvignon Blanc'],
+        [
+            'id' => 1,
+            'name' => 'Rượu vang Ý 60 Sessantanni Limited Edition (24 Karat Gold)',
+            'code' => 'RV001',
+            'price' => '1870000',
+            'display_price' => '1.870.000 ₫',
+            'image' => '/api/placeholder/220/300', // Adjusted height for bottle image
+            'category' => 'wine',
+            'stock' => 25,
+            'grape' => 'Primitivo',
+            'type' => 'Rượu vang đỏ',
+            'brand' => 'San Marzano',
+            'country' => 'Vang Ý (Italy)',
+            'abv' => '13% ABV',
+            'description' => 'Mẫu chai nho 60 năm từ thương hiệu Primitivo. Manduria D.O.P được làm phiên bản vang Ý đặc biệt.'
+        ],
+        [
+            'id' => 4,
+            'name' => 'Cognac Pháp',
+            'code' => 'CG001',
+            'price' => '2300000',
+            'display_price' => '2.300.000 ₫',
+            'image' => '/api/placeholder/220/300',
+            'category' => 'wine',
+            'stock' => 12,
+            'grape' => 'Merlot',
+            'type' => 'Rượu vang đỏ',
+            'brand' => 'San Marzano',
+            'country' => 'Pháp',
+            'abv' => '14% ABV',
+            'description' => 'Rượu vang cao cấp từ Pháp, hương vị đậm đà.'
+        ],
+        [
+            'id' => 6,
+            'name' => 'Rượu vang trắng Ý',
+            'code' => 'RV045',
+            'price' => '950000',
+            'display_price' => '950.000 ₫',
+            'image' => '/api/placeholder/220/300',
+            'category' => 'wine',
+            'stock' => 15,
+            'grape' => 'Chardonnay',
+            'type' => 'Rượu vang trắng',
+            'brand' => 'San Marzano',
+            'country' => 'Vang Ý (Italy)',
+            'abv' => '12% ABV',
+            'description' => 'Rượu vang trắng Ý, nhẹ nhàng và thanh lịch.'
+        ],
+        [
+            'id' => 7,
+            'name' => 'Champagne Pháp',
+            'code' => 'CH001',
+            'price' => '2100000',
+            'display_price' => '2.100.000 ₫',
+            'image' => '/api/placeholder/220/300',
+            'category' => 'wine',
+            'stock' => 10,
+            'grape' => 'Pinot Noir',
+            'type' => 'Rượu vang sủi',
+            'brand' => 'San Marzano',
+            'country' => 'Pháp',
+            'abv' => '12.5% ABV',
+            'description' => 'Champagne Pháp cao cấp, lý tưởng cho các dịp lễ.'
+        ],
+        [
+            'id' => 11,
+            'name' => 'Rượu vang Chile',
+            'code' => 'RV023',
+            'price' => '640000',
+            'display_price' => '640.000 ₫',
+            'old_price' => '800.000 ₫',
+            'discount' => '-20%',
+            'image' => '/api/placeholder/220/300',
+            'category' => 'wine',
+            'stock' => 28,
+            'promotion' => true,
+            'grape' => 'Syrah',
+            'type' => 'Rượu vang đỏ',
+            'brand' => 'San Marzano',
+            'country' => 'Chile',
+            'abv' => '13.5% ABV',
+            'description' => 'Rượu vang Chile đậm đà, giá trị tốt.'
+        ],
+        [
+            'id' => 15,
+            'name' => 'Rượu vang Úc',
+            'code' => 'RV056',
+            'price' => '550000',
+            'display_price' => '550.000 ₫',
+            'old_price' => '690.000 ₫',
+            'discount' => '-20%',
+            'image' => '/api/placeholder/220/300',
+            'category' => 'wine',
+            'stock' => 20,
+            'promotion' => true,
+            'grape' => 'Sauvignon Blanc',
+            'type' => 'Rượu vang trắng',
+            'brand' => 'San Marzano',
+            'country' => 'Úc',
+            'abv' => '12% ABV',
+            'description' => 'Rượu vang Úc tươi mát, dễ uống.'
+        ],
     ];
 
     // Filter by category
@@ -48,7 +142,7 @@ function get_products($category = 'all', $search = '', $sort = 'default', $limit
             $custom_price = (int) str_replace('.', '', $filters['custom_price']);
             $filtered_products = array_filter($filtered_products, function ($product) use ($custom_price) {
                 $price = (int) str_replace('.', '', $product['price']);
-                return $price <= $custom_price + 100000 && $price >= $custom_price - 100000; // ±100,000 range
+                return $price <= $custom_price + 100000 && $price >= $custom_price - 100000;
             });
         }
         if (isset($filters['country']) && $filters['country'] !== 'all') {

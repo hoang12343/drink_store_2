@@ -3,20 +3,23 @@ document.addEventListener('DOMContentLoaded', function() {
     const productsHeader = document.querySelector('.products-header');
     const leftBar = document.querySelector('.left-bar');
     
-    const filterToggle = document.createElement('button');
-    filterToggle.classList.add('filter-toggle');
-    filterToggle.textContent = 'Lọc sản phẩm';
-    productsHeader.prepend(filterToggle);
+    if (productsHeader && leftBar) {
+        const filterToggle = document.createElement('button');
+        filterToggle.classList.add('filter-toggle');
+        filterToggle.textContent = 'Lọc sản phẩm';
+        productsHeader.prepend(filterToggle);
 
-    filterToggle.addEventListener('click', function() {
-        leftBar.classList.toggle('active');
-    });
+        filterToggle.addEventListener('click', function() {
+            leftBar.classList.toggle('active');
+        });
+    }
 
-    // Add-to-cart functionality
-    const addToCartButtons = document.querySelectorAll('.add-to-cart-btn');
-    addToCartButtons.forEach(button => {
+    // Buy Now functionality (same as add-to-cart)
+    const buyNowButtons = document.querySelectorAll('.buy-now-btn');
+    buyNowButtons.forEach(button => {
         button.addEventListener('click', function() {
-            const productCode = this.getAttribute('data-product-code');
+            const productCard = this.closest('.product-card');
+            const productCode = productCard.querySelector('.buy-now-btn').getAttribute('data-product-code');
 
             fetch('processes/add_to_cart.php', {
                     method: 'POST',

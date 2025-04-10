@@ -8,16 +8,13 @@ if (!defined('APP_START')) {
 <script src="assets/js/products.js" defer></script>
 
 <?php
-// Include product functions and components
 require_once 'utils/product-functions.php';
 require_once 'components/product-card.php';
 
-// Get filter parameters
 $category = filter_input(INPUT_GET, 'category', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?? 'all';
 $search = filter_input(INPUT_GET, 'search', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?? '';
 $sort = filter_input(INPUT_GET, 'sort', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?? 'default';
 
-// Get additional filter parameters
 $filters = [
     'price_min' => filter_input(INPUT_GET, 'price_min', FILTER_SANITIZE_NUMBER_INT),
     'price_max' => filter_input(INPUT_GET, 'price_max', FILTER_SANITIZE_NUMBER_INT),
@@ -28,11 +25,9 @@ $filters = [
     'grape' => filter_input(INPUT_GET, 'grape', FILTER_SANITIZE_FULL_SPECIAL_CHARS),
 ];
 
-// Fetch products
 $products = get_products($category, $search, $sort, 12, $filters);
 $total_products = count($products);
 
-// Get categories for filter
 $categories = [
     'all' => 'Tất cả sản phẩm',
     'wine' => 'Rượu vang',
@@ -44,7 +39,6 @@ $categories = [
     'promotion' => 'Khuyến mãi'
 ];
 
-// Sort options
 $sort_options = [
     'default' => 'Mặc định',
     'price_asc' => 'Giá tăng dần',
@@ -57,10 +51,8 @@ $sort_options = [
 
 <section class="content products-page wine-page">
     <div class="products-layout">
-        <!-- Left-Bar for Filters -->
         <?php include_once 'components/filter-bar.php'; ?>
 
-        <!-- Right Content for Products -->
         <div class="right-content">
             <div class="products-header">
                 <h1>
