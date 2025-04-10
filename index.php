@@ -1,10 +1,11 @@
 <?php
 define('APP_START', true);
 
+// Placeholder for database connection and session handling
 require_once 'includes/db_connect.php';
 require_once 'includes/session_start.php';
 
-// Session timeout (30 phút)
+// Session timeout (30 minutes)
 $timeout = 1800;
 if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > $timeout)) {
     session_unset();
@@ -29,8 +30,8 @@ if ($page === 'cart' && !isset($_SESSION['logged_in'])) {
 }
 
 if ($page === 'logout') {
-    require_once 'processes/logout.php'; // Gọi file logout từ thư mục processes
-    exit; // Đảm bảo không xử lý thêm sau khi logout
+    require_once 'processes/logout.php';
+    exit;
 }
 
 $header_file = 'includes/header.php';
@@ -51,7 +52,7 @@ if (file_exists($header_file)) {
     <?php
     $page_file = "pages/$page.php";
     if (file_exists($page_file)) {
-        include $page_file;
+        include_once $page_file; // Use include_once to prevent multiple inclusions
     } else {
         http_response_code(404);
         include 'pages/404.php';
