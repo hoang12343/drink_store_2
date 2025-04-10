@@ -9,29 +9,34 @@ body {
     font-family: 'Roboto', sans-serif;
     line-height: 1.6;
     color: #333;
+    margin: 0; /* Ensure no default margins */
 }
 
 .wrapper {
-    width: 100%;
+    width: 100vw; /* Full viewport width */
+    margin: 0;
 }
 
+/* Remove max-width and make container full-width */
 .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 15px;
+    width: 100vw; /* Full viewport width */
+    margin: 0;
+    padding: 0 15px; /* Minimal padding to avoid content sticking to edges */
 }
 
+/* Links */
 a {
     text-decoration: none;
     color: inherit;
 }
 
-/* Top Bar Styles */
+/* Top Bar Styles - Full Width */
 .top-bar {
     background-color: #8B0000;
     color: #fff;
     padding: 8px 0;
     font-size: 14px;
+    width: 100vw; /* Full width */
 }
 
 .top-bar .container {
@@ -68,11 +73,12 @@ a {
     margin-right: 5px;
 }
 
-/* Main Header Styles */
+/* Main Header Styles - Full Width */
 .main-header {
     background-color: #fff;
     padding: 15px 0;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    width: 100vw; /* Full width */
 }
 
 .main-header .container {
@@ -164,10 +170,11 @@ a {
     cursor: pointer;
 }
 
-/* Main Navigation Styles */
+/* Main Navigation Styles - Full Width */
 .main-navigation {
     background-color: #f8f8f8;
     border-bottom: 1px solid #eee;
+    width: 100vw; /* Full width */
 }
 
 .main-nav {
@@ -189,25 +196,25 @@ a {
     transition: all 0.3s ease;
 }
 
-/* Màu mặc định cho hover và active của các mục menu (trừ Rượu vang) */
+/* Default hover and active styles for menu items (except Rượu vang) */
 .main-nav li a:hover,
 .main-nav li a.active {
     color: #fff;
     background-color: rgba(139, 0, 0, 0.05);
 }
 
-/* Đặc biệt cho mục Rượu vang (thứ 3 trong menu) */
+/* Special styles for Rượu vang (3rd menu item) */
 .main-nav li.has-dropdown:nth-child(3) a {
     transition: all 0.3s ease;
 }
 
-/* Khi ở trang chủ, hover vào Rượu vang là trắng trên nền đỏ */
+/* On homepage, hover on Rượu vang is white on red */
 body.home .main-nav li.has-dropdown:nth-child(3) a:hover {
     color: #fff;
     background-color: #8B0000;
 }
 
-/* Khi ở trang Rượu vang, trạng thái active là trắng trên nền đỏ */
+/* On Rượu vang page, active state is white on red */
 body.products .main-nav li.has-dropdown:nth-child(3) a.active {
     color: #fff;
     background-color: #8B0000;
@@ -238,7 +245,7 @@ body.products .main-nav li.has-dropdown:nth-child(3) a.active {
     gap: 20px;
 }
 
-/* Hiển thị dropdown khi hover */
+/* Show dropdown on hover */
 .main-nav .has-dropdown:hover .dropdown-menu {
     display: flex;
 }
@@ -305,13 +312,118 @@ body.products .main-nav li.has-dropdown:nth-child(3) a.active {
     color: #0066cc;
 }
 
+/* Footer Styles - Full Width */
+.footer {
+    background: #2E1A0F; /* Using --cognac-brown */
+    color: #FFF8F0; /* Using --off-white */
+    padding-top: 50px;
+    margin-top: auto;
+    width: 100vw; /* Full width */
+}
+
+.footer-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+    margin-bottom: 30px;
+    padding: 0 15px; /* Minimal padding */
+}
+
+.footer-title {
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+    position: static; /* Changed from fixed to static to avoid layout issues */
+}
+
+/* Home Content - Full Width (from previous code) */
+.home-content {
+    width: 100vw; /* Full viewport width */
+    margin: 0;
+    padding: 40px 0;
+    background: #FFF8F0; /* Using --off-white */
+}
+
+.category-title {
+    text-align: center;
+    font-size: 2rem;
+    margin-bottom: 30px;
+    color: #2E1A0F; /* Using --cognac-brown */
+    font-weight: bold;
+}
+
+.categories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    width: 100vw;
+    margin: 0;
+    padding: 0 20px;
+    box-sizing: border-box;
+}
+
+/* Category Card */
+.category-card {
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.category-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.category-img img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    display: block;
+}
+
+.category-info {
+    padding: 15px;
+    text-align: center;
+}
+
+.category-info h3 {
+    font-size: 1.3rem;
+    color: #2E1A0F; /* Using --cognac-brown */
+    margin-bottom: 10px;
+}
+
+.category-info p {
+    font-size: 0.95rem;
+    color: #666;
+    margin-bottom: 15px;
+}
+
+.view-btn {
+    display: inline-block;
+    padding: 8px 20px;
+    background: #8B1E3F; /* Using --wine-red */
+    color: #FFF8F0; /* Using --off-white */
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    transition: background 0.3s ease;
+}
+
+.view-btn:hover {
+    background: #6B152F; /* Using --wine-red-dark */
+}
+
 /* Responsive Styles */
 @media (max-width: 1200px) {
     .dropdown-menu.wine-dropdown {
-        width: 700px;
+        width: 100vw; /* Full width on smaller screens */
+        padding: 15px;
     }
-    .dropdown-menu.brandy-dropdown {
-        width: 700px;
+
+    .categories-grid {
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        padding: 0 15px;
     }
 }
 
@@ -337,21 +449,10 @@ body.products .main-nav li.has-dropdown:nth-child(3) a.active {
     }
 
     .dropdown-menu.wine-dropdown {
-        width: 100%;
+        width: 100vw;
         left: 0;
         flex-direction: column;
     }
-
-    .dropdown-menu.brandy-dropdown {
-        width: 100%;
-        left: 0;
-        flex-direction: column;
-    }
-
-/* Đảm bảo dropdown hiển thị đúng vị trí */
-.main-nav > li.has-dropdown:nth-child(4) .dropdown-menu.brandy-dropdown {
-    left: 0;
-}
 
     .dropdown-column {
         width: 100%;
@@ -388,6 +489,7 @@ body.products .main-nav li.has-dropdown:nth-child(3) a.active {
     .main-navigation {
         background-color: transparent;
         position: relative;
+        width: 100vw;
     }
 
     .main-nav {
@@ -397,7 +499,7 @@ body.products .main-nav li.has-dropdown:nth-child(3) a.active {
         position: absolute;
         top: 100%;
         left: 0;
-        width: 100%;
+        width: 100vw;
         z-index: 1000;
         box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
     }
@@ -410,7 +512,6 @@ body.products .main-nav li.has-dropdown:nth-child(3) a.active {
         border-bottom: 1px solid #eee;
     }
 
-    /* Mobile dropdown handling */
     .dropdown-menu {
         position: static;
         width: 100%;
@@ -423,54 +524,57 @@ body.products .main-nav li.has-dropdown:nth-child(3) a.active {
         padding: 10px;
     }
 
-    /* Disable hover effects on mobile */
     .main-nav .has-dropdown:hover .dropdown-menu {
         display: none;
     }
 
-    /* Show dropdown only when active class is present */
     .main-nav .has-dropdown.active .dropdown-menu {
         display: flex;
     }
 
-    /* Màu sắc trên mobile */
     .main-nav li a:hover,
     .main-nav li a.active {
         color: #8B0000;
         background-color: rgba(139, 0, 0, 0.05);
     }
 
-    /* Hover vào Rượu vang trên mobile từ trang chủ */
     body.home .main-nav li.has-dropdown:nth-child(3) a:hover {
         color: #fff;
         background-color: #8B0000;
     }
 
-    /* Active trên trang Rượu vang */
     body.products .main-nav li.has-dropdown:nth-child(3) a.active {
         color: #fff;
         background-color: #8B0000;
     }
+
+    .categories-grid {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        padding: 0 10px;
+    }
 }
 
-/* Đảm bảo dropdown hiển thị dưới đúng menu item */
-.main-nav > li.has-dropdown {
-    position: relative;
-}
+@media (max-width: 576px) {
+    .category-title {
+        font-size: 1.5rem;
+        margin-bottom: 20px;
+    }
 
-/* Fix vị trí dropdown cho menu Rượu vang */
-.main-nav > li.has-dropdown:nth-child(3) .dropdown-menu.wine-dropdown {
-    left: 0;
-}
+    .categories-grid {
+        grid-template-columns: 1fr;
+        padding: 0 10px;
+    }
 
-/* Đảm bảo dropdown chỉ hiển thị khi hover vào đúng menu item */
-.main-nav > li.has-dropdown:hover > .dropdown-menu {
-    display: flex;
-}
+    .category-info h3 {
+        font-size: 1.1rem;
+    }
 
-/* JavaScript toggle for mobile menu */
-@media (max-width: 768px) {
-    #menuToggle.active + #navWrapper .main-nav {
-        display: flex;
+    .category-info p {
+        font-size: 0.85rem;
+    }
+
+    .footer-content {
+        grid-template-columns: 1fr;
+        padding: 0 10px;
     }
 }

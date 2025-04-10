@@ -16,6 +16,7 @@ function get_category_info($category)
         'vodka' => ['name' => 'Vodka', 'description' => 'Vodka tinh khiết từ Nga', 'image' => '/api/placeholder/220/180', 'link' => '?page=products&category=vodka'],
         'beer' => ['name' => 'Bia', 'description' => 'Bia nhập khẩu từ Bỉ, Hà Lan', 'image' => '/api/placeholder/220/180', 'link' => '?page=products&category=beer'],
         'gift' => ['name' => 'Quà tặng', 'description' => 'Hộp quà rượu sang trọng', 'image' => '/api/placeholder/220/180', 'link' => '?page=products&category=gift'],
+        'crystal_glasses' => ['name' => 'Ly pha lê Riedel', 'description' => 'Ly pha lê cao cấp ', 'image' => '/api/placeholder/220/180', 'link' => '?page=products&category=crystal_glasses'],
     ];
 
     return $category_data[$category] ?? null;
@@ -29,16 +30,16 @@ function display_category_card($category): string
 
     ob_start();
 ?>
-    <article class="category-card">
-        <div class="category-img">
-            <img src="<?= htmlspecialchars($info['image']) ?>" alt="<?= htmlspecialchars($info['name']) ?>" loading="lazy">
-        </div>
-        <div class="category-info">
-            <h3><?= htmlspecialchars($info['name']) ?></h3>
-            <p><?= htmlspecialchars($info['description']) ?></p>
-            <a href="<?= htmlspecialchars($info['link']) ?>" class="view-btn">Khám phá ngay</a>
-        </div>
-    </article>
+<article class="category-card">
+    <div class="category-img">
+        <img src="<?= htmlspecialchars($info['image']) ?>" alt="<?= htmlspecialchars($info['name']) ?>" loading="lazy">
+    </div>
+    <div class="category-info">
+        <h3><?= htmlspecialchars($info['name']) ?></h3>
+        <p><?= htmlspecialchars($info['description']) ?></p>
+        <a href="<?= htmlspecialchars($info['link']) ?>" class="view-btn">Khám phá ngay</a>
+    </div>
+</article>
 <?php
     return ob_get_clean();
 }
@@ -48,9 +49,9 @@ $main_categories = [
     'promotion' => 'Sản phẩm khuyến mãi',
     'wine' => 'Rượu vang nhập khẩu',
     'brandy' => 'Rượu mạnh',
+    'crystal_glasses' => 'Ly pha lê',
     'whisky' => 'Whisky',
     'vodka' => 'Vodka',
-    'gin' => 'Gin',
     'beer' => 'Bia',
     'cocktail' => 'Cocktail',
 
@@ -71,7 +72,7 @@ $main_categories = [
     <h2 class="category-title">Danh mục sản phẩm</h2>
     <div class="categories-grid">
         <?php foreach ($main_categories as $category => $title): ?>
-            <?= display_category_card($category) ?>
+        <?= display_category_card($category) ?>
         <?php endforeach; ?>
     </div>
 </section>

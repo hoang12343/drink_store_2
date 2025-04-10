@@ -1,56 +1,39 @@
-/* Variables (giữ nguyên từ file gốc) */
-:root {
-    --cognac-brown: #8B4513;
-    --wine-red: #722F37;
-    --wine-red-dark: #5E2630;
-    --whisky-gold: #D4AF37;
-    --off-white: #ffffff;
-}
-
-/* Reset cơ bản */
+/* Reset CSS */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* Main Banner */
-.main-banner {
-    background: linear-gradient(135deg, var(--cognac-brown), #4A2C1A);
-    padding: 60px 20px;
-    text-align: center;
-    color: var(--off-white);
+/* Variables (keeping original colors) */
+:root {
+    --wine-red: #8B1E3F;         /* Đỏ rượu vang đậm */
+    --wine-red-dark: #6B152F;    /* Đỏ rượu vang tối hơn */
+    --whisky-gold: #D4A017;      /* Vàng whisky */
+    --cognac-brown: #2E1A0F;     /* Nâu cognac đậm */
+    --light-cream: #F8EDE3;      /* Màu kem nhạt */
+    --off-white: #FFF8F0;        /* Trắng ngà */
+    --soft-brown: #7A5A3E;       /* Nâu nhạt */
+    --border-brown: #C9A68A;     /* Nâu cam nhạt */
+    --shadow: rgba(46, 26, 15, 0.2); /* Bóng đổ nâu nhạt */
+    --success-green: #3D6B2F;    /* Xanh lá đậm */
+    --error-red: #A93226;        /* Đỏ lỗi */
 }
 
-.banner-content h1 {
-    font-size: 2.5rem;
-    margin-bottom: 15px;
-    font-weight: bold;
+/* Body */
+body {
+    background: var(--light-cream);
+    color: var(--cognac-brown);
+    line-height: 1.6;
+    margin: 0;
 }
 
-.banner-content p {
-    font-size: 1.2rem;
-    margin-bottom: 25px;
-}
-
-.btn-shop-now {
-    display: inline-block;
-    padding: 12px 25px;
-    background: var(--wine-red);
-    color: var(--off-white);
-    text-decoration: none;
-    border-radius: 6px;
-    font-size: 1.1rem;
-    transition: background 0.3s ease;
-}
-
-.btn-shop-now:hover {
-    background: var(--wine-red-dark);
-}
-
-/* Home Content */
+/* Home Content - Full Width */
 .home-content {
-    padding: 40px 20px;
+    width: 100vw; /* Full viewport width */
+    margin: 0;
+    padding: 40px 0;
     background: var(--off-white);
 }
 
@@ -64,10 +47,12 @@
 
 .categories-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(4, 1fr); /* Exactly 4 columns per row */
     gap: 20px;
-    max-width: 1200px;
-    margin: 0 auto;
+    width: 100vw;
+    margin: 0;
+    padding: 0 20px;
+    box-sizing: border-box;
 }
 
 /* Category Card */
@@ -123,192 +108,38 @@
     background: var(--wine-red-dark);
 }
 
-/* Features Section */
-.features {
-    padding: 40px 20px;
-    background: #f9f9f9;
-}
-
-.features .container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 20px;
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-.feature-item {
-    text-align: center;
-    padding: 20px;
-}
-
-.feature-item i {
-    font-size: 2rem;
-    color: var(--whisky-gold);
-    margin-bottom: 15px;
-}
-
-.feature-item h3 {
-    font-size: 1.2rem;
-    color: var(--cognac-brown);
-    margin-bottom: 10px;
-}
-
-.feature-item p {
-    font-size: 0.9rem;
-    color: #777;
-}
-
-/* Wine Dropdown (hàng ngang) */
-.wine-dropdown {
-    display: none;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    background: var(--wine-red-dark);
-    width: 900px; /* Độ rộng lớn hơn để chứa hàng ngang */
-    padding: 15px;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-    border-radius: 0 0 4px 4px;
-    border-top: 2px solid var(--whisky-gold);
-    z-index: 1000;
-}
-
-.main-nav .has-dropdown:hover .wine-dropdown {
-    display: block; /* Hiển thị khi hover */
-    animation: fadeIn 0.3s ease;
-}
-
-.dropdown-section {
-    margin-bottom: 15px;
-}
-
-.dropdown-section h4 {
-    color: var(--whisky-gold);
-    font-size: 1rem;
-    margin-bottom: 8px;
-    text-transform: uppercase;
-}
-
-.horizontal-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 15px; /* Khoảng cách giữa các mục */
-}
-
-.horizontal-list li {
-    flex: 0 0 auto;
-}
-
-.horizontal-list li a {
-    display: block;
-    padding: 5px 10px;
-    color: var(--off-white);
-    font-size: 0.9rem;
-    text-decoration: none;
-    transition: color 0.2s ease, background 0.2s ease;
-}
-
-.horizontal-list li a:hover {
-    color: var(--whisky-gold);
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 4px;
-}
-
-/* Responsive */
+/* Responsive Adjustments */
 @media (max-width: 1024px) {
     .categories-grid {
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    }
-
-    .banner-content h1 {
-        font-size: 2rem;
-    }
-
-    .banner-content p {
-        font-size: 1rem;
-    }
-}
-
-@media (max-width: 768px) {
-    .main-banner {
-        padding: 40px 15px;
+        grid-template-columns: repeat(3, 1fr); /* 3 columns on medium screens */
+        padding: 0 15px;
     }
 
     .category-title {
         font-size: 1.8rem;
     }
+}
 
+@media (max-width: 768px) {
     .categories-grid {
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        grid-template-columns: repeat(2, 1fr); /* 2 columns on tablets */
+        padding: 0 10px;
     }
 
-    .feature-item {
-        padding: 15px;
-    }
-
-    .feature-item i {
-        font-size: 1.8rem;
-    }
-    .wine-dropdown {
-        width: 100%;
-        flex-direction: column;
-        position: static;
-        background: rgba(0, 0, 0, 0.15);
-        box-shadow: none;
-        border-top: none;
-        padding: 10px 0;
-    }
-
-    .main-nav .has-dropdown:hover .wine-dropdown {
-        display: none; /* Tắt hover trên mobile */
-    }
-
-    .main-nav .dropdown-active .wine-dropdown {
-        display: block; /* Hiển thị khi active trên mobile */
-    }
-
-    .dropdown-column {
-        padding: 5px 20px;
-    }
-
-    .dropdown-column h4 {
-        font-size: 0.95rem;
-    }
-
-    .dropdown-column ul li a {
-        padding: 6px 0;
+    .category-title {
+        font-size: 1.6rem;
     }
 }
 
 @media (max-width: 576px) {
-    .main-banner {
-        padding: 30px 10px;
-    }
-
-    .banner-content h1 {
-        font-size: 1.5rem;
-    }
-
-    .banner-content p {
-        font-size: 0.9rem;
-    }
-
-    .btn-shop-now {
-        padding: 10px 20px;
-        font-size: 0.95rem;
+    .categories-grid {
+        grid-template-columns: 1fr; /* 1 column on mobile */
+        padding: 0 10px;
     }
 
     .category-title {
         font-size: 1.5rem;
         margin-bottom: 20px;
-    }
-
-    .categories-grid {
-        grid-template-columns: 1fr;
     }
 
     .category-info h3 {
@@ -317,9 +148,5 @@
 
     .category-info p {
         font-size: 0.85rem;
-    }
-
-    .features .container {
-        grid-template-columns: 1fr;
     }
 }
