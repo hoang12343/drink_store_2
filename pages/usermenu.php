@@ -1,32 +1,16 @@
-<?php
-if (!defined('APP_START')) {
-    exit('No direct access');
-}
-
-// Kiểm tra xem người dùng đã đăng nhập chưa
-if (!isset($_SESSION['logged_in']) || !$_SESSION['logged_in']) {
-    exit('Bạn cần đăng nhập để xem menu này.');
-}
-?>
-
-<div class="user-menu">
-    <div class="user-info">
-        <span class="username">
-            <i class="fas fa-user-circle"></i>
-            Xin chào, <?= htmlspecialchars($_SESSION['username'] ?? 'Khách') ?>
-        </span>
-        <button class="dropdown-toggle" id="userMenuToggle" aria-label="Toggle User Menu">
-            <i class="fas fa-caret-down"></i>
-        </button>
-    </div>
-    <div class="dropdown-menu" id="userDropdown">
-        <ul>
-            <li><a href="?page=account">Tài khoản của tôi</a></li>
-            <li><a href="processes/logout.php">Đăng xuất</a></li>
-        </ul>
+<!-- includes/usermenu.php -->
+<div class="user-menu" id="userMenu">
+    <button class="user-toggle">
+        <i class="fas fa-user"></i>
+        <span class="username"><?= htmlspecialchars($_SESSION['username'] ?? 'User') ?></span>
+        <i class="fas fa-caret-down"></i>
+    </button>
+    <div class="dropdown-menu">
+        <a href="?page=profile"><i class="fas fa-user-circle"></i> Hồ sơ</a>
+        <a href="?page=orders"><i class="fas fa-shopping-bag"></i> Đơn hàng</a>
+        <?php if (isset($_SESSION['is_admin']) && $_SESSION['is_admin']): ?>
+        <a href="?page=admin"><i class="fas fa-cogs"></i> Quản trị</a>
+        <?php endif; ?>
+        <a href="?page=logout"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a>
     </div>
 </div>
-
-<!-- Liên kết CSS và JS -->
-<link rel="stylesheet" href="assets/css/usermenu.css">
-<script src="assets/js/usermenu.js"></script>

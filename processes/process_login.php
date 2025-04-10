@@ -12,8 +12,10 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 $username = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_STRING) ?? '';
 $password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_STRING) ?? '';
 
-if (!$username || !$password) {
-    header('Location: ../index.php?page=login&error=empty');
+if (empty($username) || empty($password)) {
+    $_SESSION['login_error'] = 'empty';
+    $_SESSION['last_username'] = $username; // Lưu tên người dùng
+    header('Location: ../index.php?page=login');
     exit;
 }
 
@@ -23,18 +25,27 @@ try {
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if ($user && password_verify($password, $user['password'])) {
+        session_regenerate_id(true);
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['username'] = $user['username'];
         $_SESSION['is_admin'] = $user['is_admin'] ?? 0;
         $_SESSION['logged_in'] = true;
         $_SESSION['last_activity'] = time();
-        header('Location: ../index.php?page=home');
+        unset($_SESSION['last_username']); // Xóa sau khi đăng nhập thành công
+
+        $redirect = filter_input(INPUT_GET, 'redirect', FILTER_SANITIZE_URL) ?? 'home';
+        header("Location: ../index.php?page=$redirect");
+        exit;
     } else {
-        header('Location: ../index.php?page=login&error=invalid');
+        $_SESSION['login_error'] = 'invalid';
+        $_SESSION['last_username'] = $username;
+        header('Location: ../index.php?page=login');
+        exit;
     }
-    exit;
 } catch (PDOException $e) {
     error_log('Login error: ' . $e->getMessage());
-    header('Location: ../index.php?page=login&error=system');
+    $_SESSION['login_error'] = 'system';
+    $_SESSION['last_username'] = $username;
+    header('Location: ../index.php?page=login');
     exit;
 }

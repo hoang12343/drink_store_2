@@ -1,8 +1,4 @@
-<?php
-if (!defined('APP_START')) {
-    exit('No direct access');
-}
-?>
+<?php if (!defined('APP_START')) exit('No direct access'); ?>
 <!DOCTYPE html>
 <html lang="vi">
 
@@ -13,6 +9,7 @@ if (!defined('APP_START')) {
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="assets/css/header.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="assets/js/script.js" defer></script>
 </head>
 
 <body>
@@ -26,15 +23,20 @@ if (!defined('APP_START')) {
                     <a href="?page=about"><i class="fas fa-info-circle"></i> Giới thiệu</a>
                     <a href="?page=contact"><i class="fas fa-address-book"></i> Liên hệ</a>
                 </div>
-                <div class="user-actions">
-                    <?php if (isset($_SESSION['logged_in']) && $_SESSION['logged_in']): ?>
-                        <a href="?page=account"><i class="fas fa-user-circle"></i> Tài khoản</a>
-                        <a href="processes/logout.php"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a>
-                    <?php else: ?>
-                        <a href="?page=login"><i class="fas fa-user"></i> Đăng nhập</a>
-                        <a href="?page=register"><i class="fas fa-user-plus"></i> Đăng ký</a>
-                    <?php endif; ?>
-                </div>
+                <?php if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true): ?>
+                <?php
+                    $usermenu_file = __DIR__ . '/usermenu.php';
+                    if (file_exists($usermenu_file)) {
+                        include $usermenu_file;
+                    } else {
+                        echo '<a href="?page=profile"><i class="fas fa-user"></i> ' . htmlspecialchars($_SESSION['username'] ?? 'User') . '</a>';
+                        echo '<a href="?page=logout"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a>';
+                    }
+                    ?>
+                <?php else: ?>
+                <a href="?page=login"><i class="fas fa-user"></i> Đăng nhập</a>
+                <a href="?page=register"><i class="fas fa-user-plus"></i> Đăng ký</a>
+                <?php endif; ?>
             </div>
         </div>
 
@@ -53,8 +55,9 @@ if (!defined('APP_START')) {
                 <div class="header-actions">
                     <a href="?page=cart" class="cart-icon">
                         <i class="fas fa-shopping-cart"></i>
-                        <span id="cartCount"
-                            class="cart-count"><?= isset($_SESSION['cart']) ? count($_SESSION['cart']) : 0 ?></span>
+                        <span id="cartCount" class="cart-count">
+                            <?= isset($_SESSION['cart']) && is_array($_SESSION['cart']) ? count($_SESSION['cart']) : 0 ?>
+                        </span>
                     </a>
                     <button class="menu-toggle" id="menuToggle" aria-label="Toggle Menu">
                         <i class="fas fa-bars"></i>
@@ -80,8 +83,7 @@ if (!defined('APP_START')) {
                         'gift' => 'Quà tặng'
                     ];
 
-                    // Sub-menus giữ nguyên cấu trúc của bạn nhưng có thể tối ưu hóa thêm nếu cần
-                    $current_page = $_GET['page'] ?? 'home';
+                    $current_page = filter_input(INPUT_GET, 'page', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?? 'home';
                     foreach ($main_menu_items as $key => $label) {
                         $active = ($current_page === $key) ? 'active' : '';
                         $url = in_array($key, ['home', 'promotion', 'knowledge']) ? "?page=$key" : "?page=products&category=$key";

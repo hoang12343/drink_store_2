@@ -1,17 +1,25 @@
-document.addEventListener('DOMContentLoaded', function() {
-    const toggle = document.getElementById('userMenuToggle');
-    const dropdown = document.getElementById('userDropdown');
+document.addEventListener('DOMContentLoaded', () => {
+    const userMenu = document.getElementById('userMenu');
+    if (!userMenu) return;
 
-    if (toggle && dropdown) {
-        toggle.addEventListener('click', function() {
+    const toggle = userMenu.querySelector('.user-toggle');
+    const dropdown = userMenu.querySelector('.dropdown-menu');
+
+    toggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+    });
+
+    document.addEventListener('click', (e) => {
+        if (!userMenu.contains(e.target)) {
+            dropdown.style.display = 'none';
+        }
+    });
+
+    toggle.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
             dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
-        });
-
-        // Đóng menu khi nhấp ra ngoài
-        document.addEventListener('click', function(event) {
-            if (!toggle.contains(event.target) && !dropdown.contains(event.target)) {
-                dropdown.style.display = 'none';
-            }
-        });
-    }
+        }
+    });
 });
