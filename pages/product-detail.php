@@ -3,21 +3,17 @@ if (!defined('APP_START')) {
     exit('No direct access');
 }
 
-// Include necessary utilities
 require_once 'utils/product-functions.php';
+require_once 'components/product-card.php';
 
-// Get the product ID from the URL
-$product_id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-$product = get_product_by_id($product_id); // Assume this function fetches product details from the database
+$product_id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
+$product = get_product_by_id($product_id);
 
 if (!$product) {
     http_response_code(404);
     include 'pages/404.php';
     exit;
 }
-
-// Product details from the product array
-// Note: In practice, you would fetch this from the database
 ?>
 
 <link rel="stylesheet" href="assets/css/product-detail.css">
@@ -30,7 +26,6 @@ if (!$product) {
             <div class="main-image">
                 <img src="<?= htmlspecialchars($product['image']) ?>" alt="<?= htmlspecialchars($product['name']) ?>">
             </div>
-
         </div>
 
         <!-- Product Information -->
@@ -71,21 +66,14 @@ if (!$product) {
                     <i class="fas fa-building"></i>
                     <span>Nhà sản xuất: <?= htmlspecialchars($product['brand'] ?? '') ?></span>
                 </div>
-                <?php if (isset($product['vintage'])): ?>
-                    <div class="label-item">
-                        <i class="fas fa-calendar-alt"></i>
-                        <span>Niên vụ: <?= htmlspecialchars($product['vintage']) ?></span>
-                    </div>
-                <?php endif; ?>
             </div>
 
             <!-- Price -->
             <div class="product-price">
-                <?php if (isset($product['old_price']) && $product['old_price']): ?>
-                    <span class="old-price"><?= htmlspecialchars($product['old_price']) ?></span>
+                <?php if (!empty($product['display_old_price'])): ?>
+                    <span class="old-price"><?= htmlspecialchars($product['display_old_price']) ?></span>
                 <?php endif; ?>
-                <span
-                    class="current-price"><?= htmlspecialchars($product['display_price'] ?? number_format($product['price'], 0, ',', '.') . ' đ') ?></span>
+                <span class="current-price"><?= htmlspecialchars($product['display_price']) ?></span>
             </div>
 
             <!-- Stock Status -->
@@ -133,14 +121,14 @@ if (!$product) {
         <p><?= htmlspecialchars($product['description'] ?? '') ?></p>
     </div>
 
-    <!-- Related Products (Optional) -->
+    <!-- Related Products -->
     <div class="related-products-section">
         <h2>Sản phẩm liên quan</h2>
         <div class="products-grid">
             <?php
-            $related_products = get_related_products($product['id'], 4); // Assume this function fetches related products
+            $related_products = get_related_products($product['id'], 4);
             foreach ($related_products as $related_product) {
-                echo display_product($related_product); // Reuse the display_product function from product-card.php
+                echo display_product($related_product);
             }
             ?>
         </div>

@@ -13,8 +13,16 @@ function display_product(array $product): string
         'brand' => '',
         'country' => '',
         'abv' => '',
-        'description' => ''
+        'description' => '',
+        'display_price' => '',
+        'display_old_price' => ''
     ], $product);
+
+    // Dự phòng nếu display_price không có
+    if (empty($product['display_price']) && isset($product['price'])) {
+        $product['display_price'] = format_price($product['price']);
+    }
+
     ob_start();
 ?>
     <article class="product-card clickable" data-product-id="<?= htmlspecialchars($product['id']) ?>"
@@ -84,8 +92,8 @@ function display_product(array $product): string
             <!-- Product Price -->
             <div class="product-price">
                 <?= htmlspecialchars($product['display_price']) ?>
-                <?php if (!empty($product['old_price'])): ?>
-                    <span class="old-price"><?= htmlspecialchars($product['old_price']) ?></span>
+                <?php if (!empty($product['display_old_price'])): ?>
+                    <span class="old-price"><?= htmlspecialchars($product['display_old_price']) ?></span>
                 <?php endif; ?>
             </div>
 
@@ -98,4 +106,3 @@ function display_product(array $product): string
 <?php
     return ob_get_clean();
 }
-?>

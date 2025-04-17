@@ -1,5 +1,6 @@
 <?php
 define('APP_START', true);
+define('ROOT_PATH', __DIR__);
 
 // Placeholder for database connection and session handling
 require_once 'includes/db_connect.php';

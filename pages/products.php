@@ -28,15 +28,18 @@ $filters = [
 $products = get_products($category, $search, $sort, 12, $filters);
 $total_products = count($products);
 
+// Đồng bộ danh mục với home.php và cơ sở dữ liệu
 $categories = [
     'all' => 'Tất cả sản phẩm',
-    'wine' => 'Rượu vang',
+    'promotion' => 'Sản phẩm khuyến mãi',
+    'wine' => 'Rượu vang nhập khẩu',
+    'brandy' => 'Rượu mạnh',
+    'crystal_glasses' => 'Ly pha lê',
     'whisky' => 'Whisky',
     'vodka' => 'Vodka',
-    'gin' => 'Gin',
     'beer' => 'Bia',
-    'other' => 'Khác',
-    'promotion' => 'Khuyến mãi'
+    'cocktail' => 'Cocktail',
+    'gift' => 'Quà tặng'
 ];
 
 $sort_options = [
