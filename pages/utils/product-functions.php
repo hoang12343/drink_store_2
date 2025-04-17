@@ -202,3 +202,16 @@ function get_products($category = 'all', $search = '', $sort = 'default', $limit
 
     return array_slice($filtered_products, 0, $limit);
 }
+
+function get_product_by_id($id)
+{
+    $products = get_products(); // Reuse function to get all products
+
+    foreach ($products as $product) {
+        if ($product['id'] == $id) {
+            return $product;
+        }
+    }
+
+    return null; // Product not found
+}

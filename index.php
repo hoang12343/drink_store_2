@@ -17,7 +17,7 @@ $_SESSION['last_activity'] = time();
 
 function route_request($default = 'home'): string
 {
-    $valid_pages = ['home', 'products', 'cart', 'contact', 'about', 'login', 'register', 'logout'];
+    $valid_pages = ['home', 'products', 'product-detail', 'cart', 'contact', 'about', 'login', 'register', 'logout'];
     $page = filter_input(INPUT_GET, 'page', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?? $default;
     return in_array($page, $valid_pages) ? $page : $default;
 }
@@ -44,9 +44,9 @@ if (file_exists($header_file)) {
 
 <div class="container">
     <?php if (isset($_GET['success']) && $_GET['success'] === 'registered'): ?>
-    <div class="form-message success">Đăng ký thành công! Vui lòng đăng nhập.</div>
+        <div class="form-message success">Đăng ký thành công! Vui lòng đăng nhập.</div>
     <?php elseif (isset($_GET['timeout']) && $_GET['timeout'] === '1'): ?>
-    <div class="form-message error">Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.</div>
+        <div class="form-message error">Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.</div>
     <?php endif; ?>
 
     <?php

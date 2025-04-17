@@ -1,4 +1,3 @@
-/* Root variables */
 :root {
     --wine-red: #8B1E3F;
     --wine-red-dark: #6B152F;
@@ -12,7 +11,6 @@
     --shadow-color: rgba(0, 0, 0, 0.1);
 }
 
-/* Base styles */
 * {
     margin: 0;
     padding: 0;
@@ -32,13 +30,11 @@ body {
     margin: 0 auto;
 }
 
-/* Products Layout */
 .products-layout {
     display: flex;
     gap: 30px;
 }
 
-/* Left sidebar styles */
 .left-bar {
     flex: 0 0 280px;
     background-color: white;
@@ -107,7 +103,6 @@ body {
     background-color: var(--wine-red-dark);
 }
 
-/* Right content styles */
 .right-content {
     flex: 1;
 }
@@ -159,14 +154,12 @@ body {
     font-size: 0.9rem;
 }
 
-/* Products grid */
 .products-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 25px;
 }
 
-/* Product card styles */
 .product-card {
     background-color: white;
     border-radius: 8px;
@@ -183,14 +176,16 @@ body {
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
 }
 
-/* Product content layout */
+.product-card.clickable {
+    cursor: pointer;
+}
+
 .product-content {
     display: flex;
     padding: 20px;
     gap: 15px;
 }
 
-/* Product image container */
 .product-img {
     flex: 0 0 110px;
     display: flex;
@@ -209,12 +204,16 @@ body {
     transform: scale(1.05);
 }
 
-/* Product info section */
+.product-image,
+.product-title a {
+    text-decoration: none;
+    color: inherit;
+}
+
 .product-info {
     flex: 1;
 }
 
-/* Product labels */
 .product-labels {
     display: flex;
     flex-direction: column;
@@ -235,7 +234,6 @@ body {
     text-align: center;
 }
 
-/* Product details */
 .product-details {
     padding: 0 20px;
     flex-grow: 1;
@@ -243,7 +241,6 @@ body {
     flex-direction: column;
 }
 
-/* Product name */
 .product-name {
     font-size: 1.1rem;
     line-height: 1.4;
@@ -256,7 +253,6 @@ body {
     overflow: hidden;
 }
 
-/* Product description */
 .product-description {
     font-size: 0.9rem;
     color: var(--text-light);
@@ -268,7 +264,6 @@ body {
     overflow: hidden;
 }
 
-/* Price and action */
 .price-and-action {
     display: flex;
     justify-content: space-between;
@@ -311,7 +306,6 @@ body {
     background: var(--wine-red-dark);
 }
 
-/* No products message */
 .no-products {
     background-color: white;
     padding: 40px;

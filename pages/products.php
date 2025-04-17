@@ -66,16 +66,16 @@ $sort_options = [
                         <form action="index.php" method="get" class="sort-form">
                             <input type="hidden" name="page" value="products">
                             <?php if ($category !== 'all'): ?>
-                            <input type="hidden" name="category" value="<?= htmlspecialchars($category) ?>">
+                                <input type="hidden" name="category" value="<?= htmlspecialchars($category) ?>">
                             <?php endif; ?>
                             <?php if ($search): ?>
-                            <input type="hidden" name="search" value="<?= htmlspecialchars($search) ?>">
+                                <input type="hidden" name="search" value="<?= htmlspecialchars($search) ?>">
                             <?php endif; ?>
                             <label for="sort">Sắp xếp:</label>
                             <select name="sort" id="sort" onchange="this.form.submit()">
                                 <?php foreach ($sort_options as $key => $label): ?>
-                                <option value="<?= $key ?>" <?= $sort === $key ? 'selected' : '' ?>><?= $label ?>
-                                </option>
+                                    <option value="<?= $key ?>" <?= $sort === $key ? 'selected' : '' ?>><?= $label ?>
+                                    </option>
                                 <?php endforeach; ?>
                             </select>
                         </form>
@@ -84,18 +84,18 @@ $sort_options = [
             </div>
 
             <?php if (empty($products)): ?>
-            <div class="no-products">
-                <p>Không tìm thấy sản phẩm phù hợp.</p>
-                <a href="?page=products" class="btn">Xem tất cả sản phẩm</a>
-            </div>
-            <?php else: ?>
-            <div class="products-container">
-                <div class="products-grid">
-                    <?php foreach ($products as $product): ?>
-                    <?= display_product($product) ?>
-                    <?php endforeach; ?>
+                <div class="no-products">
+                    <p>Không tìm thấy sản phẩm phù hợp.</p>
+                    <a href="?page=products" class="btn">Xem tất cả sản phẩm</a>
                 </div>
-            </div>
+            <?php else: ?>
+                <div class="products-container">
+                    <div class="products-grid">
+                        <?php foreach ($products as $product): ?>
+                            <?= display_product($product) ?>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
             <?php endif; ?>
         </div>
     </div>

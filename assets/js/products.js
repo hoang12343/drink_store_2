@@ -1,17 +1,9 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Add filter toggle button for mobile
     initFilterToggle();
-    
-    // Initialize buy now buttons
     initBuyNowButtons();
-    
-    // Initialize product action handlers for product detail navigation
     initProductDetailNavigation();
 });
 
-/**
- * Initialize filter toggle for mobile view
- */
 function initFilterToggle() {
     const productsHeader = document.querySelector('.products-header');
     const leftBar = document.querySelector('.left-bar');
@@ -28,35 +20,26 @@ function initFilterToggle() {
     }
 }
 
-/**
- * Initialize buy now buttons functionality
- */
 function initBuyNowButtons() {
     const buyNowButtons = document.querySelectorAll('.buy-now-btn');
     
     buyNowButtons.forEach(button => {
         button.addEventListener('click', function(e) {
             e.preventDefault();
+            e.stopPropagation();
             
-            const productCard = this.closest('.product-card');
-            const productCode = this.getAttribute('data-product-code');
+            const productId = this.getAttribute('data-product-id');
             
-            if (!productCode) {
-                console.error('Product code not found');
+            if (!productId) {
+                console.error('Product ID not found');
                 return;
             }
 
-            addToCart(productCode, 1);
+            navigateToProductDetail(productId);
         });
     });
 }
 
-/**
- * Add product to cart via AJAX
- * 
- * @param {string} productCode The product code to add to cart
- * @param {number} quantity The quantity to add
- */
 function addToCart(productCode, quantity) {
     fetch('processes/add_to_cart.php', {
         method: 'POST',
@@ -83,37 +66,26 @@ function addToCart(productCode, quantity) {
     });
 }
 
-/**
- * Initialize all product elements to navigate to product detail
- */
 function initProductDetailNavigation() {
-    // Product cards
     const productCards = document.querySelectorAll('.product-card');
     
     productCards.forEach(card => {
-        // Get product ID from the data attribute
         const productId = card.getAttribute('data-product-id');
-        if (!productId) return;
+        if (!productId) {
+            console.warn('Product card missing data-product-id:', card);
+            return;
+        }
         
-        // Product image click
         const productImage = card.querySelector('.product-image');
         if (productImage) {
             makeClickableForDetail(productImage, productId);
         }
         
-        // Product title click
         const productTitle = card.querySelector('.product-title');
         if (productTitle) {
             makeClickableForDetail(productTitle, productId);
         }
         
-        // Quick view button click
-        const quickViewBtn = card.querySelector('.quick-view-btn');
-        if (quickViewBtn) {
-            makeClickableForDetail(quickViewBtn, productId);
-        }
-        
-        // Add to cart action (prevent navigation when clicked)
         const addToCartBtn = card.querySelector('.add-to-cart-btn');
         if (addToCartBtn) {
             addToCartBtn.addEventListener('click', function(e) {
@@ -126,36 +98,9 @@ function initProductDetailNavigation() {
                 }
             });
         }
-    });
-    
-    // Product action buttons (for any layout)
-    const productActions = document.querySelectorAll('.product-action');
-    productActions.forEach(action => {
-        if (action.classList.contains('add-to-cart-btn') || action.classList.contains('buy-now-btn')) {
-            // Skip cart buttons as they're handled separately
-            return;
-        }
         
-        action.addEventListener('click', function(e) {
-            // Find product ID from closest container
-            const container = this.closest('[data-product-id]');
-            if (container) {
-                const productId = container.getAttribute('data-product-id');
-                if (productId) {
-                    e.preventDefault();
-                    navigateToProductDetail(productId);
-                }
-            }
-        });
-    });
-    
-    // Make entire product card clickable if it has a specific class
-    const clickableCards = document.querySelectorAll('.product-card.clickable');
-    clickableCards.forEach(card => {
-        const productId = card.getAttribute('data-product-id');
-        if (productId) {
+        if (card.classList.contains('clickable')) {
             card.addEventListener('click', function(e) {
-                // Don't navigate if clicking on buttons or links
                 if (e.target.tagName === 'BUTTON' || e.target.tagName === 'A' || 
                     e.target.closest('button') || e.target.closest('a')) {
                     return;
@@ -163,19 +108,11 @@ function initProductDetailNavigation() {
                 
                 navigateToProductDetail(productId);
             });
-            
-            // Add cursor pointer style
             card.style.cursor = 'pointer';
         }
     });
 }
 
-/**
- * Make an element clickable to navigate to product detail
- * 
- * @param {HTMLElement} element The element to make clickable
- * @param {string} productId The product ID to navigate to
- */
 function makeClickableForDetail(element, productId) {
     element.style.cursor = 'pointer';
     element.addEventListener('click', function(e) {
@@ -184,30 +121,17 @@ function makeClickableForDetail(element, productId) {
     });
 }
 
-/**
- * Navigate to product detail page
- * 
- * @param {string} productId The product ID to navigate to
- */
 function navigateToProductDetail(productId) {
     window.location.href = 'index.php?page=product-detail&id=' + encodeURIComponent(productId);
 }
 
-/**
- * Show notification
- * 
- * @param {string} message The message to display
- * @param {string} type The notification type (success, error, info)
- */
 function showNotification(message, type = 'info') {
-    // Check if notification container exists, if not create it
     let notificationContainer = document.querySelector('.notification-container');
     if (!notificationContainer) {
         notificationContainer = document.createElement('div');
         notificationContainer.className = 'notification-container';
         document.body.appendChild(notificationContainer);
         
-        // Create notification container styles
         const style = document.createElement('style');
         style.textContent = `
             .notification-container {
@@ -270,11 +194,9 @@ function showNotification(message, type = 'info') {
         document.head.appendChild(style);
     }
     
-    // Create notification
     const notification = document.createElement('div');
     notification.className = `notification ${type}`;
     
-    // Icon based on type
     let iconClass = '';
     switch (type) {
         case 'success':
@@ -297,12 +219,10 @@ function showNotification(message, type = 'info') {
     
     notificationContainer.appendChild(notification);
     
-    // Show notification with a slight delay for transition
     setTimeout(() => {
         notification.classList.add('show');
     }, 10);
     
-    // Close notification when clicking on X
     const closeBtn = notification.querySelector('.notification-close');
     closeBtn.addEventListener('click', function() {
         notification.classList.remove('show');
@@ -311,7 +231,6 @@ function showNotification(message, type = 'info') {
         }, 400);
     });
     
-    // Auto-close after 5 seconds
     setTimeout(() => {
         if (notification.parentNode) {
             notification.classList.remove('show');
