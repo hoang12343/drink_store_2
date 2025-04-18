@@ -5,10 +5,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cửa hàng đồ uống</title>
+    <title>Cửa hàng đồ uống - <?php echo ucfirst($current_page ?? 'home'); ?></title>
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="assets/css/header.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <?php if ($current_page === 'cart'): ?>
+        <link rel="stylesheet" href="assets/css/cart.css?v=<?php echo time(); ?>">
+    <?php endif; ?>
     <script src="assets/js/script.js" defer></script>
 </head>
 
@@ -58,10 +61,10 @@
                         <span id="cartCount" class="cart-count">
                             <?php
                             $total_items = 0;
-                            if (isset($_SESSION['cart']) && is_array($_SESSION['cart'])) {
-                                foreach ($_SESSION['cart'] as $item) {
-                                    $total_items += $item['quantity'];
-                                }
+                            if (isset($_SESSION['user_id'])) {
+                                $stmt = $pdo->prepare("SELECT SUM(quantity) as total FROM cart_items WHERE user_id = ?");
+                                $stmt->execute([$_SESSION['user_id']]);
+                                $total_items = $stmt->fetch()['total'] ?? 0;
                             }
                             echo $total_items;
                             ?>
@@ -91,7 +94,6 @@
                         'gift' => 'Quà tặng'
                     ];
 
-                    $current_page = filter_input(INPUT_GET, 'page', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?? 'home';
                     foreach ($main_menu_items as $key => $label) {
                         $active = ($current_page === $key) ? 'active' : '';
                         $url = in_array($key, ['home', 'promotion', 'knowledge']) ? "?page=$key" : "?page=products&category=$key";

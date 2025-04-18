@@ -24,6 +24,7 @@ function route_request($default = 'home'): string
 }
 
 $page = route_request();
+$current_page = $page; // Gán $current_page để sử dụng trong header.php
 
 // Yêu cầu đăng nhập để truy cập trang giỏ hàng
 if ($page === 'cart' && !isset($_SESSION['logged_in'])) {
@@ -72,4 +73,8 @@ if (file_exists($footer_file)) {
 } else {
     echo '<p>Error: Footer file not found at ' . $footer_file . '</p>';
 }
-?>
+
+// Liên kết JavaScript cho trang giỏ hàng
+if ($page === 'cart'): ?>
+    <script src="assets/js/cart.js"></script>
+<?php endif; ?>
