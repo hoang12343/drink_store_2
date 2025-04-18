@@ -1,9 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize all cart functionalities
     initCart();
 });
 
-// Main initialization function
 function initCart() {
     initQuantitySelectors();
     initRemoveButtons();
@@ -11,53 +9,49 @@ function initCart() {
     initPromoCode();
 }
 
-// Initialize quantity selectors for increasing/decreasing product quantities
 function initQuantitySelectors() {
     const decreaseButtons = document.querySelectorAll('.quantity-btn.decrease');
     const increaseButtons = document.querySelectorAll('.quantity-btn.increase');
     const quantityInputs = document.querySelectorAll('.quantity-input');
 
-    // Handle decrease button clicks
     decreaseButtons.forEach(button => {
         button.addEventListener('click', function() {
-            const index = this.getAttribute('data-index');
-            const input = document.querySelector(`.quantity-input[data-index="${index}"]`);
+            const productId = this.getAttribute('data-product-id');
+            const input = document.querySelector(`.quantity-input[data-product-id="${productId}"]`);
             if (!input) {
-                console.error(`Quantity input with data-index="${index}" not found`);
+                console.error(`Quantity input with data-product-id="${productId}" not found`);
                 return;
             }
             let value = parseInt(input.value);
             if (value > 1) {
                 input.value = value - 1;
-                updateCartItem(index, value - 1);
+                updateCartItem(productId, value - 1);
             }
         });
     });
 
-    // Handle increase button clicks
     increaseButtons.forEach(button => {
         button.addEventListener('click', function() {
-            const index = this.getAttribute('data-index');
-            const input = document.querySelector(`.quantity-input[data-index="${index}"]`);
+            const productId = this.getAttribute('data-product-id');
+            const input = document.querySelector(`.quantity-input[data-product-id="${productId}"]`);
             if (!input) {
-                console.error(`Quantity input with data-index="${index}" not found`);
+                console.error(`Quantity input with data-product-id="${productId}" not found`);
                 return;
             }
             let value = parseInt(input.value);
-            let max = parseInt(input.max) || 100; // Default max if not specified
+            let max = parseInt(input.max) || 100;
             if (value < max) {
                 input.value = value + 1;
-                updateCartItem(index, value + 1);
+                updateCartItem(productId, value + 1);
             } else {
                 showNotification(`Số lượng tối đa là ${max}`, 'info');
             }
         });
     });
 
-    // Handle manual input changes
     quantityInputs.forEach(input => {
         input.addEventListener('change', function() {
-            const index = this.getAttribute('data-index');
+            const productId = this.getAttribute('data-product-id');
             let value = parseInt(this.value);
             let max = parseInt(this.max) || 100;
             let min = parseInt(this.min) || 1;
@@ -73,30 +67,28 @@ function initQuantitySelectors() {
                 value = max;
             }
 
-            updateCartItem(index, value);
+            updateCartItem(productId, value);
         });
     });
 }
 
-// Initialize remove buttons for deleting products from the cart
 function initRemoveButtons() {
     const removeButtons = document.querySelectorAll('.remove-btn');
 
     removeButtons.forEach(button => {
         button.addEventListener('click', function() {
-            const index = this.getAttribute('data-index');
-            if (!index) {
-                console.error('Remove button missing data-index attribute');
+            const productId = this.getAttribute('data-product-id');
+            if (!productId) {
+                console.error('Remove button missing data-product-id attribute');
                 return;
             }
             if (confirm('Bạn có chắc muốn xóa sản phẩm này khỏi giỏ hàng?')) {
-                removeCartItem(index);
+                removeCartItem(productId);
             }
         });
     });
 }
 
-// Initialize checkout button to redirect to checkout page
 function initCheckoutButton() {
     const checkoutButton = document.getElementById('checkout-btn');
 
@@ -105,14 +97,13 @@ function initCheckoutButton() {
             showNotification('Đang chuyển hướng đến trang thanh toán...', 'info');
             setTimeout(() => {
                 window.location.href = 'index.php?page=checkout';
-            }, 800); // Short delay to show notification
+            }, 800);
         });
     } else {
         console.warn('Checkout button (#checkout-btn) not found');
     }
 }
 
-// Initialize promo code application
 function initPromoCode() {
     const applyButton = document.getElementById('apply-promo-btn');
 
@@ -135,8 +126,7 @@ function initPromoCode() {
     }
 }
 
-// Update cart item quantity
-function updateCartItem(index, quantity) {
+function updateCartItem(productId, quantity) {
     showNotification('Đang cập nhật giỏ hàng...', 'info');
 
     fetch('processes/update_cart.php', {
@@ -145,44 +135,40 @@ function updateCartItem(index, quantity) {
             'Content-Type': 'application/x-www-form-urlencoded',
         },
         body: new URLSearchParams({
-            'index': index,
+            'product_id': productId,
             'quantity': quantity
         })
     })
     .then(response => {
         if (!response.ok) {
-            console.error('Lỗi mạng:', response.status, response.statusText);
-            throw new Error('Phản hồi mạng không thành công');
+            console.error('Network error:', response.status, response.statusText);
+            throw new Error('Network response was not ok');
         }
         return response.json();
     })
     .then(data => {
         if (data.success) {
-            // Update subtotal for the specific item
-            const subtotalElement = document.querySelector(`.cart-row[data-index="${index}"] .product-subtotal`);
+            const subtotalElement = document.querySelector(`.cart-row[data-product-id="${productId}"] .product-subtotal`);
             if (subtotalElement) {
                 subtotalElement.textContent = data.subtotal;
             } else {
-                console.warn(`Subtotal element for data-index="${index}" not found`);
+                console.warn(`Subtotal element for data-product-id="${productId}" not found`);
             }
 
-            // Update cart summary
             updateCartSummary(data);
-
             showNotification('Giỏ hàng đã được cập nhật', 'success');
         } else {
-            console.error('Lỗi từ server:', data.message);
+            console.error('Server error:', data.message);
             showNotification(data.message || 'Có lỗi khi cập nhật giỏ hàng', 'error');
         }
     })
     .catch(error => {
-        console.error('Lỗi khi cập nhật giỏ hàng:', error);
+        console.error('Error updating cart:', error);
         showNotification('Lỗi kết nối server. Vui lòng thử lại.', 'error');
     });
 }
 
-// Remove item from cart
-function removeCartItem(index) {
+function removeCartItem(productId) {
     showNotification('Đang xóa sản phẩm...', 'info');
 
     fetch('processes/remove_from_cart.php', {
@@ -191,31 +177,28 @@ function removeCartItem(index) {
             'Content-Type': 'application/x-www-form-urlencoded',
         },
         body: new URLSearchParams({
-            'index': index
+            'product_id': productId
         })
     })
     .then(response => {
         if (!response.ok) {
-            console.error('Lỗi mạng:', response.status, response.statusText);
-            throw new Error('Phản hồi mạng không thành công');
+            console.error('Network error:', response.status, response.statusText);
+            throw new Error('Network response was not ok');
         }
         return response.json();
     })
     .then(data => {
         if (data.success) {
-            // Remove the cart row from the DOM
-            const row = document.querySelector(`.cart-row[data-index="${index}"]`);
+            const row = document.querySelector(`.cart-row[data-product-id="${productId}"]`);
             if (row) {
                 row.remove();
-                console.log(`Đã xóa dòng sản phẩm với data-index="${index}"`);
+                console.log(`Removed cart row with data-product-id="${productId}"`);
             } else {
-                console.warn(`Không tìm thấy dòng sản phẩm với data-index="${index}"`);
+                console.warn(`Cart row with data-product-id="${productId}" not found`);
             }
 
-            // Update cart summary
             updateCartSummary(data);
 
-            // Update cart count in header
             const cartCountElement = document.querySelector('#cartCount');
             if (cartCountElement) {
                 cartCountElement.textContent = data.count;
@@ -227,24 +210,22 @@ function removeCartItem(index) {
 
             showNotification('Sản phẩm đã được xóa khỏi giỏ hàng', 'success');
 
-            // Reload page if cart is empty
             if (data.count === 0) {
                 setTimeout(() => {
                     window.location.reload();
-                }, 1500); // Delay to show success notification
+                }, 1500);
             }
         } else {
-            console.error('Lỗi từ server:', data.message);
+            console.error('Server error:', data.message);
             showNotification(data.message || 'Có lỗi khi xóa sản phẩm', 'error');
         }
     })
     .catch(error => {
-        console.error('Lỗi khi xóa sản phẩm:', error);
+        console.error('Error removing item:', error);
         showNotification('Lỗi kết nối server. Vui lòng thử lại.', 'error');
     });
 }
 
-// Apply promo code
 function applyPromoCode(code) {
     showNotification('Đang áp dụng mã giảm giá...', 'info');
 
@@ -259,20 +240,18 @@ function applyPromoCode(code) {
     })
     .then(response => {
         if (!response.ok) {
-            console.error('Lỗi mạng:', response.status, response.statusText);
-            throw new Error('Phản hồi mạng không thành công');
+            console.error('Network error:', response.status, response.statusText);
+            throw new Error('Network response was not ok');
         }
         return response.json();
     })
     .then(data => {
         if (data.success) {
-            // Update subtotal and total
             const subtotalElement = document.getElementById('subtotal');
             const totalElement = document.getElementById('total-amount');
             if (subtotalElement) subtotalElement.textContent = data.subtotal;
             if (totalElement) totalElement.textContent = data.total;
 
-            // Add or update discount row
             const discountRow = document.querySelector('.discount-row');
             if (!discountRow && data.discount) {
                 const summaryContainer = document.querySelector('.summary-row.total').parentNode;
@@ -290,17 +269,16 @@ function applyPromoCode(code) {
 
             showNotification('Áp dụng mã giảm giá thành công', 'success');
         } else {
-            console.error('Lỗi từ server:', data.message);
+            console.error('Server error:', data.message);
             showNotification(data.message || 'Mã giảm giá không hợp lệ', 'error');
         }
     })
     .catch(error => {
-        console.error('Lỗi khi áp dụng mã giảm giá:', error);
+        console.error('Error applying promo code:', error);
         showNotification('Lỗi kết nối server. Vui lòng thử lại.', 'error');
     });
 }
 
-// Update cart summary (subtotal, shipping, total, items count)
 function updateCartSummary(data) {
     const subtotalElement = document.getElementById('subtotal');
     const totalItemsElement = document.getElementById('total-items');
@@ -313,7 +291,6 @@ function updateCartSummary(data) {
     if (totalAmountElement) totalAmountElement.textContent = data.total_with_shipping;
 }
 
-// Display notification
 function showNotification(message, type = 'info') {
     let notificationContainer = document.querySelector('.notification-container');
     if (!notificationContainer) {
@@ -341,12 +318,10 @@ function showNotification(message, type = 'info') {
 
     notificationContainer.appendChild(notification);
 
-    // Show notification with animation
     setTimeout(() => {
         notification.classList.add('show');
     }, 10);
 
-    // Handle close button
     const closeButton = notification.querySelector('.notification-close');
     closeButton.addEventListener('click', () => {
         notification.classList.remove('show');
@@ -355,7 +330,6 @@ function showNotification(message, type = 'info') {
         }, 400);
     });
 
-    // Auto-close after 5 seconds
     setTimeout(() => {
         if (notification.parentNode) {
             notification.classList.remove('show');

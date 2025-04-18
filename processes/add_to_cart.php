@@ -11,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
+if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true || !isset($_SESSION['user_id'])) {
     echo json_encode(['success' => false, 'message' => 'Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng']);
     exit;
 }
@@ -26,40 +26,49 @@ if (!$product_id || !$name || !$price) {
     exit;
 }
 
-// Chuyển đổi giá từ định dạng tiền tệ (VD: 1.500.000 ₫) sang số
-$price_numeric = preg_replace('/[^\d]/', '', $price);
+try {
+    // Kiểm tra sản phẩm và tồn kho
+    $stmt = $pdo->prepare("SELECT stock, price FROM products WHERE id = ?");
+    $stmt->execute([$product_id]);
+    $product = $stmt->fetch();
 
-if (!isset($_SESSION['cart'])) {
-    $_SESSION['cart'] = [];
-}
-
-$found = false;
-foreach ($_SESSION['cart'] as &$item) {
-    if ($item['product_id'] == $product_id) {
-        $item['quantity'] += $quantity;
-        $found = true;
-        break;
+    if (!$product) {
+        echo json_encode(['success' => false, 'message' => 'Sản phẩm không tồn tại']);
+        exit;
     }
-}
 
-if (!$found) {
-    $_SESSION['cart'][] = [
-        'product_id' => $product_id,
-        'name' => $name,
-        'price' => $price,
-        'price_numeric' => $price_numeric,
-        'quantity' => $quantity
-    ];
-}
+    // Kiểm tra nếu sản phẩm đã có trong giỏ hàng
+    $stmt = $pdo->prepare("SELECT quantity FROM cart_items WHERE user_id = ? AND product_id = ?");
+    $stmt->execute([$_SESSION['user_id'], $product_id]);
+    $existing_item = $stmt->fetch();
 
-$total_items = 0;
-foreach ($_SESSION['cart'] as $item) {
-    $total_items += $item['quantity'];
-}
+    $new_quantity = $existing_item ? $existing_item['quantity'] + $quantity : $quantity;
 
-echo json_encode([
-    'success' => true,
-    'message' => 'Sản phẩm đã được thêm vào giỏ hàng',
-    'count' => $total_items
-]);
+    if ($new_quantity > $product['stock']) {
+        echo json_encode(['success' => false, 'message' => 'Số lượng vượt quá tồn kho']);
+        exit;
+    }
+
+    // Thêm hoặc cập nhật giỏ hàng
+    $stmt = $pdo->prepare("
+        INSERT INTO cart_items (user_id, product_id, quantity)
+        VALUES (?, ?, ?)
+        ON DUPLICATE KEY UPDATE quantity = quantity + ?, updated_at = NOW()
+    ");
+    $stmt->execute([$_SESSION['user_id'], $product_id, $quantity, $quantity]);
+
+    // Tính tổng số lượng
+    $stmt = $pdo->prepare("SELECT SUM(quantity) as total_items FROM cart_items WHERE user_id = ?");
+    $stmt->execute([$_SESSION['user_id']]);
+    $total_items = $stmt->fetch()['total_items'] ?? 0;
+
+    echo json_encode([
+        'success' => true,
+        'message' => 'Sản phẩm đã được thêm vào giỏ hàng',
+        'count' => $total_items
+    ]);
+} catch (PDOException $e) {
+    error_log("Error adding to cart: " . $e->getMessage());
+    echo json_encode(['success' => false, 'message' => 'Lỗi hệ thống, vui lòng thử lại sau']);
+}
 exit;
