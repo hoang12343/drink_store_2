@@ -16,24 +16,26 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true || !isset(
     exit;
 }
 
-$product_id = filter_input(INPUT_POST, 'product_id', FILTER_SANITIZE_NUMBER_INT);
+$cart_item_id = filter_input(INPUT_POST, 'cart_item_id', FILTER_SANITIZE_NUMBER_INT);
 
-if (!$product_id) {
-    echo json_encode(['success' => false, 'message' => 'ID sản phẩm không hợp lệ']);
+if (!$cart_item_id) {
+    error_log("Invalid cart_item_id: cart_item_id=$cart_item_id, user_id={$_SESSION['user_id']}");
+    echo json_encode(['success' => false, 'message' => 'ID mục giỏ hàng không hợp lệ']);
     exit;
 }
 
 try {
-    // Xóa sản phẩm khỏi giỏ hàng
-    $stmt = $pdo->prepare("DELETE FROM cart_items WHERE user_id = ? AND product_id = ?");
-    $stmt->execute([$_SESSION['user_id'], $product_id]);
+    // Delete cart item
+    $stmt = $pdo->prepare("DELETE FROM cart_items WHERE id = ? AND user_id = ?");
+    $stmt->execute([$cart_item_id, $_SESSION['user_id']]);
 
     if ($stmt->rowCount() === 0) {
-        echo json_encode(['success' => false, 'message' => 'Sản phẩm không tồn tại trong giỏ hàng']);
+        error_log("Cart item not found for deletion: cart_item_id=$cart_item_id, user_id={$_SESSION['user_id']}");
+        echo json_encode(['success' => false, 'message' => 'Mục giỏ hàng không tồn tại']);
         exit;
     }
 
-    // Tính toán lại tổng tiền và số lượng
+    // Calculate totals
     $stmt = $pdo->prepare("
         SELECT ci.quantity, p.price
         FROM cart_items ci
@@ -50,7 +52,6 @@ try {
         $count += $item['quantity'];
     }
 
-    // Tính phí vận chuyển (miễn phí cho đơn hàng >= 1,000,000đ)
     $shipping = $total >= 1000000 ? 0 : 30000;
     $total_with_shipping = $total + $shipping;
 
@@ -62,7 +63,7 @@ try {
         'total_with_shipping' => number_format($total_with_shipping, 0, ',', '.') . ' ₫'
     ]);
 } catch (PDOException $e) {
-    error_log("Error removing cart item: " . $e->getMessage());
+    error_log("Error in remove_from_cart: " . $e->getMessage() . " | Trace: " . $e->getTraceAsString());
     echo json_encode(['success' => false, 'message' => 'Lỗi hệ thống, vui lòng thử lại sau']);
+    exit;
 }
-exit;

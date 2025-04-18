@@ -24,7 +24,7 @@ function route_request($default = 'home'): string
 }
 
 $page = route_request();
-$current_page = $page; // Gán $current_page để sử dụng trong header.php
+$current_page = $page;
 
 // Yêu cầu đăng nhập để truy cập trang giỏ hàng
 if ($page === 'cart' && !isset($_SESSION['logged_in'])) {
@@ -43,7 +43,7 @@ $header_file = 'includes/header.php';
 if (file_exists($header_file)) {
     include $header_file;
 } else {
-    die('Error: Header file not found at ' . $header_file);
+    die('Lỗi: Không tìm thấy file header tại ' . $header_file);
 }
 ?>
 
@@ -71,10 +71,10 @@ $footer_file = 'includes/footer.php';
 if (file_exists($footer_file)) {
     include $footer_file;
 } else {
-    echo '<p>Error: Footer file not found at ' . $footer_file . '</p>';
+    echo '<p>Lỗi: Không tìm thấy file footer tại ' . $footer_file . '</p>';
 }
 
 // Liên kết JavaScript cho trang giỏ hàng
 if ($page === 'cart'): ?>
-    <script src="assets/js/cart.js"></script>
+    <script src="assets/js/cart.js" defer></script>
 <?php endif; ?>

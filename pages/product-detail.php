@@ -16,26 +16,27 @@ if (!$product) {
 }
 ?>
 
-<link rel="stylesheet" href="assets/css/product-detail.css">
-<script src="assets/js/product-detail.js" defer></script>
+<link rel="stylesheet" href="assets/css/product-detail.css?v=<?= time() ?>">
+<script src="assets/js/product-detail.js?v=<?= time() ?>" defer></script>
 
 <section class="content product-detail-page">
     <div class="product-detail-layout">
         <!-- Product Images -->
         <div class="product-images">
             <div class="main-image">
-                <img src="<?= htmlspecialchars($product['image']) ?>" alt="<?= htmlspecialchars($product['name']) ?>">
+                <img src="<?= htmlspecialchars($product['image'] ?? 'assets/images/placeholder.jpg') ?>"
+                    alt="<?= htmlspecialchars($product['name'] ?? 'Sản phẩm') ?>">
             </div>
         </div>
 
         <!-- Product Information -->
         <div class="product-info">
-            <h1 class="product-name"><?= htmlspecialchars($product['name']) ?></h1>
+            <h1 class="product-name"><?= htmlspecialchars($product['name'] ?? 'Sản phẩm') ?></h1>
 
             <!-- Rating -->
             <div class="product-rating">
                 <?php for ($i = 0; $i < 5; $i++): ?>
-                <i class="fas fa-star <?= $i < ($product['rating'] ?? 5) ? 'filled' : '' ?>"></i>
+                    <i class="fas fa-star <?= $i < ($product['rating'] ?? 5) ? 'filled' : '' ?>"></i>
                 <?php endfor; ?>
                 <span>(<?= $product['reviews'] ?? 0 ?> bình chọn)</span>
             </div>
@@ -44,15 +45,15 @@ if (!$product) {
             <div class="product-labels">
                 <div class="label-item">
                     <i class="fas fa-wine-bottle"></i>
-                    <span>Loại: <?= htmlspecialchars($product['type'] ?? '') ?></span>
+                    <span>Loại: <?= htmlspecialchars($product['type'] ?? 'N/A') ?></span>
                 </div>
                 <div class="label-item">
                     <i class="fas fa-globe"></i>
-                    <span>Quốc gia: <?= htmlspecialchars($product['country'] ?? '') ?></span>
+                    <span>Quốc gia: <?= htmlspecialchars($product['country'] ?? 'N/A') ?></span>
                 </div>
                 <div class="label-item">
                     <i class="fas fa-percentage"></i>
-                    <span>Nồng độ: <?= htmlspecialchars($product['abv'] ?? '') ?></span>
+                    <span>Nồng độ: <?= htmlspecialchars($product['abv'] ?? 'N/A') ?></span>
                 </div>
                 <div class="label-item">
                     <i class="fas fa-tint"></i>
@@ -60,25 +61,25 @@ if (!$product) {
                 </div>
                 <div class="label-item">
                     <i class="fas fa-leaf"></i>
-                    <span>Giống nho: <?= htmlspecialchars($product['grape'] ?? '') ?></span>
+                    <span>Giống nho: <?= htmlspecialchars($product['grape'] ?? 'N/A') ?></span>
                 </div>
                 <div class="label-item">
                     <i class="fas fa-building"></i>
-                    <span>Nhà sản xuất: <?= htmlspecialchars($product['brand'] ?? '') ?></span>
+                    <span>Nhà sản xuất: <?= htmlspecialchars($product['brand'] ?? 'N/A') ?></span>
                 </div>
             </div>
 
             <!-- Price -->
             <div class="product-price">
                 <?php if (!empty($product['display_old_price'])): ?>
-                <span class="old-price"><?= htmlspecialchars($product['display_old_price']) ?></span>
+                    <span class="old-price"><?= htmlspecialchars($product['display_old_price']) ?></span>
                 <?php endif; ?>
-                <span class="current-price"><?= htmlspecialchars($product['display_price']) ?></span>
+                <span class="current-price"><?= htmlspecialchars($product['display_price'] ?? 'Liên hệ') ?></span>
             </div>
 
             <!-- Stock Status -->
             <div class="stock-status">
-                <span>Còn hàng: <?= $product['stock'] ?? 0 ?> sản phẩm</span>
+                <span>Còn hàng: <?= ($product['stock'] ?? 0) > 0 ? $product['stock'] : 'Hết hàng' ?> sản phẩm</span>
             </div>
 
             <!-- Quantity Selector and Actions -->
@@ -88,12 +89,12 @@ if (!$product) {
                     <input type="number" value="1" min="1" max="<?= $product['stock'] ?? 10 ?>" class="quantity-input">
                     <button class="quantity-btn increase">+</button>
                 </div>
-                <button class="add-to-cart-btn"
-                    data-product-code="<?= htmlspecialchars($product['code'] ?? $product['id']) ?>">
+                <button class="add-to-cart-btn" data-product-code="<?= htmlspecialchars($product['id']) ?>"
+                    <?= ($product['stock'] ?? 0) <= 0 ? 'disabled' : '' ?>>
                     Thêm vào giỏ hàng
                 </button>
-                <button class="buy-now-btn"
-                    data-product-code="<?= htmlspecialchars($product['code'] ?? $product['id']) ?>">
+                <button class="buy-now-btn" data-product-code="<?= htmlspecialchars($product['id']) ?>"
+                    <?= ($product['stock'] ?? 0) <= 0 ? 'disabled' : '' ?>>
                     Mua ngay
                 </button>
             </div>
@@ -108,7 +109,7 @@ if (!$product) {
                         'Đơn hàng từ 1.000.000 vnd miễn phí giao hàng.'
                     ];
                     foreach ($additional_info as $info): ?>
-                    <li><?= htmlspecialchars($info) ?></li>
+                        <li><?= htmlspecialchars($info) ?></li>
                     <?php endforeach; ?>
                 </ul>
             </div>
@@ -118,7 +119,7 @@ if (!$product) {
     <!-- Product Description -->
     <div class="product-description-section">
         <h2>Mô tả sản phẩm</h2>
-        <p><?= htmlspecialchars($product['description'] ?? '') ?></p>
+        <p><?= htmlspecialchars($product['description'] ?? 'Không có mô tả') ?></p>
     </div>
 
     <!-- Related Products -->

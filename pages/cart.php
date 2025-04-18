@@ -9,15 +9,16 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true || !isset(
 
 try {
     $stmt = $pdo->prepare("
-        SELECT ci.product_id, ci.quantity, p.name, p.price, p.image
+        SELECT ci.id, ci.product_id, ci.quantity, p.name, p.price, p.image
         FROM cart_items ci
         JOIN products p ON ci.product_id = p.id
         WHERE ci.user_id = ?
     ");
     $stmt->execute([$_SESSION['user_id']]);
     $cart_items = $stmt->fetchAll();
+    error_log("Cart items fetched for user_id={$_SESSION['user_id']}: " . count($cart_items) . " items");
 } catch (PDOException $e) {
-    error_log("Error fetching cart items: " . $e->getMessage());
+    error_log("Error fetching cart: " . $e->getMessage() . " | Trace: " . $e->getTraceAsString());
     $cart_items = [];
 }
 
@@ -46,13 +47,13 @@ if (empty($cart_items)) {
                 $formatted_price = number_format($item['price'], 0, ',', '.') . ' ₫';
                 $subtotal = $item['price'] * $item['quantity'];
                 $formatted_subtotal = number_format($subtotal, 0, ',', '.') . ' ₫';
+                $image = $item['image'] ? htmlspecialchars($item['image']) : 'assets/images/placeholder.jpg';
             ?>
-                <div class="cart-row" data-product-id="<?= htmlspecialchars($item['product_id']) ?>">
+                <div class="cart-row" data-cart-item-id="<?= htmlspecialchars($item['id']) ?>">
                     <div class="cart-col product-info-col">
                         <div class="product-info">
                             <div class="product-image">
-                                <img src="<?= htmlspecialchars($item['image'] ?? 'assets/images/placeholder.jpg') ?>"
-                                    alt="<?= htmlspecialchars($item['name']) ?>">
+                                <img src="<?= $image ?>" alt="<?= htmlspecialchars($item['name']) ?>">
                             </div>
                             <div class="product-details">
                                 <div class="product-name"><?= htmlspecialchars($item['name']) ?></div>
@@ -64,17 +65,16 @@ if (empty($cart_items)) {
                     <div class="cart-col product-quantity-col" data-label="Số lượng">
                         <div class="quantity-selector">
                             <button class="quantity-btn decrease"
-                                data-product-id="<?= htmlspecialchars($item['product_id']) ?>">-</button>
-                            <input type="number" class="quantity-input"
-                                data-product-id="<?= htmlspecialchars($item['product_id']) ?>" value="<?= $item['quantity'] ?>"
-                                min="1" max="100">
+                                data-cart-item-id="<?= htmlspecialchars($item['id']) ?>">-</button>
+                            <input type="number" class="quantity-input" data-cart-item-id="<?= htmlspecialchars($item['id']) ?>"
+                                value="<?= $item['quantity'] ?>" min="1" max="100">
                             <button class="quantity-btn increase"
-                                data-product-id="<?= htmlspecialchars($item['product_id']) ?>">+</button>
+                                data-cart-item-id="<?= htmlspecialchars($item['id']) ?>">+</button>
                         </div>
                     </div>
                     <div class="cart-col product-subtotal-col" data-label="Tổng"><?= $formatted_subtotal ?></div>
                     <div class="cart-col product-action-col">
-                        <button class="remove-btn" data-product-id="<?= htmlspecialchars($item['product_id']) ?>"><i
+                        <button class="remove-btn" data-cart-item-id="<?= htmlspecialchars($item['id']) ?>"><i
                                 class="fas fa-trash"></i></button>
                     </div>
                 </div>
@@ -117,6 +117,6 @@ if (empty($cart_items)) {
             </div>
         </div>
     </div>
+    <script src="assets/js/cart.js" defer></script>
 <?php
 }
-?>
