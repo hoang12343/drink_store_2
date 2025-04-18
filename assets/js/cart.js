@@ -8,6 +8,36 @@ function initCart() {
     initRemoveButtons();
     initCheckoutButton();
     initPromoCode();
+    initCheckboxes();
+}
+
+function initCheckboxes() {
+    const selectAllCheckbox = document.getElementById('select-all');
+    const itemCheckboxes = document.querySelectorAll('.cart-item-checkbox');
+
+    if (selectAllCheckbox) {
+        selectAllCheckbox.addEventListener('change', () => {
+            itemCheckboxes.forEach(checkbox => {
+                checkbox.checked = selectAllCheckbox.checked;
+            });
+            updateCartSummary();
+        });
+    }
+
+    itemCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', () => {
+            if (!checkbox.checked && selectAllCheckbox.checked) {
+                selectAllCheckbox.checked = false;
+            }
+            if (Array.from(itemCheckboxes).every(cb => cb.checked)) {
+                selectAllCheckbox.checked = true;
+            }
+            updateCartSummary();
+        });
+    });
+
+    // Initialize summary
+    updateCartSummary();
 }
 
 function initQuantitySelectors() {
@@ -123,11 +153,12 @@ function updateCartItem(cartItemId, quantity) {
     })
     .then(data => {
         if (data.success) {
-            const subtotalElement = document.querySelector(`.cart-row[data-cart-item-id="${cartItemId}"] .product-subtotal-col`);
+            const row = document.querySelector(`.cart-row[data-cart-item-id="${cartItemId}"]`);
+            const subtotalElement = row.querySelector('.product-subtotal-col');
             if (subtotalElement) {
                 subtotalElement.textContent = data.subtotal;
             }
-            updateCartSummary(data);
+            updateCartSummary();
         } else {
             console.error('Update cart failed:', data.message);
             alert(data.message || 'Lỗi khi cập nhật giỏ hàng.');
@@ -160,7 +191,7 @@ function removeCartItem(cartItemId) {
                 row.remove();
             }
 
-            updateCartSummary(data);
+            updateCartSummary();
 
             const cartCountElement = document.querySelector('#cartCount');
             if (cartCountElement) {
@@ -231,14 +262,38 @@ function applyPromoCode(code) {
     });
 }
 
-function updateCartSummary(data) {
+function updateCartSummary() {
+    const itemCheckboxes = document.querySelectorAll('.cart-item-checkbox:checked');
+    let subtotal = 0;
+    let totalItems = 0;
+
+    itemCheckboxes.forEach(checkbox => {
+        const cartItemId = checkbox.getAttribute('data-cart-item-id');
+        const row = document.querySelector(`.cart-row[data-cart-item-id="${cartItemId}"]`);
+        if (row) {
+            const price = parseFloat(row.getAttribute('data-price'));
+            const quantity = parseInt(row.querySelector('.quantity-input').value);
+            subtotal += price * quantity;
+            totalItems += quantity;
+        }
+    });
+
+    const shipping = subtotal >= 1000000 ? 0 : 30000;
+    const totalWithShipping = subtotal + shipping;
+
     const subtotalElement = document.getElementById('subtotal');
     const totalItemsElement = document.getElementById('total-items');
     const shippingFeeElement = document.getElementById('shipping-fee');
     const totalAmountElement = document.getElementById('total-amount');
+    const checkoutButton = document.getElementById('checkout-btn');
 
-    if (subtotalElement) subtotalElement.textContent = data.total;
-    if (totalItemsElement) totalItemsElement.textContent = data.count;
-    if (shippingFeeElement) shippingFeeElement.textContent = data.shipping;
-    if (totalAmountElement) totalAmountElement.textContent = data.total_with_shipping;
+    if (subtotalElement) subtotalElement.textContent = formatCurrency(subtotal);
+    if (totalItemsElement) totalItemsElement.textContent = totalItems;
+    if (shippingFeeElement) shippingFeeElement.textContent = formatCurrency(shipping);
+    if (totalAmountElement) totalAmountElement.textContent = formatCurrency(totalWithShipping);
+    if (checkoutButton) checkoutButton.disabled = totalItems === 0;
+}
+
+function formatCurrency(amount) {
+    return amount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }).replace('₫', '₫').trim();
 }

@@ -36,6 +36,9 @@ if (empty($cart_items)) {
         <div class="cart-container">
             <div class="cart-header">
                 <div class="cart-row">
+                    <div class="cart-col product-checkbox-col">
+                        <input type="checkbox" id="select-all" title="Chọn tất cả">
+                    </div>
                     <div class="cart-col product-info-col">Sản phẩm</div>
                     <div class="cart-col product-price-col">Giá</div>
                     <div class="cart-col product-quantity-col">Số lượng</div>
@@ -49,7 +52,12 @@ if (empty($cart_items)) {
                 $formatted_subtotal = number_format($subtotal, 0, ',', '.') . ' ₫';
                 $image = $item['image'] ? htmlspecialchars($item['image']) : 'assets/images/placeholder.jpg';
             ?>
-                <div class="cart-row" data-cart-item-id="<?= htmlspecialchars($item['id']) ?>">
+                <div class="cart-row" data-cart-item-id="<?= htmlspecialchars($item['id']) ?>"
+                    data-price="<?= $item['price'] ?>">
+                    <div class="cart-col product-checkbox-col">
+                        <input type="checkbox" class="cart-item-checkbox"
+                            data-cart-item-id="<?= htmlspecialchars($item['id']) ?>">
+                    </div>
                     <div class="cart-col product-info-col">
                         <div class="product-info">
                             <div class="product-image">
@@ -81,29 +89,21 @@ if (empty($cart_items)) {
             <?php endforeach; ?>
             <div class="cart-footer">
                 <div class="cart-summary">
-                    <?php
-                    $total = array_sum(array_map(fn($item) => $item['price'] * $item['quantity'], $cart_items));
-                    $count = array_sum(array_map(fn($item) => $item['quantity'], $cart_items));
-                    $shipping = $total >= 1000000 ? 0 : 30000;
-                    $total_with_shipping = $total + $shipping;
-                    ?>
                     <div class="summary-row">
                         <div class="summary-label">Tổng tiền hàng:</div>
-                        <div class="summary-value" id="subtotal"><?= number_format($total, 0, ',', '.') . ' ₫' ?></div>
+                        <div class="summary-value" id="subtotal">0 ₫</div>
                     </div>
                     <div class="summary-row">
                         <div class="summary-label">Số lượng sản phẩm:</div>
-                        <div class="summary-value" id="total-items"><?= $count ?></div>
+                        <div class="summary-value" id="total-items">0</div>
                     </div>
                     <div class="summary-row">
                         <div class="summary-label">Phí vận chuyển:</div>
-                        <div class="summary-value" id="shipping-fee"><?= number_format($shipping, 0, ',', '.') . ' ₫' ?>
-                        </div>
+                        <div class="summary-value" id="shipping-fee">0 ₫</div>
                     </div>
                     <div class="summary-row total">
                         <div class="summary-label">Tổng cộng:</div>
-                        <div class="summary-value" id="total-amount">
-                            <?= number_format($total_with_shipping, 0, ',', '.') . ' ₫' ?></div>
+                        <div class="summary-value" id="total-amount">0 ₫</div>
                     </div>
                     <div class="promo-code">
                         <input type="text" id="promo-code-input" placeholder="Nhập mã giảm giá">
@@ -111,12 +111,13 @@ if (empty($cart_items)) {
                     </div>
                     <div class="checkout-actions">
                         <a href="index.php?page=products" class="continue-shopping-btn">Tiếp tục mua sắm</a>
-                        <button class="checkout-btn" id="checkout-btn">Thanh toán</button>
+                        <button class="checkout-btn" id="checkout-btn" disabled>Thanh toán</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <script src="assets/js/cart.js" defer></script>
+    <script src="assets/js/cart.js?v=<?= time() ?>" defer></script>
 <?php
 }
+?>

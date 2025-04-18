@@ -2,6 +2,8 @@
 define('APP_START', true);
 define('ROOT_PATH', __DIR__);
 
+
+
 // Kết nối database và khởi tạo session
 require_once 'includes/db_connect.php';
 require_once 'includes/session_start.php';
