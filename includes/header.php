@@ -24,7 +24,7 @@
                     <a href="?page=contact"><i class="fas fa-address-book"></i> Liên hệ</a>
                 </div>
                 <?php if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true): ?>
-                <?php
+                    <?php
                     $usermenu_file = __DIR__ . '/usermenu.php';
                     if (file_exists($usermenu_file)) {
                         include $usermenu_file;
@@ -34,8 +34,8 @@
                     }
                     ?>
                 <?php else: ?>
-                <a href="?page=login"><i class="fas fa-user"></i> Đăng nhập</a>
-                <a href="?page=register"><i class="fas fa-user-plus"></i> Đăng ký</a>
+                    <a href="?page=login"><i class="fas fa-user"></i> Đăng nhập</a>
+                    <a href="?page=register"><i class="fas fa-user-plus"></i> Đăng ký</a>
                 <?php endif; ?>
             </div>
         </div>
@@ -56,7 +56,15 @@
                     <a href="?page=cart" class="cart-icon">
                         <i class="fas fa-shopping-cart"></i>
                         <span id="cartCount" class="cart-count">
-                            <?= isset($_SESSION['cart']) && is_array($_SESSION['cart']) ? count($_SESSION['cart']) : 0 ?>
+                            <?php
+                            $total_items = 0;
+                            if (isset($_SESSION['cart']) && is_array($_SESSION['cart'])) {
+                                foreach ($_SESSION['cart'] as $item) {
+                                    $total_items += $item['quantity'];
+                                }
+                            }
+                            echo $total_items;
+                            ?>
                         </span>
                     </a>
                     <button class="menu-toggle" id="menuToggle" aria-label="Toggle Menu">

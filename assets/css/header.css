@@ -9,34 +9,32 @@ body {
     font-family: 'Roboto', sans-serif;
     line-height: 1.6;
     color: #333;
-    margin: 0; /* Ensure no default margins */
+    margin: 0;
 }
 
 .wrapper {
-    width: 100vw; /* Full viewport width */
+    width: 100vw;
     margin: 0;
 }
 
-/* Remove max-width and make container full-width */
 .container {
-    width: 100vw; /* Full viewport width */
+    width: 100vw;
     margin: 0;
-    padding: 0 15px; /* Minimal padding to avoid content sticking to edges */
+    padding: 0 15px;
 }
 
-/* Links */
 a {
     text-decoration: none;
     color: inherit;
 }
 
-/* Top Bar Styles - Full Width */
+/* Top Bar Styles */
 .top-bar {
     background-color: #8B0000;
     color: #fff;
     padding: 8px 0;
     font-size: 14px;
-    width: 100vw; /* Full width */
+    width: 100vw;
 }
 
 .top-bar .container {
@@ -73,12 +71,12 @@ a {
     margin-right: 5px;
 }
 
-/* Main Header Styles - Full Width */
+/* Main Header Styles */
 .main-header {
     background-color: #fff;
     padding: 15px 0;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    width: 100vw; /* Full width */
+    width: 100vw;
 }
 
 .main-header .container {
@@ -170,11 +168,11 @@ a {
     cursor: pointer;
 }
 
-/* Main Navigation Styles - Full Width */
+/* Main Navigation Styles */
 .main-navigation {
     background-color: #f8f8f8;
     border-bottom: 1px solid #eee;
-    width: 100vw; /* Full width */
+    width: 100vw;
 }
 
 .main-nav {
@@ -196,31 +194,26 @@ a {
     transition: all 0.3s ease;
 }
 
-/* Default hover and active styles for menu items (except Rượu vang) */
 .main-nav li a:hover,
 .main-nav li a.active {
     color: #fff;
     background-color: rgba(139, 0, 0, 0.05);
 }
 
-/* Special styles for Rượu vang (3rd menu item) */
 .main-nav li.has-dropdown:nth-child(3) a {
     transition: all 0.3s ease;
 }
 
-/* On homepage, hover on Rượu vang is white on red */
 body.home .main-nav li.has-dropdown:nth-child(3) a:hover {
     color: #fff;
     background-color: #8B0000;
 }
 
-/* On Rượu vang page, active state is white on red */
 body.products .main-nav li.has-dropdown:nth-child(3) a.active {
     color: #fff;
     background-color: #8B0000;
 }
 
-/* Dropdown Menu Styles */
 .main-nav .has-dropdown {
     position: relative;
 }
@@ -237,7 +230,6 @@ body.products .main-nav li.has-dropdown:nth-child(3) a.active {
     width: auto;
 }
 
-/* Wine Dropdown Specific Styles */
 .dropdown-menu.wine-dropdown {
     width: 780px;
     padding: 20px;
@@ -245,7 +237,6 @@ body.products .main-nav li.has-dropdown:nth-child(3) a.active {
     gap: 20px;
 }
 
-/* Show dropdown on hover */
 .main-nav .has-dropdown:hover .dropdown-menu {
     display: flex;
 }
@@ -293,10 +284,9 @@ body.products .main-nav li.has-dropdown:nth-child(3) a.active {
 
 .dropdown-column ul li a:hover {
     color: #8B0000;
-    background: transparent;
+    background: церебральный;
 }
 
-/* Special link styles */
 .dropdown-column ul li a.highlight {
     color: #8B0000;
     font-weight: 600;
@@ -312,118 +302,81 @@ body.products .main-nav li.has-dropdown:nth-child(3) a.active {
     color: #0066cc;
 }
 
-/* Footer Styles - Full Width */
-.footer {
-    background: #2E1A0F; /* Using --cognac-brown */
-    color: #FFF8F0; /* Using --off-white */
-    padding-top: 50px;
-    margin-top: auto;
-    width: 100vw; /* Full width */
+/* Notification Styles */
+.notification-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
 }
 
-.footer-content {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 30px;
-    margin-bottom: 30px;
-    padding: 0 15px; /* Minimal padding */
-}
-
-.footer-title {
-    font-size: 1.2rem;
-    margin-bottom: 20px;
-    position: static; /* Changed from fixed to static to avoid layout issues */
-}
-
-/* Home Content - Full Width (from previous code) */
-.home-content {
-    width: 100vw; /* Full viewport width */
-    margin: 0;
-    padding: 40px 0;
-    background: #FFF8F0; /* Using --off-white */
-}
-
-.category-title {
-    text-align: center;
-    font-size: 2rem;
-    margin-bottom: 30px;
-    color: #2E1A0F; /* Using --cognac-brown */
-    font-weight: bold;
-}
-
-.categories-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
-    width: 100vw;
-    margin: 0;
-    padding: 0 20px;
-    box-sizing: border-box;
-}
-
-/* Category Card */
-.category-card {
-    background: #fff;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.category-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
-}
-
-.category-img img {
-    width: 100%;
-    height: 180px;
-    object-fit: cover;
-    display: block;
-}
-
-.category-info {
-    padding: 15px;
-    text-align: center;
-}
-
-.category-info h3 {
-    font-size: 1.3rem;
-    color: #2E1A0F; /* Using --cognac-brown */
-    margin-bottom: 10px;
-}
-
-.category-info p {
-    font-size: 0.95rem;
-    color: #666;
-    margin-bottom: 15px;
-}
-
-.view-btn {
-    display: inline-block;
-    padding: 8px 20px;
-    background: #8B1E3F; /* Using --wine-red */
-    color: #FFF8F0; /* Using --off-white */
-    text-decoration: none;
+.notification {
+    background-color: #fff;
+    color: #333;
     border-radius: 4px;
-    font-size: 1rem;
-    transition: background 0.3s ease;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    padding: 15px 20px;
+    margin-bottom: 10px;
+    transform: translateX(120%);
+    transition: transform 0.4s ease;
+    display: flex;
+    align-items: center;
+    min-width: 300px;
 }
 
-.view-btn:hover {
-    background: #6B152F; /* Using --wine-red-dark */
+.notification.show {
+    transform: translateX(0);
+}
+
+.notification.success {
+    border-left: 4px solid #8B0000;
+}
+
+.notification.error {
+    border-left: 4px solid #F44336;
+}
+
+.notification.info {
+    border-left: 4px solid #2196F3;
+}
+
+.notification-icon {
+    margin-right: 15px;
+    font-size: 20px;
+}
+
+.notification.success .notification-icon {
+    color: #8B0000;
+}
+
+.notification.error .notification-icon {
+    color: #F44336;
+}
+
+.notification.info .notification-icon {
+    color: #2196F3;
+}
+
+.notification-message {
+    flex: 1;
+}
+
+.notification-close {
+    margin-left: 15px;
+    cursor: pointer;
+    color: #aaa;
+    font-size: 16px;
+}
+
+.notification-close:hover {
+    color: #333;
 }
 
 /* Responsive Styles */
 @media (max-width: 1200px) {
     .dropdown-menu.wine-dropdown {
-        width: 100vw; /* Full width on smaller screens */
+        width: 100vw;
         padding: 15px;
-    }
-
-    .categories-grid {
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-        padding: 0 15px;
     }
 }
 
@@ -547,34 +500,10 @@ body.products .main-nav li.has-dropdown:nth-child(3) a.active {
         color: #fff;
         background-color: #8B0000;
     }
-
-    .categories-grid {
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        padding: 0 10px;
-    }
 }
 
 @media (max-width: 576px) {
-    .category-title {
-        font-size: 1.5rem;
-        margin-bottom: 20px;
-    }
-
-    .categories-grid {
-        grid-template-columns: 1fr;
-        padding: 0 10px;
-    }
-
-    .category-info h3 {
-        font-size: 1.1rem;
-    }
-
-    .category-info p {
-        font-size: 0.85rem;
-    }
-
-    .footer-content {
-        grid-template-columns: 1fr;
-        padding: 0 10px;
+    .notification {
+        min-width: 250px;
     }
 }

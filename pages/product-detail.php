@@ -35,7 +35,7 @@ if (!$product) {
             <!-- Rating -->
             <div class="product-rating">
                 <?php for ($i = 0; $i < 5; $i++): ?>
-                    <i class="fas fa-star <?= $i < ($product['rating'] ?? 5) ? 'filled' : '' ?>"></i>
+                <i class="fas fa-star <?= $i < ($product['rating'] ?? 5) ? 'filled' : '' ?>"></i>
                 <?php endfor; ?>
                 <span>(<?= $product['reviews'] ?? 0 ?> bình chọn)</span>
             </div>
@@ -71,7 +71,7 @@ if (!$product) {
             <!-- Price -->
             <div class="product-price">
                 <?php if (!empty($product['display_old_price'])): ?>
-                    <span class="old-price"><?= htmlspecialchars($product['display_old_price']) ?></span>
+                <span class="old-price"><?= htmlspecialchars($product['display_old_price']) ?></span>
                 <?php endif; ?>
                 <span class="current-price"><?= htmlspecialchars($product['display_price']) ?></span>
             </div>
@@ -108,7 +108,7 @@ if (!$product) {
                         'Đơn hàng từ 1.000.000 vnd miễn phí giao hàng.'
                     ];
                     foreach ($additional_info as $info): ?>
-                        <li><?= htmlspecialchars($info) ?></li>
+                    <li><?= htmlspecialchars($info) ?></li>
                     <?php endforeach; ?>
                 </ul>
             </div>
