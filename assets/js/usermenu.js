@@ -1,25 +1,17 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const userMenu = document.getElementById('userMenu');
-    if (!userMenu) return;
+document.addEventListener("DOMContentLoaded", () => {
+  const userToggle = document.querySelector(".user-toggle");
+  const dropdownMenu = document.querySelector(".dropdown-menu");
 
-    const toggle = userMenu.querySelector('.user-toggle');
-    const dropdown = userMenu.querySelector('.dropdown-menu');
-
-    toggle.addEventListener('click', (e) => {
-        e.stopPropagation();
-        dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+  if (userToggle && dropdownMenu) {
+    userToggle.addEventListener("click", () => {
+      dropdownMenu.classList.toggle("show");
     });
 
-    document.addEventListener('click', (e) => {
-        if (!userMenu.contains(e.target)) {
-            dropdown.style.display = 'none';
-        }
+    // Close dropdown when clicking outside
+    document.addEventListener("click", (e) => {
+      if (!userToggle.contains(e.target) && !dropdownMenu.contains(e.target)) {
+        dropdownMenu.classList.remove("show");
+      }
     });
-
-    toggle.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
-        }
-    });
+  }
 });

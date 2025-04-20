@@ -14,7 +14,7 @@ $password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_STRING) ?? '';
 
 if (empty($username) || empty($password)) {
     $_SESSION['login_error'] = 'empty';
-    $_SESSION['last_username'] = $username; // Lưu tên người dùng
+    $_SESSION['last_username'] = $username;
     header('Location: ../index.php?page=login');
     exit;
 }
@@ -31,10 +31,15 @@ try {
         $_SESSION['is_admin'] = $user['is_admin'] ?? 0;
         $_SESSION['logged_in'] = true;
         $_SESSION['last_activity'] = time();
-        unset($_SESSION['last_username']); // Xóa sau khi đăng nhập thành công
+        unset($_SESSION['last_username']);
 
-        $redirect = filter_input(INPUT_GET, 'redirect', FILTER_SANITIZE_URL) ?? 'home';
-        header("Location: ../index.php?page=$redirect");
+        // Redirect admin to dashboard, others to redirect or home
+        if ($user['is_admin'] == 1) {
+            header('Location: ../index.php?page=admin&subpage=dashboard');
+        } else {
+            $redirect = filter_input(INPUT_GET, 'redirect', FILTER_SANITIZE_URL) ?? 'home';
+            header("Location: ../index.php?page=$redirect");
+        }
         exit;
     } else {
         $_SESSION['login_error'] = 'invalid';

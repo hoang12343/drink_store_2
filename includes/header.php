@@ -1,4 +1,6 @@
-<?php if (!defined('APP_START')) exit('No direct access'); ?>
+<?php
+if (!defined('APP_START')) exit('No direct access');
+?>
 <!DOCTYPE html>
 <html lang="vi">
 
@@ -11,8 +13,19 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <?php if ($current_page === 'cart'): ?>
         <link rel="stylesheet" href="assets/css/cart.css?v=<?php echo time(); ?>">
+    <?php elseif (str_starts_with($current_page, 'admin/')): ?>
+        <link rel="stylesheet" href="assets/css/admin.css?v=<?php echo time(); ?>">
+    <?php elseif ($current_page === 'home'): ?>
+        <link rel="stylesheet" href="assets/css/banner.css?v=<?php echo time(); ?>">
+    <?php elseif ($current_page === 'products'): ?>
+        <link rel="stylesheet" href="assets/css/products.css?v=<?php echo time(); ?>">
     <?php endif; ?>
     <script src="assets/js/script.js" defer></script>
+    <?php if ($current_page === 'home'): ?>
+        <script src="assets/js/bannerSlider.js" defer></script>
+    <?php elseif ($current_page === 'products'): ?>
+        <script src="assets/js/products.js" defer></script>
+    <?php endif; ?>
 </head>
 
 <body>
@@ -95,7 +108,7 @@
                     ];
 
                     foreach ($main_menu_items as $key => $label) {
-                        $active = ($current_page === $key) ? 'active' : '';
+                        $active = ($current_page === $key || ($current_page === 'products' && isset($_GET['category']) && $_GET['category'] === $key)) ? 'active' : '';
                         $url = in_array($key, ['home', 'promotion', 'knowledge']) ? "?page=$key" : "?page=products&category=$key";
                         echo "<li><a href='$url' class='$active'>$label</a></li>";
                     }
@@ -104,4 +117,9 @@
             </div>
         </nav>
 
+        <!-- Banner only on homepage -->
         <?php if ($current_page === 'home') include 'pages/banner.php'; ?>
+    </div>
+</body>
+
+</html>
