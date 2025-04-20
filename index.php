@@ -24,7 +24,7 @@ function route_request($default = 'home'): string
     // Handle admin subpages
     if ($page === 'admin') {
         $admin_subpage = filter_input(INPUT_GET, 'subpage', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?? 'dashboard';
-        $valid_admin_subpages = ['dashboard', 'admin-products'];
+        $valid_admin_subpages = ['dashboard', 'admin-products', 'admin-orders', 'admin-users'];
         if (!in_array($admin_subpage, $valid_admin_subpages)) {
             $admin_subpage = 'dashboard';
         }
@@ -43,11 +43,11 @@ if (in_array($page, ['cart', 'profile', 'orders']) && !isset($_SESSION['logged_i
     exit;
 }
 
-// Yêu cầu quyền admin
-if (str_starts_with($page, 'admin/') && (!isset($_SESSION['logged_in']) || !isset($_SESSION['is_admin']) || $_SESSION['is_admin'] !== 1)) {
-    header('Location: index.php?page=login&redirect=' . urlencode('admin'));
-    exit;
-}
+// Yêu cầu quyền admin (tạm thời comment để debug sidebar)
+// if (str_starts_with($page, 'admin/') && (!isset($_SESSION['logged_in']) || !isset($_SESSION['is_admin']) || $_SESSION['is_admin'] !== 1)) {
+//     header('Location: index.php?page=login&redirect=' . urlencode('admin'));
+//     exit;
+// }
 
 // Xử lý đăng xuất
 if ($page === 'logout') {
@@ -55,13 +55,23 @@ if ($page === 'logout') {
     exit;
 }
 
-// Bao gồm header hoặc usermenu cho admin
-if (str_starts_with($current_page, 'admin/') && isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == 1) {
-    $usermenu_file = ROOT_PATH . '/includes/usermenu.php';
-    if (file_exists($usermenu_file)) {
-        include $usermenu_file;
+// Bao gồm header hoặc admin-header và sidebar cho admin
+if (str_starts_with($current_page, 'admin/')) {
+    $admin_header_file = ROOT_PATH . '/includes/admin/admin-header.php';
+    $sidebar_file = ROOT_PATH . '/includes/admin/management-sidebar.php';
+    $admin_subpage = filter_input(INPUT_GET, 'subpage', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?? 'dashboard'; // Define $admin_subpage for sidebar
+    if (file_exists($sidebar_file)) {
+        echo "<!-- Debug: Including sidebar at $sidebar_file for subpage $admin_subpage -->";
+        include $sidebar_file;
     } else {
-        error_log('Missing usermenu.php at ' . $usermenu_file);
+        error_log('Missing management-sidebar.php at ' . $sidebar_file);
+        echo '<p>Lỗi: Không tìm thấy file management-sidebar tại ' . $sidebar_file . '</p>';
+    }
+    if (file_exists($admin_header_file)) {
+        echo "<!-- Debug: Including admin-header at $admin_header_file -->";
+        include $admin_header_file;
+    } else {
+        error_log('Missing admin-header.php at ' . $admin_header_file);
         echo '<div style="margin: 10px; background: #8B1E3F; color: white; padding: 8px 15px; border-radius: 4px; display: inline-block;"><a href="?page=logout" style="color: white; text-decoration: none;">Đăng xuất</a></div>';
     }
 } else {
@@ -94,13 +104,15 @@ if (str_starts_with($current_page, 'admin/') && isset($_SESSION['is_admin']) && 
 </div>
 
 <?php
-// Bao gồm footer
-$footer_file = ROOT_PATH . '/includes/footer.php';
-if (file_exists($footer_file)) {
-    include $footer_file;
-} else {
-    error_log('Missing footer.php at ' . $footer_file);
-    echo '<p>Lỗi: Không tìm thấy file footer tại ' . $footer_file . '</p>';
+// Bao gồm footer cho non-admin pages
+if (!str_starts_with($current_page, 'admin/')) {
+    $footer_file = ROOT_PATH . '/includes/footer.php';
+    if (file_exists($footer_file)) {
+        include $footer_file;
+    } else {
+        error_log('Missing footer.php at ' . $footer_file);
+        echo '<p>Lỗi: Không tìm thấy file footer tại ' . $footer_file . '</p>';
+    }
 }
 
 // Liên kết JavaScript

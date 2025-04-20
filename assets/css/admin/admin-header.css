@@ -1,0 +1,63 @@
+.admin-header {
+    background-color: var(--wine-red);
+    padding: 10px 15px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 15px;
+    box-shadow: 0 2px 5px var(--shadow-color);
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 1300px;
+    z-index: 900;
+}
+
+.admin-username {
+    color: white;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.admin-logout, .admin-login {
+    color: white;
+    text-decoration: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    background-color: var(--wine-red-dark);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: background-color 0.2s;
+}
+
+.admin-logout:hover, .admin-login:hover {
+    background-color: var(--wine-red-light);
+}
+
+#sidebar-toggle {
+    display: none;
+    background-color: var(--wine-red-dark);
+    color: white;
+    border: none;
+    padding: 10px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    z-index: 1100;
+}
+
+@media (max-width: 768px) {
+    .admin-header {
+        width: 300px;
+        justify-content: space-between;
+    }
+
+    #sidebar-toggle {
+        display: block;
+    }
+}

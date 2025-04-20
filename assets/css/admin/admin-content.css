@@ -1,20 +1,10 @@
-:root {
-    --wine-red: #8B1E3F;
-    --wine-red-dark: #6B152F;
-    --wine-red-light: #B52F57;
-    --cognac-brown: #2E1A0F;
-    --light-cream: #F8EDE3;
-    --off-white: #FFF8F0;
-    --text-dark: #333333;
-    --text-light: #777777;
-    --border-color: #E0E0E0;
-    --shadow-color: rgba(0, 0, 0, 0.1);
-}
-
 .content.admin-page {
     padding: 30px 15px;
     max-width: 1320px;
     margin: 0 auto;
+    margin-left: 280px;
+    margin-top: 60px;
+    transition: margin-left 0.3s ease;
 }
 
 .content.admin-page h1 {
@@ -50,32 +40,6 @@
     margin-right: 5px;
 }
 
-.admin-dashboard {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 20px;
-}
-
-.dashboard-card {
-    background-color: white;
-    border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0 2px 10px var(--shadow-color);
-    text-align: center;
-}
-
-.dashboard-card h3 {
-    font-size: 1.2rem;
-    color: var(--cognac-brown);
-    margin-bottom: 10px;
-}
-
-.dashboard-card p {
-    font-size: 0.9rem;
-    color: var(--text-light);
-    margin-bottom: 15px;
-}
-
 .btn {
     display: inline-block;
     background-color: var(--wine-red);
@@ -91,17 +55,10 @@
     background-color: var(--wine-red-dark);
 }
 
-.admin-products {
-    background-color: white;
-    border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0 2px 10px var(--shadow-color);
-    text-align: center;
-}
-
 @media (max-width: 768px) {
-    .admin-dashboard {
-        grid-template-columns: 1fr;
+    .content.admin-page {
+        margin-left: 0;
+        margin-top: 60px;
     }
 
     .admin-nav a {

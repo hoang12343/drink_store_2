@@ -1,0 +1,106 @@
+.management-sidebar {
+    width: 260px;
+    background-color: var(--off-white);
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    box-shadow: 2px 0 5px var(--shadow-color);
+    overflow-y: auto;
+    transition: transform 0.3s ease;
+    z-index: 1000;
+    transform: translateX(0);
+}
+
+.management-sidebar.active {
+    transform: translateX(0);
+}
+
+.test-sidebar {
+    border: 2px solid red; /* Debug: Visible border */
+}
+
+.management-sidebar .sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid var(--border-color);
+    background-color: var(--wine-red);
+    color: white;
+}
+
+.management-sidebar .sidebar-header h2 {
+    font-size: 1.5rem;
+    margin: 0;
+}
+
+.management-sidebar .sidebar-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: none;
+}
+
+.management-sidebar .sidebar-menu {
+    padding: 20px;
+}
+
+.management-sidebar .menu-category h3 {
+    font-size: 0.9rem;
+    color: var(--text-light);
+    text-transform: uppercase;
+    margin: 20px 0 10px;
+}
+
+.management-sidebar .menu-category ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.management-sidebar .menu-category ul li {
+    margin-bottom: 5px;
+}
+
+.management-sidebar .menu-category ul li a {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    color: var(--text-dark);
+    text-decoration: none;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+.management-sidebar .menu-category ul li a i {
+    margin-right: 10px;
+    font-size: 1.1rem;
+}
+
+.management-sidebar .menu-category ul li a:hover {
+    background-color: var(--wine-red-light);
+    color: white;
+}
+
+.management-sidebar .menu-category ul li a.active {
+    background-color: var(--wine-red);
+    color: white;
+    font-weight: bold;
+}
+
+@media (max-width: 768px) {
+    .management-sidebar {
+        transform: translateX(-100%);
+    }
+
+    .management-sidebar.active {
+        transform: translateX(0);
+    }
+
+    .management-sidebar .sidebar-close {
+        display: block;
+    }
+}

@@ -1,0 +1,12 @@
+:root {
+    --wine-red: #8B1E3F;
+    --wine-red-dark: #6B152F;
+    --wine-red-light: #B52F57;
+    --cognac-brown: #2E1A0F;
+    --light-cream: #F8EDE3;
+    --off-white: #FFF8F0;
+    --text-dark: #333333;
+    --text-light: #777777;
+    --border-color: #E0E0E0;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+}
