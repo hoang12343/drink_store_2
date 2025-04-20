@@ -92,12 +92,67 @@ function initialize_database()
 }
 
 /**
- * Lấy danh sách sản phẩm
+ * Lấy danh sách sản phẩm với phân trang
  */
-function get_products($category = 'all', $search = '', $sort = 'default', $limit = 30, $filters = [])
+function get_products($category = 'all', $search = '', $sort = 'default', $limit = 30, $filters = [], $page = 1)
 {
     global $pdo;
     try {
+        // Tính offset
+        $offset = ($page - 1) * $limit;
+
+        // Đếm tổng số sản phẩm để tính số trang
+        $count_query = "SELECT COUNT(*) FROM products p JOIN categories c ON p.category_id = c.id WHERE 1=1";
+        $count_params = [];
+
+        if ($category !== 'all' && $category !== 'promotion') {
+            $count_query .= " AND c.name = :category";
+            $count_params[':category'] = $category;
+        } elseif ($category === 'promotion') {
+            $count_query .= " AND EXISTS (SELECT 1 FROM promotions pr WHERE pr.product_id = p.id)";
+        }
+
+        if (!empty($search)) {
+            $count_query .= " AND (p.name LIKE :search OR p.code LIKE :search)";
+            $count_params[':search'] = "%$search%";
+        }
+
+        // Áp dụng bộ lọc cho count
+        if (!empty($filters['price_min']) && !empty($filters['price_max'])) {
+            $count_query .= " AND p.price BETWEEN :price_min AND :price_max";
+            $count_params[':price_min'] = $filters['price_min'];
+            $count_params[':price_max'] = $filters['price_max'];
+        }
+        if (!empty($filters['custom_price'])) {
+            $count_query .= " AND p.price BETWEEN :custom_price_min AND :custom_price_max";
+            $count_params[':custom_price_min'] = $filters['custom_price'] - 100000;
+            $count_params[':custom_price_max'] = $filters['custom_price'] + 100000;
+        }
+        if (!empty($filters['country']) && $filters['country'] !== 'all') {
+            $count_query .= " AND p.country = :country";
+            $count_params[':country'] = $filters['country'];
+        }
+        if (!empty($filters['type']) && $filters['type'] !== 'all') {
+            $count_query .= " AND p.type = :type";
+            $count_params[':type'] = $filters['type'];
+        }
+        if (!empty($filters['volume']) && $filters['volume'] !== 'all') {
+            $count_query .= " AND p.volume = :volume";
+            $count_params[':volume'] = $filters['volume'];
+        }
+        if (!empty($filters['grape']) && $filters['grape'] !== 'all') {
+            $count_query .= " AND p.grape = :grape";
+            $count_params[':grape'] = $filters['grape'];
+        }
+
+        $count_stmt = $pdo->prepare($count_query);
+        foreach ($count_params as $key => $value) {
+            $count_stmt->bindValue($key, $value);
+        }
+        $count_stmt->execute();
+        $total_products = $count_stmt->fetchColumn();
+
+        // Query lấy sản phẩm với limit và offset
         $query = "SELECT p.*, c.name as category_name FROM products p JOIN categories c ON p.category_id = c.id WHERE 1=1";
         $params = [];
 
@@ -162,12 +217,13 @@ function get_products($category = 'all', $search = '', $sort = 'default', $limit
                 $query .= " ORDER BY p.id DESC";
         }
 
-        $query .= " LIMIT :limit";
+        $query .= " LIMIT :limit OFFSET :offset";
         $stmt = $pdo->prepare($query);
         foreach ($params as $key => $value) {
             $stmt->bindValue($key, $value);
         }
         $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
         $stmt->execute();
         $products = $stmt->fetchAll();
 
@@ -181,10 +237,16 @@ function get_products($category = 'all', $search = '', $sort = 'default', $limit
             }
         }
 
-        return $products;
+        return [
+            'products' => $products,
+            'total_products' => $total_products
+        ];
     } catch (PDOException $e) {
         error_log("Error fetching products: " . $e->getMessage());
-        return [];
+        return [
+            'products' => [],
+            'total_products' => 0
+        ];
     }
 }
 
