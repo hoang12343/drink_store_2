@@ -61,14 +61,12 @@ if (str_starts_with($current_page, 'admin/')) {
     $sidebar_file = ROOT_PATH . '/includes/admin/management-sidebar.php';
     $admin_subpage = filter_input(INPUT_GET, 'subpage', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?? 'dashboard'; // Define $admin_subpage for sidebar
     if (file_exists($sidebar_file)) {
-        echo "<!-- Debug: Including sidebar at $sidebar_file for subpage $admin_subpage -->";
         include $sidebar_file;
     } else {
         error_log('Missing management-sidebar.php at ' . $sidebar_file);
         echo '<p>Lỗi: Không tìm thấy file management-sidebar tại ' . $sidebar_file . '</p>';
     }
     if (file_exists($admin_header_file)) {
-        echo "<!-- Debug: Including admin-header at $admin_header_file -->";
         include $admin_header_file;
     } else {
         error_log('Missing admin-header.php at ' . $admin_header_file);
@@ -120,4 +118,6 @@ if ($page === 'cart'): ?>
     <script src="assets/js/cart.js" defer></script>
 <?php elseif (str_starts_with($page, 'admin/')): ?>
     <script src="assets/js/admin.js" defer></script>
+<?php elseif ($page === 'home'): ?>
+    <script src="assets/js/bannerSlider.js" defer></script>
 <?php endif; ?>

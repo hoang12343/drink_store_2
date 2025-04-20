@@ -108,6 +108,13 @@ body {
     background: var(--wine-red-dark);
 }
 
+.features {
+    background: var(--off-white);
+    padding: 50px 20px;
+    text-align: center;
+}
+
+
 /* Responsive Adjustments */
 @media (max-width: 1024px) {
     .categories-grid {
@@ -150,3 +157,4 @@ body {
         font-size: 0.85rem;
     }
 }
+

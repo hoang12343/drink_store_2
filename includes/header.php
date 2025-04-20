@@ -16,13 +16,13 @@ if (!defined('APP_START')) exit('No direct access');
     <?php elseif (str_starts_with($current_page, 'admin/')): ?>
         <link rel="stylesheet" href="assets/css/admin.css?v=<?php echo time(); ?>">
     <?php elseif ($current_page === 'home'): ?>
-        <link rel="stylesheet" href="assets/css/banner.css?v=<?php echo time(); ?>">
+
     <?php elseif ($current_page === 'products'): ?>
         <link rel="stylesheet" href="assets/css/products.css?v=<?php echo time(); ?>">
     <?php endif; ?>
     <script src="assets/js/script.js" defer></script>
     <?php if ($current_page === 'home'): ?>
-        <script src="assets/js/bannerSlider.js" defer></script>
+
     <?php elseif ($current_page === 'products'): ?>
         <script src="assets/js/products.js" defer></script>
     <?php endif; ?>
@@ -39,23 +39,26 @@ if (!defined('APP_START')) exit('No direct access');
                     <a href="?page=about"><i class="fas fa-info-circle"></i> Giới thiệu</a>
                     <a href="?page=contact"><i class="fas fa-address-book"></i> Liên hệ</a>
                 </div>
-                <?php if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true): ?>
-                    <?php
-                    $usermenu_file = __DIR__ . '/usermenu.php';
-                    if (file_exists($usermenu_file)) {
-                        include $usermenu_file;
-                    } else {
-                        echo '<a href="?page=profile"><i class="fas fa-user"></i> ' . htmlspecialchars($_SESSION['username'] ?? 'User') . '</a>';
-                        echo '<a href="?page=logout"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a>';
-                    }
-                    ?>
-                <?php else: ?>
-                    <a href="?page=login"><i class="fas fa-user"></i> Đăng nhập</a>
-                    <a href="?page=register"><i class="fas fa-user-plus"></i> Đăng ký</a>
-                <?php endif; ?>
+                <div class="auth-links">
+                    <?php if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true): ?>
+                        <?php
+                        $usermenu_file = __DIR__ . '/usermenu.php';
+                        if (file_exists($usermenu_file)) {
+                            include $usermenu_file;
+                        } else {
+                            echo '<a href="?page=profile"><i class="fas fa-user"></i> ' . htmlspecialchars($_SESSION['username'] ?? 'User') . '</a>';
+                            echo '<a href="?page=logout"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a>';
+                        }
+                        ?>
+                    <?php else: ?>
+                        <a href="?page=login"><i class="fas fa-user"></i> Đăng nhập</a>
+                        <a href="?page=register"><i class="fas fa-user-plus"></i> Đăng ký</a>
+                    <?php endif; ?>
+                </div>
             </div>
         </div>
 
+        <!-- Phần còn lại của header.php giữ nguyên -->
         <header class="main-header">
             <div class="container">
                 <div class="logo">
@@ -106,7 +109,6 @@ if (!defined('APP_START')) exit('No direct access');
                         'knowledge' => 'Kiến thức',
                         'gift' => 'Quà tặng'
                     ];
-
                     foreach ($main_menu_items as $key => $label) {
                         $active = ($current_page === $key || ($current_page === 'products' && isset($_GET['category']) && $_GET['category'] === $key)) ? 'active' : '';
                         $url = in_array($key, ['home', 'promotion', 'knowledge']) ? "?page=$key" : "?page=products&category=$key";
@@ -117,8 +119,7 @@ if (!defined('APP_START')) exit('No direct access');
             </div>
         </nav>
 
-        <!-- Banner only on homepage -->
-        <?php if ($current_page === 'home') include 'pages/banner.php'; ?>
+
     </div>
 </body>
 

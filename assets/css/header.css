@@ -39,9 +39,37 @@ a {
 
 .top-bar .container {
     display: flex;
-    justify-content: space-between;
+    justify-content: space-between; /* Giữ nguyên space-between */
     align-items: center;
 }
+
+/* Tạo một vùng chứa riêng cho phần đăng nhập/đăng ký ở bên phải */
+.top-bar .container > a[href="?page=login"],
+.top-bar .container > a[href="?page=register"] {
+    margin-left: 0; /* Xóa margin mặc định */
+    margin-right: 10px; /* Thêm khoảng cách phù hợp */
+}
+
+/* Đảm bảo thẻ đăng ký (thẻ cuối) không có margin bên phải */
+.top-bar .container > a[href="?page=register"] {
+    margin-right: 0; 
+}
+
+/* Thêm vào file header.css của bạn */
+
+.auth-links {
+    display: flex;
+    align-items: center;
+}
+
+.auth-links a {
+    margin-left: 10px; /* Khoảng cách giữa các liên kết */
+}
+
+.auth-links a:first-child {
+    margin-left: 0; /* Loại bỏ margin cho liên kết đầu tiên */
+}
+
 
 .contact-info,
 .user-actions {
