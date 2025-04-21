@@ -277,7 +277,7 @@ function get_product_by_id($id)
 /**
  * Lấy sản phẩm liên quan
  */
-function get_related_products($product_id, $limit = 4)
+function get_related_products($product_id, $limit = 3)
 {
     global $pdo;
     try {

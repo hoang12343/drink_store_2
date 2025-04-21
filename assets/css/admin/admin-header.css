@@ -1,24 +1,26 @@
 .admin-header {
     background-color: var(--wine-red);
-    padding: 10px 15px;
+    padding: 10px 20px;
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    gap: 15px;
+    gap: 20px;
     box-shadow: 0 2px 5px var(--shadow-color);
     position: fixed;
     top: 0;
     right: 0;
-    width: 1300px;
+    width: calc(100% - 260px); /* Adjust for sidebar width */
     z-index: 900;
+    transition: width 0.3s ease-in-out, padding 0.3s ease-in-out;
 }
 
 .admin-username {
     color: white;
     font-weight: 500;
+    font-size: 1rem;
     display: flex;
     align-items: center;
-    gap: 5px;
+    gap: 8px;
 }
 
 .admin-logout, .admin-login {
@@ -29,12 +31,14 @@
     background-color: var(--wine-red-dark);
     display: flex;
     align-items: center;
-    gap: 5px;
-    transition: background-color 0.2s;
+    gap: 8px;
+    font-size: 0.95rem;
+    transition: background-color 0.2s, transform 0.2s;
 }
 
 .admin-logout:hover, .admin-login:hover {
     background-color: var(--wine-red-light);
+    transform: scale(1.05);
 }
 
 #sidebar-toggle {
@@ -42,22 +46,73 @@
     background-color: var(--wine-red-dark);
     color: white;
     border: none;
-    padding: 10px;
+    padding: 8px;
     font-size: 1.2rem;
     cursor: pointer;
+    border-radius: 4px;
     position: fixed;
     top: 10px;
     left: 10px;
     z-index: 1100;
+    transition: background-color 0.2s, transform 0.2s;
 }
 
+#sidebar-toggle:hover {
+    background-color: var(--wine-red-light);
+    transform: scale(1.1);
+}
+
+#sidebar-toggle.active i::before {
+    content: "\f00d"; /* Font Awesome 'times' icon when active */
+}
+
+/* Media Queries */
 @media (max-width: 768px) {
     .admin-header {
-        width: 300px;
+        width: 100%; /* Full width on mobile */
+        padding: 8px 15px;
         justify-content: space-between;
+        gap: 10px;
+    }
+
+    .admin-username {
+        font-size: 0.9rem;
+        gap: 6px;
+    }
+
+    .admin-logout, .admin-login {
+        padding: 6px 10px;
+        font-size: 0.9rem;
+        gap: 6px;
     }
 
     #sidebar-toggle {
         display: block;
+        padding: 6px;
+        font-size: 1.1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .admin-header {
+        padding: 6px 10px;
+    }
+
+    .admin-username {
+        font-size: 0.85rem;
+        gap: 5px;
+    }
+
+    .admin-logout, .admin-login {
+        padding: 5px 8px;
+        font-size: 0.85rem;
+        gap: 5px;
+    }
+
+    #sidebar-toggle {
+        padding: 5px;
+        font-size: 1rem;
+        top: 8px;
+        left: 8px;
     }
 }

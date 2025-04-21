@@ -17,7 +17,7 @@ if (!defined('APP_START')) {
             <ul>
                 <li><a href="?page=admin&subpage=dashboard"
                         class="<?php echo $admin_subpage === 'dashboard' ? 'active' : ''; ?>"><i
-                            class="fas fa-tachometer-alt"></i> Bảng điều khiển</a></li>
+                            class="fas fa-tachometer-alt"></i> Tổng quan</a></li>
                 <li><a href="?page=admin&subpage=admin-products"
                         class="<?php echo $admin_subpage === 'admin-products' ? 'active' : ''; ?>"><i
                             class="fas fa-box-open"></i> Sản phẩm</a></li>
@@ -27,6 +27,12 @@ if (!defined('APP_START')) {
                 <li><a href="?page=admin&subpage=admin-users"
                         class="<?php echo $admin_subpage === 'admin-users' ? 'active' : ''; ?>"><i
                             class="fas fa-users"></i> Người dùng</a></li>
+                <li><a href="?page=admin&subpage=admin-reports"
+                        class="<?php echo $admin_subpage === 'admin-reports' ? 'active' : ''; ?>"><i
+                            class="fas fa-chart-bar"></i> Báo cáo</a></li>
+                <li><a href="?page=admin&subpage=admin-settings"
+                        class="<?php echo $admin_subpage === 'admin-settings' ? 'active' : ''; ?>"><i
+                            class="fas fa-cog"></i> Cài đặt</a></li>
             </ul>
         </div>
     </div>

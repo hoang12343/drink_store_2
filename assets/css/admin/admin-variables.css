@@ -10,3 +10,24 @@
     --border-color: #E0E0E0;
     --shadow-color: rgba(0, 0, 0, 0.1);
 }
+
+body.sidebar-open {
+    overflow-x: hidden;
+}
+
+@media (max-width: 768px) {
+    body.sidebar-open {
+        position: relative;
+    }
+    
+    body.sidebar-open:after {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.5);
+        z-index: 999;
+    }
+}

@@ -22,13 +22,8 @@ if (!defined('APP_START')) {
 
 <body>
     <section class="content admin-page">
-        <h1>Bảng điều khiển</h1>
-        <div class="admin-nav">
-            <a href="?page=admin&subpage=dashboard"><i class="fas fa-tachometer-alt"></i> Tổng quan</a>
-            <a href="?page=admin&subpage=admin-products"><i class="fas fa-box-open"></i> Sản phẩm</a>
-            <a href="?page=admin&subpage=admin-orders"><i class="fas fa-shopping-cart"></i> Đơn hàng</a>
-            <a href="?page=admin&subpage=admin-users"><i class="fas fa-users"></i> Người dùng</a>
-        </div>
+        <h1>Tổng quan</h1>
+
         <div class="admin-dashboard">
             <div class="dashboard-card">
                 <h3>Tổng sản phẩm</h3>

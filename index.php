@@ -49,6 +49,12 @@ if (in_array($page, ['cart', 'profile', 'orders']) && !isset($_SESSION['logged_i
 //     exit;
 // }
 
+// chỉ admin truy cập được trang admin
+if (str_starts_with($page, 'admin/') && (!isset($_SESSION['logged_in']) || !isset($_SESSION['is_admin']) || $_SESSION['is_admin'] !== 1)) {
+    header('Location: index.php?page=login&redirect=' . urlencode('admin'));
+    exit;
+}
+
 // Xử lý đăng xuất
 if ($page === 'logout') {
     require_once 'processes/logout.php';

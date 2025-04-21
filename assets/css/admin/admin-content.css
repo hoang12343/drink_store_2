@@ -1,9 +1,7 @@
 .content.admin-page {
     padding: 30px 15px;
     max-width: 1320px;
-    margin: 0 auto;
-    margin-left: 280px;
-    margin-top: 60px;
+    margin: 60px 0 0 280px;
     transition: margin-left 0.3s ease;
 }
 
@@ -58,7 +56,6 @@
 @media (max-width: 768px) {
     .content.admin-page {
         margin-left: 0;
-        margin-top: 60px;
     }
 
     .admin-nav a {
