@@ -1,0 +1,123 @@
+/* Contact Page Styles */
+.contact-page {
+    padding: 40px 0;
+}
+
+/* Page Title */
+.page-title {
+    text-align: center;
+    color: var(--wine-red);
+    font-size: 2.5rem;
+    margin-bottom: 30px;
+    text-transform: uppercase;
+}
+
+/* Contact Container */
+.contact-container {
+    display: flex;
+    justify-content: center;
+}
+
+/* Contact Form Styles */
+.contact-form {
+    max-width: 600px;
+    width: 100%;
+    background: var(--off-white);
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px var(--shadow);
+}
+
+.contact-form h2 {
+    color: var(--wine-red);
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+}
+
+/* Form Group */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 600;
+    color: var(--cognac-brown);
+    margin-bottom: 8px;
+}
+
+.form-group .required {
+    color: var(--error-red);
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--border-brown);
+    border-radius: 4px;
+    font-size: 1rem;
+    color: var(--cognac-brown);
+    background: var(--light-cream);
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.form-group textarea {
+    min-height: 140px;
+    resize: vertical;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    border-color: var(--wine-red);
+    box-shadow: 0 0 5px rgba(139, 30, 63, 0.3);
+    outline: none;
+}
+
+/* Submit Button */
+.submit-btn {
+    background: var(--wine-red);
+    color: white;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 4px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background 0.3s;
+    display: block;
+    margin: 0 auto;
+}
+
+.submit-btn:hover {
+    background: var(--wine-red-dark);
+}
+
+/* Form Messages */
+.form-message {
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 4px;
+    font-size: 1rem;
+    text-align: center;
+}
+
+.form-message.success {
+    background: var(--success-green);
+    color: white;
+}
+
+.form-message.error {
+    background: var(--error-red);
+    color: white;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .contact-form {
+        padding: 20px;
+    }
+
+    .page-title {
+        font-size: 2rem;
+    }
+}

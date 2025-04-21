@@ -18,7 +18,7 @@ $_SESSION['last_activity'] = time();
 
 function route_request($default = 'home'): string
 {
-    $valid_pages = ['home', 'products', 'product-detail', 'cart', 'contact', 'about', 'login', 'register', 'logout', 'knowledge', 'gift', 'promotion', 'profile', 'orders', 'admin'];
+    $valid_pages = ['home', 'products', 'product-detail', 'cart', 'contact', 'contact_process', 'about', 'login', 'register', 'logout', 'knowledge', 'gift', 'promotion', 'profile', 'orders', 'admin'];
     $page = filter_input(INPUT_GET, 'page', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?? $default;
 
     // Handle admin subpages
@@ -52,6 +52,12 @@ if (in_array($page, ['cart', 'profile', 'orders']) && !isset($_SESSION['logged_i
 // Xử lý đăng xuất
 if ($page === 'logout') {
     require_once 'processes/logout.php';
+    exit;
+}
+
+// Xử lý trang contact_process
+if ($page === 'contact_process') {
+    require_once 'processes/contact_process.php';
     exit;
 }
 

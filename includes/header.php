@@ -16,15 +16,19 @@ if (!defined('APP_START')) exit('No direct access');
     <?php elseif (str_starts_with($current_page, 'admin/')): ?>
         <link rel="stylesheet" href="assets/css/admin.css?v=<?php echo time(); ?>">
     <?php elseif ($current_page === 'home'): ?>
-
+        <!-- Không cần thêm CSS cho home -->
     <?php elseif ($current_page === 'products'): ?>
         <link rel="stylesheet" href="assets/css/products.css?v=<?php echo time(); ?>">
+    <?php elseif ($current_page === 'contact'): ?>
+        <link rel="stylesheet" href="assets/css/contact.css?v=<?php echo time(); ?>">
     <?php endif; ?>
     <script src="assets/js/script.js" defer></script>
     <?php if ($current_page === 'home'): ?>
-
+        <!-- Không cần thêm JS cho home -->
     <?php elseif ($current_page === 'products'): ?>
         <script src="assets/js/products.js" defer></script>
+    <?php elseif ($current_page === 'contact'): ?>
+        <script src="assets/js/contact.js" defer></script>
     <?php endif; ?>
 </head>
 
@@ -58,7 +62,6 @@ if (!defined('APP_START')) exit('No direct access');
             </div>
         </div>
 
-        <!-- Phần còn lại của header.php giữ nguyên -->
         <header class="main-header">
             <div class="container">
                 <div class="logo">
@@ -107,19 +110,18 @@ if (!defined('APP_START')) exit('No direct access');
                         'beer' => 'Bia',
                         'promotion' => 'Khuyến mãi',
                         'knowledge' => 'Kiến thức',
-                        'gift' => 'Quà tặng'
+                        'gift' => 'Quà tặng',
+                        'contact' => 'Liên hệ'
                     ];
                     foreach ($main_menu_items as $key => $label) {
                         $active = ($current_page === $key || ($current_page === 'products' && isset($_GET['category']) && $_GET['category'] === $key)) ? 'active' : '';
-                        $url = in_array($key, ['home', 'promotion', 'knowledge']) ? "?page=$key" : "?page=products&category=$key";
-                        echo "<li><a href='$url' class='$active'>$label</a></li>";
+                        $url = in_array($key, ['home', 'promotion', 'knowledge', 'contact']) ? "?page=$key" : "?page=products&category=$key";
+                        echo "<li><a href='$url' class='$active'>" . ($key === 'contact' ? '<i class="fas fa-address-book"></i> ' : '') . "$label</a></li>";
                     }
                     ?>
                 </ul>
             </div>
         </nav>
-
-
     </div>
 </body>
 
