@@ -21,6 +21,9 @@ if (!defined('APP_START')) {
                 <li><a href="?page=admin&subpage=admin-products"
                         class="<?php echo $admin_subpage === 'admin-products' ? 'active' : ''; ?>"><i
                             class="fas fa-box-open"></i> Sản phẩm</a></li>
+                <li><a href="?page=admin&subpage=admin-inventory"
+                        class="<?php echo $admin_subpage === 'admin-inventory' ? 'active' : ''; ?>"><i
+                            class="fas fa-warehouse"></i> Kho hàng</a></li>
                 <li><a href="?page=admin&subpage=admin-orders"
                         class="<?php echo $admin_subpage === 'admin-orders' ? 'active' : ''; ?>"><i
                             class="fas fa-shopping-cart"></i> Đơn hàng</a></li>

@@ -24,7 +24,7 @@ function route_request($default = 'home'): string
     // Handle admin subpages
     if ($page === 'admin') {
         $admin_subpage = filter_input(INPUT_GET, 'subpage', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?? 'dashboard';
-        $valid_admin_subpages = ['dashboard', 'admin-products', 'admin-orders', 'admin-users'];
+        $valid_admin_subpages = ['dashboard', 'admin-products', 'admin-inventory', 'admin-orders', 'admin-users'];
         if (!in_array($admin_subpage, $valid_admin_subpages)) {
             $admin_subpage = 'dashboard';
         }
@@ -43,13 +43,7 @@ if (in_array($page, ['cart', 'profile', 'orders']) && !isset($_SESSION['logged_i
     exit;
 }
 
-// Yêu cầu quyền admin (tạm thời comment để debug sidebar)
-// if (str_starts_with($page, 'admin/') && (!isset($_SESSION['logged_in']) || !isset($_SESSION['is_admin']) || $_SESSION['is_admin'] !== 1)) {
-//     header('Location: index.php?page=login&redirect=' . urlencode('admin'));
-//     exit;
-// }
-
-// chỉ admin truy cập được trang admin
+// Yêu cầu quyền admin
 if (str_starts_with($page, 'admin/') && (!isset($_SESSION['logged_in']) || !isset($_SESSION['is_admin']) || $_SESSION['is_admin'] !== 1)) {
     header('Location: index.php?page=login&redirect=' . urlencode('admin'));
     exit;
@@ -130,5 +124,7 @@ if ($page === 'cart'): ?>
 <script src="assets/js/cart.js" defer></script>
 <?php elseif (str_starts_with($page, 'admin/')): ?>
 <script src="assets/js/admin.js" defer></script>
-
 <?php endif; ?>
+</body>
+
+</html>
