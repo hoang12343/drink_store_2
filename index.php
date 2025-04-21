@@ -91,9 +91,9 @@ if (str_starts_with($current_page, 'admin/')) {
 
 <div class="container">
     <?php if (isset($_GET['success']) && $_GET['success'] === 'registered'): ?>
-        <div class="form-message success">Đăng ký thành công! Vui lòng đăng nhập.</div>
+    <div class="form-message success">Đăng ký thành công! Vui lòng đăng nhập.</div>
     <?php elseif (isset($_GET['timeout']) && $_GET['timeout'] === '1'): ?>
-        <div class="form-message error">Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.</div>
+    <div class="form-message error">Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.</div>
     <?php endif; ?>
 
     <?php
@@ -121,9 +121,8 @@ if (!str_starts_with($current_page, 'admin/')) {
 
 // Liên kết JavaScript
 if ($page === 'cart'): ?>
-    <script src="assets/js/cart.js" defer></script>
+<script src="assets/js/cart.js" defer></script>
 <?php elseif (str_starts_with($page, 'admin/')): ?>
-    <script src="assets/js/admin.js" defer></script>
-<?php elseif ($page === 'home'): ?>
-    <script src="assets/js/bannerSlider.js" defer></script>
+<script src="assets/js/admin.js" defer></script>
+
 <?php endif; ?>

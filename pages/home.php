@@ -5,6 +5,7 @@ if (!defined('APP_START')) {
 ?>
 <link rel="stylesheet" href="assets/css/home.css">
 
+
 <?php
 // Hàm lấy thông tin danh mục (mô phỏng sản phẩm tiêu biểu hoặc thông tin tổng quan)
 function get_category_info($category)
@@ -30,16 +31,16 @@ function display_category_card($category): string
 
     ob_start();
 ?>
-    <article class="category-card">
-        <div class="category-img">
-            <img src="<?= htmlspecialchars($info['image']) ?>" alt="<?= htmlspecialchars($info['name']) ?>" loading="lazy">
-        </div>
-        <div class="category-info">
-            <h3><?= htmlspecialchars($info['name']) ?></h3>
-            <p><?= htmlspecialchars($info['description']) ?></p>
-            <a href="<?= htmlspecialchars($info['link']) ?>" class="view-btn">Khám phá ngay</a>
-        </div>
-    </article>
+<article class="category-card">
+    <div class="category-img">
+        <img src="<?= htmlspecialchars($info['image']) ?>" alt="<?= htmlspecialchars($info['name']) ?>" loading="lazy">
+    </div>
+    <div class="category-info">
+        <h3><?= htmlspecialchars($info['name']) ?></h3>
+        <p><?= htmlspecialchars($info['description']) ?></p>
+        <a href="<?= htmlspecialchars($info['link']) ?>" class="view-btn">Khám phá ngay</a>
+    </div>
+</article>
 <?php
     return ob_get_clean();
 }
@@ -57,14 +58,14 @@ $main_categories = [
 ];
 ?>
 
-<?php include ROOT_PATH . './pages/banner.php'; ?>
+<?php include ROOT_PATH . '/pages/banner.php'; ?>
 
 <!-- Danh mục sản phẩm tổng hợp -->
 <section class="home-content">
     <h2 class="category-title">Danh mục sản phẩm</h2>
     <div class="categories-grid">
         <?php foreach ($main_categories as $category => $title): ?>
-            <?= display_category_card($category) ?>
+        <?= display_category_card($category) ?>
         <?php endforeach; ?>
     </div>
 </section>

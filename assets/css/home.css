@@ -47,7 +47,7 @@ body {
 
 .categories-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr); /* Exactly 4 columns per row */
+    grid-template-columns: repeat(3, 1fr); /* Exactly 4 columns per row */
     gap: 20px;
     width: 100vw;
     margin: 0;

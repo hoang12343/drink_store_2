@@ -12,23 +12,23 @@ if (!defined('APP_START')) exit('No direct access');
     <link rel="stylesheet" href="assets/css/header.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <?php if ($current_page === 'cart'): ?>
-        <link rel="stylesheet" href="assets/css/cart.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="assets/css/cart.css?v=<?php echo time(); ?>">
     <?php elseif (str_starts_with($current_page, 'admin/')): ?>
-        <link rel="stylesheet" href="assets/css/admin.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="assets/css/admin.css?v=<?php echo time(); ?>">
     <?php elseif ($current_page === 'home'): ?>
-        <!-- Không cần thêm CSS cho home -->
+    <!-- Không cần thêm CSS cho home -->
     <?php elseif ($current_page === 'products'): ?>
-        <link rel="stylesheet" href="assets/css/products.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="assets/css/products.css?v=<?php echo time(); ?>">
     <?php elseif ($current_page === 'contact'): ?>
-        <link rel="stylesheet" href="assets/css/contact.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="assets/css/contact.css?v=<?php echo time(); ?>">
     <?php endif; ?>
     <script src="assets/js/script.js" defer></script>
     <?php if ($current_page === 'home'): ?>
-        <!-- Không cần thêm JS cho home -->
+    <!-- Không cần thêm JS cho home -->
     <?php elseif ($current_page === 'products'): ?>
-        <script src="assets/js/products.js" defer></script>
+    <script src="assets/js/products.js" defer></script>
     <?php elseif ($current_page === 'contact'): ?>
-        <script src="assets/js/contact.js" defer></script>
+    <script src="assets/js/contact.js" defer></script>
     <?php endif; ?>
 </head>
 
@@ -45,7 +45,7 @@ if (!defined('APP_START')) exit('No direct access');
                 </div>
                 <div class="auth-links">
                     <?php if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true): ?>
-                        <?php
+                    <?php
                         $usermenu_file = __DIR__ . '/usermenu.php';
                         if (file_exists($usermenu_file)) {
                             include $usermenu_file;
@@ -55,8 +55,8 @@ if (!defined('APP_START')) exit('No direct access');
                         }
                         ?>
                     <?php else: ?>
-                        <a href="?page=login"><i class="fas fa-user"></i> Đăng nhập</a>
-                        <a href="?page=register"><i class="fas fa-user-plus"></i> Đăng ký</a>
+                    <a href="?page=login"><i class="fas fa-user"></i> Đăng nhập</a>
+                    <a href="?page=register"><i class="fas fa-user-plus"></i> Đăng ký</a>
                     <?php endif; ?>
                 </div>
             </div>
@@ -105,13 +105,13 @@ if (!defined('APP_START')) exit('No direct access');
                         'all' => 'Tất cả sản phẩm',
                         'wine' => 'Rượu vang',
                         'brandy' => 'Rượu mạnh',
-                        'crystal' => 'Ly Pha Lê',
+                        'crystal_glasses' => 'Ly Pha Lê',
                         'vodka' => 'Vodka',
                         'beer' => 'Bia',
                         'promotion' => 'Khuyến mãi',
                         'knowledge' => 'Kiến thức',
                         'gift' => 'Quà tặng',
-                        'contact' => 'Liên hệ'
+
                     ];
                     foreach ($main_menu_items as $key => $label) {
                         $active = ($current_page === $key || ($current_page === 'products' && isset($_GET['category']) && $_GET['category'] === $key)) ? 'active' : '';
