@@ -174,52 +174,6 @@ document.addEventListener("DOMContentLoaded", () => {
     },
   };
 
-  // Navigation and usermenu handling
-  const navigation = {
-    init() {
-      // Toggle menu trên mobile
-      const menuToggle = utils.$("#menuToggle");
-      const navWrapper = utils.$("#navWrapper");
-      if (menuToggle && navWrapper) {
-        menuToggle.addEventListener("click", () => {
-          navWrapper.classList.toggle("active");
-          menuToggle.innerHTML = navWrapper.classList.contains("active")
-            ? '<i class="fas fa-times"></i>'
-            : '<i class="fas fa-bars"></i>';
-        });
-
-        document.addEventListener("click", (e) => {
-          if (
-            !e.target.closest(".main-navigation") &&
-            !e.target.closest("#menuToggle")
-          ) {
-            navWrapper.classList.remove("active");
-            menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
-          }
-        });
-      }
-
-      // Xử lý usermenu dropdown
-      const usermenu = utils.$(".usermenu");
-      if (usermenu) {
-        const dropdown = usermenu.querySelector(".usermenu-dropdown");
-        if (dropdown) {
-          usermenu.addEventListener("click", (e) => {
-            e.stopPropagation();
-            dropdown.style.display =
-              dropdown.style.display === "block" ? "none" : "block";
-          });
-
-          document.addEventListener("click", (e) => {
-            if (!e.target.closest(".usermenu")) {
-              dropdown.style.display = "none";
-            }
-          });
-        }
-      }
-    },
-  };
-
   // Khởi tạo các module
   formSwitch.init();
   forms.init();
