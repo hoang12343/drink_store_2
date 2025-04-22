@@ -1,3 +1,17 @@
+/* Import biến màu từ products.css */
+:root {
+    --wine-red: #8B1E3F;
+    --wine-red-dark: #6B152F;
+    --wine-red-light: #B52F57;
+    --cognac-brown: #2E1A0F;
+    --light-cream: #F8EDE3;
+    --off-white: #FFF8F0;
+    --text-dark: #333333;
+    --text-light: #777777;
+    --border-color: #E0E0E0;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+}
+
 /* Reset CSS */
 * {
     margin: 0;
@@ -6,10 +20,9 @@
 }
 
 body {
-    font-family: 'Roboto', sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     line-height: 1.6;
-    color: #333;
-    margin: 0;
+    color: var(--text-dark);
 }
 
 .wrapper {
@@ -30,7 +43,7 @@ a {
 
 /* Top Bar Styles */
 .top-bar {
-    background-color: #8B0000;
+    background-color: var(--wine-red);
     color: #fff;
     padding: 8px 0;
     font-size: 14px;
@@ -39,23 +52,9 @@ a {
 
 .top-bar .container {
     display: flex;
-    justify-content: space-between; /* Giữ nguyên space-between */
+    justify-content: space-between;
     align-items: center;
 }
-
-/* Tạo một vùng chứa riêng cho phần đăng nhập/đăng ký ở bên phải */
-.top-bar .container > a[href="?page=login"],
-.top-bar .container > a[href="?page=register"] {
-    margin-left: 0; /* Xóa margin mặc định */
-    margin-right: 10px; /* Thêm khoảng cách phù hợp */
-}
-
-/* Đảm bảo thẻ đăng ký (thẻ cuối) không có margin bên phải */
-.top-bar .container > a[href="?page=register"] {
-    margin-right: 0; 
-}
-
-/* Thêm vào file header.css của bạn */
 
 .auth-links {
     display: flex;
@@ -63,13 +62,12 @@ a {
 }
 
 .auth-links a {
-    margin-left: 10px; /* Khoảng cách giữa các liên kết */
+    margin-left: 10px;
 }
 
 .auth-links a:first-child {
-    margin-left: 0; /* Loại bỏ margin cho liên kết đầu tiên */
+    margin-left: 0;
 }
-
 
 .contact-info,
 .user-actions {
@@ -91,7 +89,7 @@ a {
 
 .contact-info a:hover,
 .user-actions a:hover {
-    color: #f1c40f;
+    color: var(--wine-red-light);
 }
 
 .contact-info i,
@@ -103,7 +101,7 @@ a {
 .main-header {
     background-color: #fff;
     padding: 15px 0;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 5px var(--shadow-color);
     width: 100vw;
 }
 
@@ -116,7 +114,7 @@ a {
 .logo a {
     font-size: 24px;
     font-weight: 700;
-    color: #8B0000;
+    color: var(--wine-red);
     text-transform: uppercase;
     letter-spacing: 1px;
 }
@@ -125,6 +123,7 @@ a {
     flex: 1;
     max-width: 500px;
     margin: 0 30px;
+    position: relative;
 }
 
 .search-bar form {
@@ -135,10 +134,11 @@ a {
 .search-bar input[type="text"] {
     width: 100%;
     padding: 10px 15px;
-    border: 1px solid #ddd;
+    border: 1px solid var(--border-color);
     border-radius: 4px;
     font-size: 14px;
     outline: none;
+    background-color: var(--off-white);
 }
 
 .search-bar button {
@@ -147,7 +147,7 @@ a {
     top: 0;
     height: 100%;
     width: 40px;
-    background-color: #8B0000;
+    background-color: var(--wine-red);
     border: none;
     border-radius: 0 4px 4px 0;
     color: #fff;
@@ -156,7 +156,67 @@ a {
 }
 
 .search-bar button:hover {
-    background-color: #6d0000;
+    background-color: var(--wine-red-dark);
+}
+
+/* Search Suggestions */
+.search-suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    box-shadow: 0 2px 8px var(--shadow-color);
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 1000;
+    display: none;
+}
+
+.search-suggestions.active {
+    display: block;
+}
+
+.suggestion-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.suggestion-item:hover {
+    background-color: var(--light-cream);
+}
+
+.suggestion-item img {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    margin-right: 10px;
+    border-radius: 4px;
+}
+
+.suggestion-item span {
+    font-size: 14px;
+    color: var(--text-dark);
+}
+
+.suggestion-item span strong {
+    color: var(--wine-red);
+    font-weight: 600;
+}
+
+.suggestion-item.no-results {
+    color: var(--text-light);
+    cursor: default;
+    text-align: center;
+}
+
+.suggestion-item.no-results:hover {
+    background-color: transparent;
 }
 
 .header-actions {
@@ -168,15 +228,15 @@ a {
     position: relative;
     margin-right: 20px;
     font-size: 20px;
-    color: #8B0000;
+    color: var(--wine-red);
 }
 
 .cart-count {
     position: absolute;
     top: -10px;
     right: -10px;
-    background-color: #f1c40f;
-    color: #000;
+    background-color: var(--wine-red-light);
+    color: #fff;
     font-size: 12px;
     width: 20px;
     height: 20px;
@@ -192,14 +252,14 @@ a {
     background: none;
     border: none;
     font-size: 20px;
-    color: #8B0000;
+    color: var(--wine-red);
     cursor: pointer;
 }
 
 /* Main Navigation Styles */
 .main-navigation {
-    background-color: #f8f8f8;
-    border-bottom: 1px solid #eee;
+    background-color: var(--off-white);
+    border-bottom: 1px solid var(--border-color);
     width: 100vw;
 }
 
@@ -217,7 +277,7 @@ a {
 .main-nav li a {
     display: block;
     padding: 15px;
-    color: #333;
+    color: var(--text-dark);
     font-weight: 500;
     transition: all 0.3s ease;
 }
@@ -225,21 +285,17 @@ a {
 .main-nav li a:hover,
 .main-nav li a.active {
     color: #fff;
-    background-color: rgba(139, 0, 0, 0.05);
+    background-color: var(--wine-red);
 }
 
-.main-nav li.has-dropdown:nth-child(3) a {
+.main-nav .has-dropdown:nth-child(3) a {
     transition: all 0.3s ease;
 }
 
-body.home .main-nav li.has-dropdown:nth-child(3) a:hover {
-    color: #fff;
-    background-color: #8B0000;
-}
-
+body.home .main-nav li.has-dropdown:nth-child(3) a:hover,
 body.products .main-nav li.has-dropdown:nth-child(3) a.active {
     color: #fff;
-    background-color: #8B0000;
+    background-color: var(--wine-red);
 }
 
 .main-nav .has-dropdown {
@@ -254,7 +310,7 @@ body.products .main-nav li.has-dropdown:nth-child(3) a.active {
     z-index: 1000;
     background-color: #fff;
     border-radius: 4px;
-    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 2px 15px var(--shadow-color);
     width: auto;
 }
 
@@ -273,7 +329,7 @@ body.products .main-nav li.has-dropdown:nth-child(3) a.active {
     flex: 1;
     min-width: 200px;
     padding: 0;
-    border-right: 1px solid #e0e0e0;
+    border-right: 1px solid var(--border-color);
 }
 
 .dropdown-column:last-child {
@@ -281,12 +337,12 @@ body.products .main-nav li.has-dropdown:nth-child(3) a.active {
 }
 
 .dropdown-column h4 {
-    color: #8B0000;
+    color: var(--wine-red);
     font-size: 16px;
     font-weight: 600;
     margin-bottom: 15px;
     padding-bottom: 8px;
-    border-bottom: 1px solid #e0e0e0;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .dropdown-column ul {
@@ -300,7 +356,7 @@ body.products .main-nav li.has-dropdown:nth-child(3) a.active {
 }
 
 .dropdown-column ul li a {
-    color: #333;
+    color: var(--text-dark);
     font-size: 14px;
     text-decoration: none;
     display: block;
@@ -311,19 +367,18 @@ body.products .main-nav li.has-dropdown:nth-child(3) a.active {
 }
 
 .dropdown-column ul li a:hover {
-    color: #8B0000;
-    background: церебральный;
+    color: var(--wine-red);
 }
 
 .dropdown-column ul li a.highlight {
-    color: #8B0000;
+    color: var(--wine-red);
     font-weight: 600;
 }
 
 .dropdown-column ul li a.all-link {
     font-weight: 500;
     margin-top: 10px;
-    color: #555;
+    color: var(--text-light);
 }
 
 .dropdown-column ul li a.search-link {
@@ -340,9 +395,9 @@ body.products .main-nav li.has-dropdown:nth-child(3) a.active {
 
 .notification {
     background-color: #fff;
-    color: #333;
+    color: var(--text-dark);
     border-radius: 4px;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 3px 10px var(--shadow-color);
     padding: 15px 20px;
     margin-bottom: 10px;
     transform: translateX(120%);
@@ -357,7 +412,7 @@ body.products .main-nav li.has-dropdown:nth-child(3) a.active {
 }
 
 .notification.success {
-    border-left: 4px solid #8B0000;
+    border-left: 4px solid var(--wine-red);
 }
 
 .notification.error {
@@ -374,7 +429,7 @@ body.products .main-nav li.has-dropdown:nth-child(3) a.active {
 }
 
 .notification.success .notification-icon {
-    color: #8B0000;
+    color: var(--wine-red);
 }
 
 .notification.error .notification-icon {
@@ -392,12 +447,12 @@ body.products .main-nav li.has-dropdown:nth-child(3) a.active {
 .notification-close {
     margin-left: 15px;
     cursor: pointer;
-    color: #aaa;
+    color: var(--text-light);
     font-size: 16px;
 }
 
 .notification-close:hover {
-    color: #333;
+    color: var(--text-dark);
 }
 
 /* Responsive Styles */
@@ -439,7 +494,7 @@ body.products .main-nav li.has-dropdown:nth-child(3) a.active {
         width: 100%;
         margin-bottom: 15px;
         border-right: none;
-        border-bottom: 1px solid #e0e0e0;
+        border-bottom: 1px solid var(--border-color);
         padding-bottom: 15px;
     }
 
@@ -476,13 +531,13 @@ body.products .main-nav li.has-dropdown:nth-child(3) a.active {
     .main-nav {
         display: none;
         flex-direction: column;
-        background-color: #f8f8f8;
+        background-color: var(--off-white);
         position: absolute;
         top: 100%;
         left: 0;
         width: 100vw;
         z-index: 1000;
-        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 5px 10px var(--shadow-color);
     }
 
     .main-nav.active {
@@ -490,7 +545,7 @@ body.products .main-nav li.has-dropdown:nth-child(3) a.active {
     }
 
     .main-nav li {
-        border-bottom: 1px solid #eee;
+        border-bottom: 1px solid var(--border-color);
     }
 
     .dropdown-menu {
@@ -498,7 +553,7 @@ body.products .main-nav li.has-dropdown:nth-child(3) a.active {
         width: 100%;
         display: none;
         box-shadow: none;
-        border-top: 1px solid #eee;
+        border-top: 1px solid var(--border-color);
     }
 
     .dropdown-menu.wine-dropdown {
@@ -515,18 +570,14 @@ body.products .main-nav li.has-dropdown:nth-child(3) a.active {
 
     .main-nav li a:hover,
     .main-nav li a.active {
-        color: #8B0000;
-        background-color: rgba(139, 0, 0, 0.05);
-    }
-
-    body.home .main-nav li.has-dropdown:nth-child(3) a:hover {
         color: #fff;
-        background-color: #8B0000;
+        background-color: var(--wine-red);
     }
 
+    body.home .main-nav li.has-dropdown:nth-child(3) a:hover,
     body.products .main-nav li.has-dropdown:nth-child(3) a.active {
         color: #fff;
-        background-color: #8B0000;
+        background-color: var(--wine-red);
     }
 }
 
