@@ -18,7 +18,7 @@ $_SESSION['last_activity'] = time();
 
 function route_request($default = 'home'): string
 {
-    $valid_pages = ['home', 'products', 'product-detail', 'cart', 'contact', 'contact_process', 'about', 'login', 'register', 'logout', 'knowledge', 'gift', 'promotion', 'profile', 'orders', 'admin'];
+    $valid_pages = ['home', 'products', 'product-detail', 'cart', 'contact', 'contact_process', 'about', 'login', 'register', 'logout', 'knowledge', 'gift', 'promotion', 'profile', 'orders', 'admin', 'update_profile'];
     $page = filter_input(INPUT_GET, 'page', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?? $default;
 
     // Handle admin subpages
@@ -38,7 +38,7 @@ $page = route_request();
 $current_page = $page;
 
 // Yêu cầu đăng nhập cho trang người dùng
-if (in_array($page, ['cart', 'profile', 'orders']) && !isset($_SESSION['logged_in'])) {
+if (in_array($page, ['cart', 'profile', 'orders', 'update_profile']) && !isset($_SESSION['logged_in'])) {
     header('Location: index.php?page=login&redirect=' . urlencode($page));
     exit;
 }
@@ -65,7 +65,7 @@ if ($page === 'contact_process') {
 if (str_starts_with($current_page, 'admin/')) {
     $admin_header_file = ROOT_PATH . '/includes/admin/admin-header.php';
     $sidebar_file = ROOT_PATH . '/includes/admin/management-sidebar.php';
-    $admin_subpage = filter_input(INPUT_GET, 'subpage', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?? 'dashboard'; // Define $admin_subpage for sidebar
+    $admin_subpage = filter_input(INPUT_GET, 'subpage', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?? 'dashboard';
     if (file_exists($sidebar_file)) {
         include $sidebar_file;
     } else {
@@ -91,9 +91,9 @@ if (str_starts_with($current_page, 'admin/')) {
 
 <div class="container">
     <?php if (isset($_GET['success']) && $_GET['success'] === 'registered'): ?>
-    <div class="form-message success">Đăng ký thành công! Vui lòng đăng nhập.</div>
+        <div class="form-message success">Đăng ký thành công! Vui lòng đăng nhập.</div>
     <?php elseif (isset($_GET['timeout']) && $_GET['timeout'] === '1'): ?>
-    <div class="form-message error">Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.</div>
+        <div class="form-message error">Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.</div>
     <?php endif; ?>
 
     <?php
@@ -121,9 +121,9 @@ if (!str_starts_with($current_page, 'admin/')) {
 
 // Liên kết JavaScript
 if ($page === 'cart'): ?>
-<script src="assets/js/cart.js" defer></script>
+    <script src="assets/js/cart.js" defer></script>
 <?php elseif (str_starts_with($page, 'admin/')): ?>
-<script src="assets/js/admin.js" defer></script>
+    <script src="assets/js/admin.js" defer></script>
 <?php endif; ?>
 </body>
 

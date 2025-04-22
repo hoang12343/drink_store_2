@@ -7,28 +7,29 @@ if (!defined('APP_START')) exit('No direct access');
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>Cửa hàng đồ uống - <?php echo ucfirst($current_page ?? 'home'); ?></title>
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="assets/css/header.css">
+    <link rel="stylesheet" href="assets/css/usermenu.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <?php if ($current_page === 'cart'): ?>
-    <link rel="stylesheet" href="assets/css/cart.css?v=<?php echo time(); ?>">
+        <link rel="stylesheet" href="assets/css/cart.css?v=<?php echo time(); ?>">
     <?php elseif (str_starts_with($current_page, 'admin/')): ?>
-    <link rel="stylesheet" href="assets/css/admin.css?v=<?php echo time(); ?>">
-    <?php elseif ($current_page === 'home'): ?>
-    <!-- Không cần thêm CSS cho home -->
+        <link rel="stylesheet" href="assets/css/admin.css?v=<?php echo time(); ?>">
     <?php elseif ($current_page === 'products'): ?>
-    <link rel="stylesheet" href="assets/css/products.css?v=<?php echo time(); ?>">
+        <link rel="stylesheet" href="assets/css/products.css?v=<?php echo time(); ?>">
     <?php elseif ($current_page === 'contact'): ?>
-    <link rel="stylesheet" href="assets/css/contact.css?v=<?php echo time(); ?>">
+        <link rel="stylesheet" href="assets/css/contact.css?v=<?php echo time(); ?>">
+    <?php elseif ($current_page === 'register' || $current_page === 'update_profile'): ?>
+        <link rel="stylesheet" href="assets/css/register.css?v=<?php echo time(); ?>">
     <?php endif; ?>
     <script src="assets/js/script.js" defer></script>
-    <?php if ($current_page === 'home'): ?>
-    <!-- Không cần thêm JS cho home -->
-    <?php elseif ($current_page === 'products'): ?>
-    <script src="assets/js/products.js" defer></script>
+    <script src="assets/js/usermenu.js" defer></script>
+    <?php if ($current_page === 'products'): ?>
+        <script src="assets/js/products.js" defer></script>
     <?php elseif ($current_page === 'contact'): ?>
-    <script src="assets/js/contact.js" defer></script>
+        <script src="assets/js/contact.js" defer></script>
     <?php endif; ?>
 </head>
 
@@ -45,18 +46,27 @@ if (!defined('APP_START')) exit('No direct access');
                 </div>
                 <div class="auth-links">
                     <?php if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true): ?>
-                    <?php
-                        $usermenu_file = __DIR__ . '/usermenu.php';
+                        <?php
+                        $usermenu_file = ROOT_PATH . '/usermenu.php';
                         if (file_exists($usermenu_file)) {
                             include $usermenu_file;
                         } else {
-                            echo '<a href="?page=profile"><i class="fas fa-user"></i> ' . htmlspecialchars($_SESSION['username'] ?? 'User') . '</a>';
+                            echo '<div class="user-menu" id="userMenu">';
+                            echo '<button class="user-toggle"><i class="fas fa-user"></i> <span class="username">' . htmlspecialchars($_SESSION['username'] ?? 'User', ENT_QUOTES, 'UTF-8') . '</span> <i class="fas fa-caret-down"></i></button>';
+                            echo '<div class="dropdown-menu">';
+                            echo '<a href="?page=update_profile"><i class="fas fa-user-circle"></i> Tài khoản</a>';
+                            echo '<a href="?page=orders"><i class="fas fa-shopping-bag"></i> Đơn hàng</a>';
+                            if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == 1) {
+                                echo '<a href="?page=admin&subpage=dashboard"><i class="fas fa-cog"></i> Quản trị</a>';
+                            }
                             echo '<a href="?page=logout"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a>';
+                            echo '</div>';
+                            echo '</div>';
                         }
                         ?>
                     <?php else: ?>
-                    <a href="?page=login"><i class="fas fa-user"></i> Đăng nhập</a>
-                    <a href="?page=register"><i class="fas fa-user-plus"></i> Đăng ký</a>
+                        <a href="?page=login"><i class="fas fa-user"></i> Đăng nhập</a>
+                        <a href="?page=register"><i class="fas fa-user-plus"></i> Đăng ký</a>
                     <?php endif; ?>
                 </div>
             </div>
@@ -111,7 +121,6 @@ if (!defined('APP_START')) exit('No direct access');
                         'promotion' => 'Khuyến mãi',
                         'knowledge' => 'Kiến thức',
                         'gift' => 'Quà tặng',
-
                     ];
                     foreach ($main_menu_items as $key => $label) {
                         $active = ($current_page === $key || ($current_page === 'products' && isset($_GET['category']) && $_GET['category'] === $key)) ? 'active' : '';
