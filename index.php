@@ -24,7 +24,7 @@ function route_request($default = 'home'): string
     // Handle admin subpages
     if ($page === 'admin') {
         $admin_subpage = filter_input(INPUT_GET, 'subpage', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?? 'dashboard';
-        $valid_admin_subpages = ['dashboard', 'admin-products', 'admin-inventory', 'admin-orders', 'admin-users'];
+        $valid_admin_subpages = ['dashboard', 'admin-products', 'admin-inventory', 'admin-orders', 'admin-users', 'admin-reports', 'admin-settings'];
         if (!in_array($admin_subpage, $valid_admin_subpages)) {
             $admin_subpage = 'dashboard';
         }
