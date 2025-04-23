@@ -80,7 +80,7 @@ function get_products($category, $search, $sort, $limit, $filters, $page)
 
     // Build query
     $where = !empty($conditions) ? 'WHERE ' . implode(' AND ', $conditions) : '';
-    $query = "SELECT p.* FROM products p JOIN categories c ON p.category_id = c.id $where";
+    $query = "SELECT p.*, c.display_name AS category_name FROM products p JOIN categories c ON p.category_id = c.id $where";
 
     // Handle sorting
     switch ($sort) {
@@ -140,7 +140,7 @@ function get_products($category, $search, $sort, $limit, $filters, $page)
 function get_product_by_id($product_id)
 {
     global $pdo;
-    $stmt = $pdo->prepare("SELECT p.* FROM products p WHERE p.id = ?");
+    $stmt = $pdo->prepare("SELECT p.*, c.display_name AS category_name FROM products p JOIN categories c ON p.category_id = c.id WHERE p.id = ?");
     $stmt->execute([$product_id]);
     $product = $stmt->fetch(PDO::FETCH_ASSOC);
     if ($product) {
@@ -161,7 +161,7 @@ function get_product_by_id($product_id)
 function get_related_products($product_id, $limit = 4)
 {
     global $pdo;
-    $stmt = $pdo->prepare("SELECT p.* FROM products p WHERE p.id != ? AND p.category_id = (SELECT category_id FROM products WHERE id = ?) LIMIT ?");
+    $stmt = $pdo->prepare("SELECT p.*, c.display_name AS category_name FROM products p JOIN categories c ON p.category_id = c.id WHERE p.id != ? AND p.category_id = (SELECT category_id FROM products WHERE id = ?) LIMIT ?");
     $stmt->execute([$product_id, $product_id, $limit]);
     $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
     foreach ($products as &$product) {
