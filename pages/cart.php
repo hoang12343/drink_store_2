@@ -1,4 +1,5 @@
 <?php
+
 if (!defined('APP_START')) exit('No direct access');
 require_once 'includes/db_connect.php';
 
@@ -31,91 +32,91 @@ if (empty($cart_items)) {
     </div>';
 } else {
 ?>
-<div class="cart-page">
-    <h1 class="page-title">Giỏ hàng</h1>
-    <div class="cart-container">
-        <div class="cart-header">
-            <div class="cart-header-content">
-                <input type="checkbox" id="select-all" title="Chọn tất cả">
-                <span>Chọn tất cả (<?= count($cart_items) ?> sản phẩm)</span>
+    <div class="cart-page">
+        <h1 class="page-title">Giỏ hàng</h1>
+        <div class="cart-container">
+            <div class="cart-header">
+                <div class="cart-header-content">
+                    <input type="checkbox" id="select-all" title="Chọn tất cả">
+                    <span>Chọn tất cả (<?= count($cart_items) ?> sản phẩm)</span>
+                </div>
             </div>
-        </div>
-        <div class="cart-items">
-            <?php foreach ($cart_items as $item):
+            <div class="cart-items">
+                <?php foreach ($cart_items as $item):
                     $formatted_price = number_format($item['price'], 0, ',', '.') . ' ₫';
                     $subtotal = $item['price'] * $item['quantity'];
                     $formatted_subtotal = number_format($subtotal, 0, ',', '.') . ' ₫';
                     $image = $item['image'] ? htmlspecialchars($item['image']) : 'assets/images/placeholder.jpg';
                 ?>
-            <div class="cart-card" data-cart-item-id="<?= htmlspecialchars($item['id']) ?>"
-                data-price="<?= $item['price'] ?>" data-subtotal="<?= $subtotal ?>">
-                <div class="cart-card-checkbox">
-                    <input type="checkbox" class="cart-item-checkbox"
-                        data-cart-item-id="<?= htmlspecialchars($item['id']) ?>">
-                </div>
-                <div class="cart-card-content">
-                    <div class="cart-card-image">
-                        <img src="<?= $image ?>" alt="<?= htmlspecialchars($item['name']) ?>">
-                    </div>
-                    <div class="cart-card-details">
-                        <div class="product-name"><?= htmlspecialchars($item['name']) ?></div>
-                        <div class="product-code">Mã: <?= htmlspecialchars($item['product_id']) ?></div>
-                    </div>
-                    <div class="cart-card-price" data-label="Giá"><?= $formatted_price ?></div>
-                    <div class="cart-card-quantity" data-label="Số lượng">
-                        <div class="quantity-selector">
-                            <button class="quantity-btn decrease"
-                                data-cart-item-id="<?= htmlspecialchars($item['id']) ?>">-</button>
-                            <input type="number" class="quantity-input"
-                                data-cart-item-id="<?= htmlspecialchars($item['id']) ?>"
-                                value="<?= $item['quantity'] ?>" min="1" max="100">
-                            <button class="quantity-btn increase"
-                                data-cart-item-id="<?= htmlspecialchars($item['id']) ?>">+</button>
+                    <div class="cart-card" data-cart-item-id="<?= htmlspecialchars($item['id']) ?>"
+                        data-price="<?= $item['price'] ?>" data-subtotal="<?= $subtotal ?>">
+                        <div class="cart-card-checkbox">
+                            <input type="checkbox" class="cart-item-checkbox"
+                                data-cart-item-id="<?= htmlspecialchars($item['id']) ?>">
+                        </div>
+                        <div class="cart-card-content">
+                            <div class="cart-card-image">
+                                <img src="<?= $image ?>" alt="<?= htmlspecialchars($item['name']) ?>">
+                            </div>
+                            <div class="cart-card-details">
+                                <div class="product-name"><?= htmlspecialchars($item['name']) ?></div>
+                                <div class="product-code">Mã: <?= htmlspecialchars($item['product_id']) ?></div>
+                            </div>
+                            <div class="cart-card-price" data-label="Giá"><?= $formatted_price ?></div>
+                            <div class="cart-card-quantity" data-label="Số lượng">
+                                <div class="quantity-selector">
+                                    <button class="quantity-btn decrease"
+                                        data-cart-item-id="<?= htmlspecialchars($item['id']) ?>">-</button>
+                                    <input type="number" class="quantity-input"
+                                        data-cart-item-id="<?= htmlspecialchars($item['id']) ?>"
+                                        value="<?= $item['quantity'] ?>" min="1" max="100">
+                                    <button class="quantity-btn increase"
+                                        data-cart-item-id="<?= htmlspecialchars($item['id']) ?>">+</button>
+                                </div>
+                            </div>
+                            <div class="cart-card-subtotal" data-label="Tổng"><?= $formatted_subtotal ?></div>
+                            <div class="cart-card-action">
+                                <button class="remove-btn" data-cart-item-id="<?= htmlspecialchars($item['id']) ?>"><i
+                                        class="fas fa-trash"></i></button>
+                            </div>
                         </div>
                     </div>
-                    <div class="cart-card-subtotal" data-label="Tổng"><?= $formatted_subtotal ?></div>
-                    <div class="cart-card-action">
-                        <button class="remove-btn" data-cart-item-id="<?= htmlspecialchars($item['id']) ?>"><i
-                                class="fas fa-trash"></i></button>
-                    </div>
-                </div>
+                <?php endforeach; ?>
             </div>
-            <?php endforeach; ?>
-        </div>
-        <div class="cart-footer">
-            <div class="cart-summary">
-                <div class="summary-row">
-                    <div class="summary-label">Tổng tiền hàng:</div>
-                    <div class="summary-value" id="subtotal">0 ₫</div>
-                </div>
-                <div class="summary-row">
-                    <div class="summary-label">Số lượng sản phẩm:</div>
-                    <div class="summary-value" id="total-items">0</div>
-                </div>
-                <div class="summary-row">
-                    <div class="summary-label">Phí vận chuyển:</div>
-                    <div class="summary-value" id="shipping-fee">0 ₫</div>
-                </div>
-                <div class="summary-row total">
-                    <div class="summary-label">Tổng cộng:</div>
-                    <div class="summary-value" id="total-amount">0 ₫</div>
-                </div>
-                <div class="promo-code">
-                    <input type="text" id="promo-code-input" placeholder="Nhập mã giảm giá">
-                    <button id="apply-promo-btn">Áp dụng</button>
-                </div>
-                <form id="checkout-form" action="index.php?page=checkout" method="post">
-                    <input type="hidden" name="selected_items" id="selected-items">
-                    <div class="checkout-actions">
-                        <a href="index.php?page=products" class="continue-shopping-btn">Tiếp tục mua sắm</a>
-                        <button type="submit" class="checkout-btn" id="checkout-btn" disabled>Thanh toán</button>
+            <div class="cart-footer">
+                <div class="cart-summary">
+                    <div class="summary-row">
+                        <div class="summary-label">Tổng tiền hàng:</div>
+                        <div class="summary-value" id="subtotal">0 ₫</div>
                     </div>
-                </form>
+                    <div class="summary-row">
+                        <div class="summary-label">Số lượng sản phẩm:</div>
+                        <div class="summary-value" id="total-items">0</div>
+                    </div>
+                    <div class="summary-row">
+                        <div class="summary-label">Phí vận chuyển:</div>
+                        <div class="summary-value" id="shipping-fee">0 ₫</div>
+                    </div>
+                    <div class="summary-row total">
+                        <div class="summary-label">Tổng cộng:</div>
+                        <div class="summary-value" id="total-amount">0 ₫</div>
+                    </div>
+                    <div class="promo-code">
+                        <input type="text" id="promo-code-input" placeholder="Nhập mã giảm giá">
+                        <button id="apply-promo-btn">Áp dụng</button>
+                    </div>
+                    <form id="checkout-form" action="index.php?page=checkout" method="post">
+                        <input type="hidden" name="selected_items" id="selected-items">
+                        <div class="checkout-actions">
+                            <a href="index.php?page=products" class="continue-shopping-btn">Tiếp tục mua sắm</a>
+                            <button type="submit" class="checkout-btn" id="checkout-btn" disabled>Thanh toán</button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
-<script src="assets/js/cart.js?v=<?= time() ?>" defer></script>
+    <script src="assets/js/cart.js?v=<?= time() ?>" defer></script>
 <?php
 }
 ?>

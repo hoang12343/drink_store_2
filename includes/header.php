@@ -23,6 +23,8 @@ if (!defined('APP_START')) exit('No direct access');
         <link rel="stylesheet" href="assets/css/contact.css?v=<?php echo time(); ?>">
     <?php elseif ($current_page === 'register' || $current_page === 'update_profile'): ?>
         <link rel="stylesheet" href="assets/css/register.css?v=<?php echo time(); ?>">
+    <?php elseif ($current_page === 'checkout'): ?>
+        <link rel="stylesheet" href="assets/css/checkout.css?v=<?php echo time(); ?>">
     <?php endif; ?>
     <script src="assets/js/script.js" defer></script>
     <script src="assets/js/usermenu.js" defer></script>

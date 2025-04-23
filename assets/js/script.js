@@ -177,5 +177,4 @@ document.addEventListener("DOMContentLoaded", () => {
   // Khởi tạo các module
   formSwitch.init();
   forms.init();
-  navigation.init();
 });

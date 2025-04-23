@@ -18,7 +18,7 @@ $_SESSION['last_activity'] = time();
 
 function route_request($default = 'home'): string
 {
-    $valid_pages = ['home', 'products', 'product-detail', 'cart', 'contact', 'contact_process', 'about', 'login', 'register', 'logout', 'knowledge', 'gift', 'promotion', 'profile', 'orders', 'admin', 'update_profile'];
+    $valid_pages = ['home', 'products', 'product-detail', 'cart', 'contact', 'contact_process', 'about', 'login', 'register', 'logout', 'knowledge', 'gift', 'promotion', 'profile', 'orders', 'admin', 'update_profile', 'checkout'];
     $page = filter_input(INPUT_GET, 'page', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?? $default;
 
     // Handle admin subpages
@@ -38,7 +38,7 @@ $page = route_request();
 $current_page = $page;
 
 // Yêu cầu đăng nhập cho trang người dùng
-if (in_array($page, ['cart', 'profile', 'orders', 'update_profile']) && !isset($_SESSION['logged_in'])) {
+if (in_array($page, ['cart', 'profile', 'orders', 'update_profile', 'checkout']) && !isset($_SESSION['logged_in'])) {
     header('Location: index.php?page=login&redirect=' . urlencode($page));
     exit;
 }
@@ -94,6 +94,8 @@ if (str_starts_with($current_page, 'admin/')) {
         <div class="form-message success">Đăng ký thành công! Vui lòng đăng nhập.</div>
     <?php elseif (isset($_GET['timeout']) && $_GET['timeout'] === '1'): ?>
         <div class="form-message error">Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.</div>
+    <?php elseif (isset($_GET['error'])): ?>
+        <div class="form-message error"><?= htmlspecialchars($_GET['error']) ?></div>
     <?php endif; ?>
 
     <?php
