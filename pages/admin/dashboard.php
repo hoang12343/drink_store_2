@@ -19,9 +19,12 @@ try {
     $stmt = $pdo->query("SELECT COUNT(*) as low_stock FROM products WHERE stock < 10");
     $low_stock = $stmt->fetchColumn();
 
-    // Giả định dữ liệu cho đơn hàng và người dùng (thay bằng truy vấn thực tế)
+    // Tổng số người dùng
+    $stmt = $pdo->query("SELECT COUNT(*) as total_users FROM users");
+    $total_users = $stmt->fetchColumn();
+
+    // Giả định dữ liệu cho đơn hàng (thay bằng truy vấn thực tế)
     $total_orders = 0; // Thay bằng truy vấn từ bảng orders
-    $total_users = 0; // Thay bằng truy vấn từ bảng users
 } catch (PDOException $e) {
     $error_message = 'Lỗi khi lấy dữ liệu: ' . $e->getMessage();
 }
@@ -48,7 +51,7 @@ try {
         <h1>Tổng quan</h1>
 
         <?php if (isset($error_message)): ?>
-        <div class="form-message error"><?= htmlspecialchars($error_message) ?></div>
+            <div class="form-message error"><?= htmlspecialchars($error_message) ?></div>
         <?php endif; ?>
 
         <div class="admin-dashboard">
