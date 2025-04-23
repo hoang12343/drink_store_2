@@ -11,7 +11,12 @@ if (!defined('APP_START')) {
 require_once 'utils/product-functions.php';
 require_once 'components/product-card.php';
 
+// Sanitize and process category input
 $category = filter_input(INPUT_GET, 'category', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?? 'all';
+if ($category !== 'all' && strpos($category, ',') !== false) {
+    $category = implode(',', array_map('trim', explode(',', $category)));
+}
+
 $search = filter_input(INPUT_GET, 'search', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?? '';
 $sort = filter_input(INPUT_GET, 'sort', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?? 'default';
 $page = filter_input(INPUT_GET, 'p', FILTER_SANITIZE_NUMBER_INT) ?? 1;
@@ -46,6 +51,15 @@ $categories = [
     'gift' => 'Quà tặng'
 ];
 
+// Display category name(s)
+$display_category = $category === 'all' ? 'Tất cả sản phẩm' : '';
+if ($category !== 'all') {
+    $category_array = explode(',', $category);
+    $display_category = implode(', ', array_map(function ($cat) use ($categories) {
+        return $categories[$cat] ?? $cat;
+    }, $category_array));
+}
+
 $sort_options = [
     'default' => 'Mặc định',
     'price_asc' => 'Giá tăng dần',
@@ -63,7 +77,7 @@ $sort_options = [
         <div class="right-content">
             <div class="products-header">
                 <h1>
-                    <?= $search ? "Kết quả tìm kiếm cho: " . htmlspecialchars($search) : htmlspecialchars($categories[$category] ?? 'Sản phẩm') ?>
+                    <?= $search ? "Kết quả tìm kiếm cho: " . htmlspecialchars($search) : htmlspecialchars($display_category) ?>
                 </h1>
                 <div class="filter-container">
                     <div class="products-count">
@@ -73,16 +87,16 @@ $sort_options = [
                         <form action="index.php" method="get" class="sort-form">
                             <input type="hidden" name="page" value="products">
                             <?php foreach ($_GET as $key => $value): ?>
-                            <?php if ($key !== 'sort' && $value): ?>
-                            <input type="hidden" name="<?= htmlspecialchars($key) ?>"
-                                value="<?= htmlspecialchars($value) ?>">
-                            <?php endif; ?>
+                                <?php if ($key !== 'sort' && $value): ?>
+                                    <input type="hidden" name="<?= htmlspecialchars($key) ?>"
+                                        value="<?= htmlspecialchars($value) ?>">
+                                <?php endif; ?>
                             <?php endforeach; ?>
                             <label for="sort">Sắp xếp:</label>
                             <select name="sort" id="sort" onchange="this.form.submit()">
                                 <?php foreach ($sort_options as $key => $label): ?>
-                                <option value="<?= $key ?>" <?= $sort === $key ? 'selected' : '' ?>><?= $label ?>
-                                </option>
+                                    <option value="<?= $key ?>" <?= $sort === $key ? 'selected' : '' ?>><?= $label ?>
+                                    </option>
                                 <?php endforeach; ?>
                             </select>
                         </form>
@@ -91,59 +105,59 @@ $sort_options = [
             </div>
 
             <?php if (empty($products)): ?>
-            <div class="no-products">
-                <p>Không tìm thấy sản phẩm phù hợp.</p>
-                <a href="?page=products" class="btn">Xem tất cả sản phẩm</a>
-            </div>
-            <?php else: ?>
-            <div class="products-container">
-                <div class="products-grid">
-                    <?php foreach ($products as $product): ?>
-                    <?= display_product($product) ?>
-                    <?php endforeach; ?>
+                <div class="no-products">
+                    <p>Không tìm thấy sản phẩm phù hợp.</p>
+                    <a href="?page=products" class="btn">Xem tất cả sản phẩm</a>
                 </div>
-                <?php if ($total_pages > 1): ?>
-                <div class="pagination">
-                    <?php
+            <?php else: ?>
+                <div class="products-container">
+                    <div class="products-grid">
+                        <?php foreach ($products as $product): ?>
+                            <?= display_product($product) ?>
+                        <?php endforeach; ?>
+                    </div>
+                    <?php if ($total_pages > 1): ?>
+                        <div class="pagination">
+                            <?php
                             $query_params = $_GET;
                             unset($query_params['p']);
                             $base_url = 'index.php?' . http_build_query($query_params);
                             ?>
 
-                    <?php if ($page > 1): ?>
-                    <a href="<?= $base_url ?>&p=<?= $page - 1 ?>" class="pagination-btn prev">Trước</a>
-                    <?php endif; ?>
+                            <?php if ($page > 1): ?>
+                                <a href="<?= $base_url ?>&p=<?= $page - 1 ?>" class="pagination-btn prev">Trước</a>
+                            <?php endif; ?>
 
-                    <?php
+                            <?php
                             $start_page = max(1, $page - 2);
                             $end_page = min($total_pages, $page + 2);
 
                             if ($start_page > 1): ?>
-                    <a href="<?= $base_url ?>&p=1" class="pagination-btn">1</a>
-                    <?php if ($start_page > 2): ?>
-                    <span class="pagination-ellipsis">...</span>
-                    <?php endif; ?>
-                    <?php endif; ?>
+                                <a href="<?= $base_url ?>&p=1" class="pagination-btn">1</a>
+                                <?php if ($start_page > 2): ?>
+                                    <span class="pagination-ellipsis">...</span>
+                                <?php endif; ?>
+                            <?php endif; ?>
 
-                    <?php for ($i = $start_page; $i <= $end_page; $i++): ?>
-                    <a href="<?= $base_url ?>&p=<?= $i ?>" class="pagination-btn <?= $i === $page ? 'active' : '' ?>">
-                        <?= $i ?>
-                    </a>
-                    <?php endfor; ?>
+                            <?php for ($i = $start_page; $i <= $end_page; $i++): ?>
+                                <a href="<?= $base_url ?>&p=<?= $i ?>" class="pagination-btn <?= $i === $page ? 'active' : '' ?>">
+                                    <?= $i ?>
+                                </a>
+                            <?php endfor; ?>
 
-                    <?php if ($end_page < $total_pages): ?>
-                    <?php if ($end_page < $total_pages - 1): ?>
-                    <span class="pagination-ellipsis">...</span>
-                    <?php endif; ?>
-                    <a href="<?= $base_url ?>&p=<?= $total_pages ?>" class="pagination-btn"><?= $total_pages ?></a>
-                    <?php endif; ?>
+                            <?php if ($end_page < $total_pages): ?>
+                                <?php if ($end_page < $total_pages - 1): ?>
+                                    <span class="pagination-ellipsis">...</span>
+                                <?php endif; ?>
+                                <a href="<?= $base_url ?>&p=<?= $total_pages ?>" class="pagination-btn"><?= $total_pages ?></a>
+                            <?php endif; ?>
 
-                    <?php if ($page < $total_pages): ?>
-                    <a href="<?= $base_url ?>&p=<?= $page + 1 ?>" class="pagination-btn next">Sau</a>
+                            <?php if ($page < $total_pages): ?>
+                                <a href="<?= $base_url ?>&p=<?= $page + 1 ?>" class="pagination-btn next">Sau</a>
+                            <?php endif; ?>
+                        </div>
                     <?php endif; ?>
                 </div>
-                <?php endif; ?>
-            </div>
             <?php endif; ?>
         </div>
     </div>

@@ -48,9 +48,9 @@ unset($query_params['page']); // Remove 'page' as it will be added explicitly
             <input type="hidden" name="page" value="products">
             <input type="hidden" name="category" value="<?= htmlspecialchars($category ?? 'all') ?>">
             <?php foreach ($query_params as $key => $value): ?>
-            <?php if ($key !== 'price_min' && $key !== 'price_max' && $value): ?>
-            <input type="hidden" name="<?= htmlspecialchars($key) ?>" value="<?= htmlspecialchars($value) ?>">
-            <?php endif; ?>
+                <?php if ($key !== 'price_min' && $key !== 'price_max' && $value): ?>
+                    <input type="hidden" name="<?= htmlspecialchars($key) ?>" value="<?= htmlspecialchars($value) ?>">
+                <?php endif; ?>
             <?php endforeach; ?>
             <label for="price_min">Từ:</label>
             <input type="number" name="price_min" id="price_min" min="0" step="10000"
@@ -69,9 +69,9 @@ unset($query_params['page']); // Remove 'page' as it will be added explicitly
             <input type="hidden" name="page" value="products">
             <input type="hidden" name="category" value="<?= htmlspecialchars($category ?? 'all') ?>">
             <?php foreach ($query_params as $key => $value): ?>
-            <?php if ($key !== 'custom_price' && $value): ?>
-            <input type="hidden" name="<?= htmlspecialchars($key) ?>" value="<?= htmlspecialchars($value) ?>">
-            <?php endif; ?>
+                <?php if ($key !== 'custom_price' && $value): ?>
+                    <input type="hidden" name="<?= htmlspecialchars($key) ?>" value="<?= htmlspecialchars($value) ?>">
+                <?php endif; ?>
             <?php endforeach; ?>
             <input type="number" name="custom_price" id="custom_price" min="0" step="10000"
                 value="<?= htmlspecialchars($filters['custom_price'] ?? '') ?>" placeholder="1000000">
@@ -86,16 +86,16 @@ unset($query_params['page']); // Remove 'page' as it will be added explicitly
             <input type="hidden" name="page" value="products">
             <input type="hidden" name="category" value="<?= htmlspecialchars($category ?? 'all') ?>">
             <?php foreach ($query_params as $key => $value): ?>
-            <?php if ($key !== 'country' && $value): ?>
-            <input type="hidden" name="<?= htmlspecialchars($key) ?>" value="<?= htmlspecialchars($value) ?>">
-            <?php endif; ?>
+                <?php if ($key !== 'country' && $value): ?>
+                    <input type="hidden" name="<?= htmlspecialchars($key) ?>" value="<?= htmlspecialchars($value) ?>">
+                <?php endif; ?>
             <?php endforeach; ?>
             <select name="country" onchange="this.form.submit()">
                 <?php foreach ($countries as $key => $label): ?>
-                <option value="<?= htmlspecialchars($key) ?>"
-                    <?= ($filters['country'] ?? 'all') === $key ? 'selected' : '' ?>>
-                    <?= htmlspecialchars($label) ?>
-                </option>
+                    <option value="<?= htmlspecialchars($key) ?>"
+                        <?= ($filters['country'] ?? 'all') === $key ? 'selected' : '' ?>>
+                        <?= htmlspecialchars($label) ?>
+                    </option>
                 <?php endforeach; ?>
             </select>
         </form>
@@ -108,16 +108,16 @@ unset($query_params['page']); // Remove 'page' as it will be added explicitly
             <input type="hidden" name="page" value="products">
             <input type="hidden" name="category" value="<?= htmlspecialchars($category ?? 'all') ?>">
             <?php foreach ($query_params as $key => $value): ?>
-            <?php if ($key !== 'type' && $value): ?>
-            <input type="hidden" name="<?= htmlspecialchars($key) ?>" value="<?= htmlspecialchars($value) ?>">
-            <?php endif; ?>
+                <?php if ($key !== 'type' && $value): ?>
+                    <input type="hidden" name="<?= htmlspecialchars($key) ?>" value="<?= htmlspecialchars($value) ?>">
+                <?php endif; ?>
             <?php endforeach; ?>
             <select name="type" onchange="this.form.submit()">
                 <?php foreach ($wine_types as $key => $label): ?>
-                <option value="<?= htmlspecialchars($key) ?>"
-                    <?= ($filters['type'] ?? 'all') === $key ? 'selected' : '' ?>>
-                    <?= htmlspecialchars($label) ?>
-                </option>
+                    <option value="<?= htmlspecialchars($key) ?>"
+                        <?= ($filters['type'] ?? 'all') === $key ? 'selected' : '' ?>>
+                        <?= htmlspecialchars($label) ?>
+                    </option>
                 <?php endforeach; ?>
             </select>
         </form>
@@ -130,16 +130,16 @@ unset($query_params['page']); // Remove 'page' as it will be added explicitly
             <input type="hidden" name="page" value="products">
             <input type="hidden" name="category" value="<?= htmlspecialchars($category ?? 'all') ?>">
             <?php foreach ($query_params as $key => $value): ?>
-            <?php if ($key !== 'volume' && $value): ?>
-            <input type="hidden" name="<?= htmlspecialchars($key) ?>" value="<?= htmlspecialchars($value) ?>">
-            <?php endif; ?>
+                <?php if ($key !== 'volume' && $value): ?>
+                    <input type="hidden" name="<?= htmlspecialchars($key) ?>" value="<?= htmlspecialchars($value) ?>">
+                <?php endif; ?>
             <?php endforeach; ?>
             <select name="volume" onchange="this.form.submit()">
                 <?php foreach ($volumes as $key => $label): ?>
-                <option value="<?= htmlspecialchars($key) ?>"
-                    <?= ($filters['volume'] ?? 'all') === $key ? 'selected' : '' ?>>
-                    <?= htmlspecialchars($label) ?>
-                </option>
+                    <option value="<?= htmlspecialchars($key) ?>"
+                        <?= ($filters['volume'] ?? 'all') === $key ? 'selected' : '' ?>>
+                        <?= htmlspecialchars($label) ?>
+                    </option>
                 <?php endforeach; ?>
             </select>
         </form>
@@ -152,16 +152,16 @@ unset($query_params['page']); // Remove 'page' as it will be added explicitly
             <input type="hidden" name="page" value="products">
             <input type="hidden" name="category" value="<?= htmlspecialchars($category ?? 'all') ?>">
             <?php foreach ($query_params as $key => $value): ?>
-            <?php if ($key !== 'grape' && $value): ?>
-            <input type="hidden" name="<?= htmlspecialchars($key) ?>" value="<?= htmlspecialchars($value) ?>">
-            <?php endif; ?>
+                <?php if ($key !== 'grape' && $value): ?>
+                    <input type="hidden" name="<?= htmlspecialchars($key) ?>" value="<?= htmlspecialchars($value) ?>">
+                <?php endif; ?>
             <?php endforeach; ?>
             <select name="grape" onchange="this.form.submit()">
                 <?php foreach ($grapes as $key => $label): ?>
-                <option value="<?= htmlspecialchars($key) ?>"
-                    <?= ($filters['grape'] ?? 'all') === $key ? 'selected' : '' ?>>
-                    <?= htmlspecialchars($label) ?>
-                </option>
+                    <option value="<?= htmlspecialchars($key) ?>"
+                        <?= ($filters['grape'] ?? 'all') === $key ? 'selected' : '' ?>>
+                        <?= htmlspecialchars($label) ?>
+                    </option>
                 <?php endforeach; ?>
             </select>
         </form>

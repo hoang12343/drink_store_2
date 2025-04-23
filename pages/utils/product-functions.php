@@ -3,319 +3,172 @@ if (!defined('APP_START')) {
     exit('No direct access');
 }
 
-require_once ROOT_PATH . '/includes/db_connect.php';
-
 /**
- * Định dạng giá thành chuỗi tiền tệ Việt Nam
+ * Format price to Vietnamese currency format (e.g., 500000 -> 500.000 VND)
+ * @param int|float $price The price to format
+ * @return string Formatted price string
  */
 function format_price($price)
 {
-    return number_format($price, 0, ',', '.') . ' ₫';
+    return number_format($price, 0, ',', '.') . ' VND';
 }
 
 /**
- * Khởi tạo cơ sở dữ liệu và bảng
+ * Retrieve products with filtering, sorting, and pagination
+ * @param string $category Comma-separated category names or 'all'
+ * @param string $search Search term
+ * @param string $sort Sorting option
+ * @param int $limit Number of products per page
+ * @param array $filters Additional filters (price, country, etc.)
+ * @param int $page Current page number
+ * @return array Products and total count
  */
-function initialize_database()
-{
-    global $db_config, $pdo;
-
-    try {
-        // Kết nối không chọn database để tạo database
-        $dsn = "mysql:host={$db_config['host']};port={$db_config['port']};charset={$db_config['charset']}";
-        $temp_pdo = new PDO($dsn, $db_config['user'], $db_config['password'], [
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-            PDO::ATTR_EMULATE_PREPARES => false
-        ]);
-
-        // Tạo cơ sở dữ liệu
-        $temp_pdo->exec("CREATE DATABASE IF NOT EXISTS {$db_config['name']} CHARACTER SET {$db_config['charset']} COLLATE utf8mb4_unicode_ci");
-        $temp_pdo->exec("USE {$db_config['name']}");
-
-        // Tạo bảng categories
-        $temp_pdo->exec("
-            CREATE TABLE IF NOT EXISTS categories (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                name VARCHAR(50) NOT NULL UNIQUE,
-                display_name VARCHAR(100) NOT NULL,
-                description TEXT,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        ");
-
-        // Tạo bảng products
-        $temp_pdo->exec("
-            CREATE TABLE IF NOT EXISTS products (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                code VARCHAR(20) NOT NULL UNIQUE,
-                name VARCHAR(255) NOT NULL,
-                category_id INT NOT NULL,
-                price DECIMAL(10, 2) NOT NULL,
-                old_price DECIMAL(10, 2) DEFAULT NULL,
-                discount VARCHAR(10) DEFAULT NULL,
-                stock INT NOT NULL DEFAULT 0,
-                image VARCHAR(255) DEFAULT NULL,
-                grape VARCHAR(100) DEFAULT NULL,
-                type VARCHAR(100) DEFAULT NULL,
-                brand VARCHAR(100) DEFAULT NULL,
-                country VARCHAR(100) DEFAULT NULL,
-                abv VARCHAR(10) DEFAULT NULL,
-                volume VARCHAR(50) DEFAULT '750ml',
-                description TEXT,
-                rating DECIMAL(3, 1) DEFAULT 0.0,
-                reviews INT DEFAULT 0,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE RESTRICT
-            )
-        ");
-
-        // Tạo bảng promotions
-        $temp_pdo->exec("
-            CREATE TABLE IF NOT EXISTS promotions (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                product_id INT NOT NULL,
-                discount_percentage DECIMAL(5, 2) NOT NULL,
-                start_date DATETIME NOT NULL,
-                end_date DATETIME NOT NULL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
-            )
-        ");
-
-        return true;
-    } catch (PDOException $e) {
-        error_log("Database initialization error: " . $e->getMessage());
-        return false;
-    }
-}
-
-/**
- * Lấy danh sách sản phẩm với phân trang
- */
-function get_products($category = 'all', $search = '', $sort = 'default', $limit = 30, $filters = [], $page = 1)
+function get_products($category, $search, $sort, $limit, $filters, $page)
 {
     global $pdo;
-    try {
-        // Tính offset
-        $offset = ($page - 1) * $limit;
+    $offset = ($page - 1) * $limit;
+    $conditions = [];
+    $params = [];
 
-        // Đếm tổng số sản phẩm để tính số trang
-        $count_query = "SELECT COUNT(*) FROM products p JOIN categories c ON p.category_id = c.id WHERE 1=1";
-        $count_params = [];
-
-        if ($category !== 'all' && $category !== 'promotion') {
-            $count_query .= " AND c.name = :category";
-            $count_params[':category'] = $category;
-        } elseif ($category === 'promotion') {
-            $count_query .= " AND EXISTS (SELECT 1 FROM promotions pr WHERE pr.product_id = p.id)";
-        }
-
-        if (!empty($search)) {
-            $count_query .= " AND (p.name LIKE :search OR p.code LIKE :search)";
-            $count_params[':search'] = "%$search%";
-        }
-
-        // Áp dụng bộ lọc cho count
-        if (!empty($filters['price_min']) && !empty($filters['price_max'])) {
-            $count_query .= " AND p.price BETWEEN :price_min AND :price_max";
-            $count_params[':price_min'] = $filters['price_min'];
-            $count_params[':price_max'] = $filters['price_max'];
-        }
-        if (!empty($filters['custom_price'])) {
-            $count_query .= " AND p.price BETWEEN :custom_price_min AND :custom_price_max";
-            $count_params[':custom_price_min'] = $filters['custom_price'] - 100000;
-            $count_params[':custom_price_max'] = $filters['custom_price'] + 100000;
-        }
-        if (!empty($filters['country']) && $filters['country'] !== 'all') {
-            $count_query .= " AND p.country = :country";
-            $count_params[':country'] = $filters['country'];
-        }
-        if (!empty($filters['type']) && $filters['type'] !== 'all') {
-            $count_query .= " AND p.type = :type";
-            $count_params[':type'] = $filters['type'];
-        }
-        if (!empty($filters['volume']) && $filters['volume'] !== 'all') {
-            $count_query .= " AND p.volume = :volume";
-            $count_params[':volume'] = $filters['volume'];
-        }
-        if (!empty($filters['grape']) && $filters['grape'] !== 'all') {
-            $count_query .= " AND p.grape = :grape";
-            $count_params[':grape'] = $filters['grape'];
-        }
-
-        $count_stmt = $pdo->prepare($count_query);
-        foreach ($count_params as $key => $value) {
-            $count_stmt->bindValue($key, $value);
-        }
-        $count_stmt->execute();
-        $total_products = $count_stmt->fetchColumn();
-
-        // Query lấy sản phẩm với limit và offset
-        $query = "SELECT p.*, c.name as category_name FROM products p JOIN categories c ON p.category_id = c.id WHERE 1=1";
-        $params = [];
-
-        if ($category !== 'all' && $category !== 'promotion') {
-            $query .= " AND c.name = :category";
-            $params[':category'] = $category;
-        } elseif ($category === 'promotion') {
-            $query .= " AND EXISTS (SELECT 1 FROM promotions pr WHERE pr.product_id = p.id)";
-        }
-
-        if (!empty($search)) {
-            $query .= " AND (p.name LIKE :search OR p.code LIKE :search)";
-            $params[':search'] = "%$search%";
-        }
-
-        // Áp dụng bộ lọc
-        if (!empty($filters['price_min']) && !empty($filters['price_max'])) {
-            $query .= " AND p.price BETWEEN :price_min AND :price_max";
-            $params[':price_min'] = $filters['price_min'];
-            $params[':price_max'] = $filters['price_max'];
-        }
-        if (!empty($filters['custom_price'])) {
-            $query .= " AND p.price BETWEEN :custom_price_min AND :custom_price_max";
-            $params[':custom_price_min'] = $filters['custom_price'] - 100000;
-            $params[':custom_price_max'] = $filters['custom_price'] + 100000;
-        }
-        if (!empty($filters['country']) && $filters['country'] !== 'all') {
-            $query .= " AND p.country = :country";
-            $params[':country'] = $filters['country'];
-        }
-        if (!empty($filters['type']) && $filters['type'] !== 'all') {
-            $query .= " AND p.type = :type";
-            $params[':type'] = $filters['type'];
-        }
-        if (!empty($filters['volume']) && $filters['volume'] !== 'all') {
-            $query .= " AND p.volume = :volume";
-            $params[':volume'] = $filters['volume'];
-        }
-        if (!empty($filters['grape']) && $filters['grape'] !== 'all') {
-            $query .= " AND p.grape = :grape";
-            $params[':grape'] = $filters['grape'];
-        }
-
-        // Sắp xếp
-        switch ($sort) {
-            case 'price_asc':
-                $query .= " ORDER BY p.price ASC";
-                break;
-            case 'price_desc':
-                $query .= " ORDER BY p.price DESC";
-                break;
-            case 'name_asc':
-                $query .= " ORDER BY p.name ASC";
-                break;
-            case 'name_desc':
-                $query .= " ORDER BY p.name DESC";
-                break;
-            case 'rating':
-                $query .= " ORDER BY p.rating DESC";
-                break;
-            default:
-                $query .= " ORDER BY p.id DESC";
-        }
-
-        $query .= " LIMIT :limit OFFSET :offset";
-        $stmt = $pdo->prepare($query);
-        foreach ($params as $key => $value) {
-            $stmt->bindValue($key, $value);
-        }
-        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
-        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
-        $stmt->execute();
-        $products = $stmt->fetchAll();
-
-        // Thêm display_price và display_old_price
-        foreach ($products as &$product) {
-            $product['display_price'] = format_price($product['price']);
-            if ($product['old_price']) {
-                $product['display_old_price'] = format_price($product['old_price']);
-            } else {
-                $product['display_old_price'] = '';
-            }
-        }
-
-        return [
-            'products' => $products,
-            'total_products' => $total_products
-        ];
-    } catch (PDOException $e) {
-        error_log("Error fetching products: " . $e->getMessage());
-        return [
-            'products' => [],
-            'total_products' => 0
-        ];
+    // Handle search
+    if (!empty($search)) {
+        $search = trim($search);
+        $conditions[] = "(p.name LIKE ? OR p.description LIKE ? OR p.brand LIKE ?)";
+        $params[] = "%$search%";
+        $params[] = "%$search%";
+        $params[] = "%$search%";
     }
+
+    // Handle category
+    if ($category !== 'all') {
+        $category_array = array_map('trim', explode(',', $category));
+        $placeholders = implode(',', array_fill(0, count($category_array), '?'));
+        $conditions[] = "c.name IN ($placeholders)";
+        $params = array_merge($params, $category_array);
+    }
+
+    // Handle filters
+    if (!empty($filters['price_min'])) {
+        $conditions[] = "p.price >= ?";
+        $params[] = $filters['price_min'];
+    }
+    if (!empty($filters['price_max'])) {
+        $conditions[] = "p.price <= ?";
+        $params[] = $filters['price_max'];
+    }
+    if (!empty($filters['custom_price'])) {
+        $conditions[] = "p.price BETWEEN ? AND ?";
+        $params[] = $filters['custom_price'] * 0.9;
+        $params[] = $filters['custom_price'] * 1.1;
+    }
+    if (!empty($filters['country']) && $filters['country'] !== 'all') {
+        $conditions[] = "p.country = ?";
+        $params[] = $filters['country'];
+    }
+    if (!empty($filters['type']) && $filters['type'] !== 'all') {
+        $conditions[] = "p.type = ?";
+        $params[] = $filters['type'];
+    }
+    if (!empty($filters['volume']) && $filters['volume'] !== 'all') {
+        $conditions[] = "p.volume = ?";
+        $params[] = $filters['volume'];
+    }
+    if (!empty($filters['grape']) && $filters['grape'] !== 'all') {
+        $conditions[] = "p.grape = ?";
+        $params[] = $filters['grape'];
+    }
+
+    // Build query
+    $where = !empty($conditions) ? 'WHERE ' . implode(' AND ', $conditions) : '';
+    $query = "SELECT p.* FROM products p JOIN categories c ON p.category_id = c.id $where";
+
+    // Handle sorting
+    switch ($sort) {
+        case 'price_asc':
+            $query .= " ORDER BY p.price ASC";
+            break;
+        case 'price_desc':
+            $query .= " ORDER BY p.price DESC";
+            break;
+        case 'name_asc':
+            $query .= " ORDER BY p.name ASC";
+            break;
+        case 'name_desc':
+            $query .= " ORDER BY p.name DESC";
+            break;
+        case 'rating':
+            $query .= " ORDER BY p.rating DESC";
+            break;
+        default:
+            $query .= " ORDER BY p.id DESC";
+    }
+
+    // Count total products
+    $count_query = "SELECT COUNT(*) FROM products p JOIN categories c ON p.category_id = c.id $where";
+    $stmt = $pdo->prepare($count_query);
+    $stmt->execute($params);
+    $total_products = $stmt->fetchColumn();
+
+    // Fetch products with pagination
+    $query .= " LIMIT ? OFFSET ?";
+    $params[] = $limit;
+    $params[] = $offset;
+
+    $stmt = $pdo->prepare($query);
+    $stmt->execute($params);
+    $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Format prices
+    foreach ($products as &$product) {
+        $product['display_price'] = format_price($product['price']);
+        if (!empty($product['old_price'])) {
+            $product['display_old_price'] = format_price($product['old_price']);
+        }
+    }
+
+    return [
+        'products' => $products,
+        'total_products' => $total_products
+    ];
 }
 
 /**
- * Lấy sản phẩm theo ID
+ * Retrieve a single product by ID
+ * @param int $product_id Product ID
+ * @return array|null Product data or null if not found
  */
-function get_product_by_id($id)
+function get_product_by_id($product_id)
 {
     global $pdo;
-    try {
-        $stmt = $pdo->prepare("SELECT p.*, c.name as category_name FROM products p JOIN categories c ON p.category_id = c.id WHERE p.id = :id");
-        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
-        $stmt->execute();
-        $product = $stmt->fetch();
-
-        if ($product) {
-            $product['display_price'] = format_price($product['price']);
-            $product['display_old_price'] = $product['old_price'] ? format_price($product['old_price']) : '';
+    $stmt = $pdo->prepare("SELECT p.* FROM products p WHERE p.id = ?");
+    $stmt->execute([$product_id]);
+    $product = $stmt->fetch(PDO::FETCH_ASSOC);
+    if ($product) {
+        $product['display_price'] = format_price($product['price']);
+        if (!empty($product['old_price'])) {
+            $product['display_old_price'] = format_price($product['old_price']);
         }
-
-        return $product ?: null;
-    } catch (PDOException $e) {
-        error_log("Error fetching product by ID: " . $e->getMessage());
-        return null;
     }
+    return $product;
 }
 
 /**
- * Lấy sản phẩm liên quan
+ * Retrieve related products in the same category
+ * @param int $product_id Product ID
+ * @param int $limit Number of related products
+ * @return array Related products
  */
-function get_related_products($product_id, $limit = 3)
+function get_related_products($product_id, $limit = 4)
 {
     global $pdo;
-    try {
-        // Lấy danh mục của sản phẩm hiện tại
-        $stmt = $pdo->prepare("SELECT category_id FROM products WHERE id = :id");
-        $stmt->bindValue(':id', $product_id, PDO::PARAM_INT);
-        $stmt->execute();
-        $category_id = $stmt->fetchColumn();
-
-        // Lấy sản phẩm cùng danh mục, loại trừ sản phẩm hiện tại
-        $query = "SELECT p.*, c.name as category_name FROM products p JOIN categories c ON p.category_id = c.id 
-                  WHERE p.category_id = :category_id AND p.id != :product_id 
-                  ORDER BY p.rating DESC LIMIT :limit";
-        $stmt = $pdo->prepare($query);
-        $stmt->bindValue(':category_id', $category_id, PDO::PARAM_INT);
-        $stmt->bindValue(':product_id', $product_id, PDO::PARAM_INT);
-        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
-        $stmt->execute();
-        $products = $stmt->fetchAll();
-
-        // Thêm display_price và display_old_price
-        foreach ($products as &$product) {
-            $product['display_price'] = format_price($product['price']);
-            $product['display_old_price'] = $product['old_price'] ? format_price($product['old_price']) : '';
+    $stmt = $pdo->prepare("SELECT p.* FROM products p WHERE p.id != ? AND p.category_id = (SELECT category_id FROM products WHERE id = ?) LIMIT ?");
+    $stmt->execute([$product_id, $product_id, $limit]);
+    $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    foreach ($products as &$product) {
+        $product['display_price'] = format_price($product['price']);
+        if (!empty($product['old_price'])) {
+            $product['display_old_price'] = format_price($product['old_price']);
         }
-
-        return $products;
-    } catch (PDOException $e) {
-        error_log("Error fetching related products: " . $e->getMessage());
-        return [];
     }
-}
-
-// Khởi tạo cơ sở dữ liệu (chỉ chạy khi cần)
-if (isset($_GET['init_db']) && $_GET['init_db'] === 'true') {
-    if (initialize_database()) {
-        echo "Cơ sở dữ liệu và các bảng đã được tạo thành công!";
-    } else {
-        echo "Không thể khởi tạo cơ sở dữ liệu.";
-    }
+    return $products;
 }

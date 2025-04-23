@@ -6,7 +6,12 @@ if (!defined('APP_START')) {
 function display_product(array $product): string
 {
     $product = array_merge([
-        'old_price' => '',
+        'id' => '',
+        'code' => '',
+        'name' => '',
+        'image' => '',
+        'price' => 0,
+        'old_price' => null,
         'discount' => '',
         'grape' => '',
         'type' => '',
@@ -18,8 +23,8 @@ function display_product(array $product): string
         'display_old_price' => ''
     ], $product);
 
-    // Dự phòng nếu display_price không có
-    if (empty($product['display_price']) && isset($product['price'])) {
+    // Fallback for display_price
+    if (empty($product['display_price']) && !empty($product['price'])) {
         $product['display_price'] = format_price($product['price']);
     }
 
