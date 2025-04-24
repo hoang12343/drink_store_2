@@ -2,7 +2,7 @@
 if (!defined('APP_START')) {
     exit('No direct access');
 }
-
+header('Content-Type: text/html; charset=UTF-8');
 require_once ROOT_PATH . '/pages/utils/product-functions.php';
 
 // Xử lý các hành động (thêm, sửa, xóa)
@@ -13,21 +13,21 @@ $error_message = '';
 if ($action) {
     if ($action === 'add' || $action === 'edit') {
         $product_data = [
-            'code' => filter_input(INPUT_POST, 'code', FILTER_SANITIZE_FULL_SPECIAL_CHARS),
-            'name' => filter_input(INPUT_POST, 'name', FILTER_SANITIZE_FULL_SPECIAL_CHARS),
+            'code' => trim($_POST['code'] ?? ''),
+            'name' => htmlspecialchars(trim($_POST['name'] ?? ''), ENT_QUOTES, 'UTF-8'),
             'category_id' => filter_input(INPUT_POST, 'category_id', FILTER_VALIDATE_INT),
             'price' => filter_input(INPUT_POST, 'price', FILTER_VALIDATE_FLOAT),
             'old_price' => filter_input(INPUT_POST, 'old_price', FILTER_VALIDATE_FLOAT) ?: null,
-            'discount' => filter_input(INPUT_POST, 'discount', FILTER_SANITIZE_FULL_SPECIAL_CHARS),
+            'discount' => trim($_POST['discount'] ?? ''),
             'stock' => filter_input(INPUT_POST, 'stock', FILTER_VALIDATE_INT) ?: 0,
             'image' => filter_input(INPUT_POST, 'image', FILTER_SANITIZE_URL),
-            'grape' => filter_input(INPUT_POST, 'grape', FILTER_SANITIZE_FULL_SPECIAL_CHARS),
-            'type' => filter_input(INPUT_POST, 'type', FILTER_SANITIZE_FULL_SPECIAL_CHARS),
-            'brand' => filter_input(INPUT_POST, 'brand', FILTER_SANITIZE_FULL_SPECIAL_CHARS),
-            'country' => filter_input(INPUT_POST, 'country', FILTER_SANITIZE_FULL_SPECIAL_CHARS),
-            'abv' => filter_input(INPUT_POST, 'abv', FILTER_SANITIZE_FULL_SPECIAL_CHARS),
-            'volume' => filter_input(INPUT_POST, 'volume', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?: '750ml',
-            'description' => filter_input(INPUT_POST, 'description', FILTER_SANITIZE_FULL_SPECIAL_CHARS),
+            'grape' => trim($_POST['grape'] ?? ''),
+            'type' => trim($_POST['type'] ?? ''),
+            'brand' => trim($_POST['brand'] ?? ''),
+            'country' => trim($_POST['country'] ?? ''),
+            'abv' => trim($_POST['abv'] ?? ''),
+            'volume' => trim($_POST['volume'] ?? '750ml'),
+            'description' => htmlspecialchars(trim($_POST['description'] ?? ''), ENT_QUOTES, 'UTF-8'),
             'rating' => filter_input(INPUT_POST, 'rating', FILTER_VALIDATE_FLOAT) ?: 0.0,
             'reviews' => filter_input(INPUT_POST, 'reviews', FILTER_VALIDATE_INT) ?: 0
         ];
@@ -125,9 +125,9 @@ if (isset($_GET['edit'])) {
         <h1>Quản lý Sản phẩm</h1>
 
         <?php if ($success_message): ?>
-        <div class="form-message success"><?= htmlspecialchars($success_message) ?></div>
+            <div class="form-message success"><?= htmlspecialchars($success_message) ?></div>
         <?php elseif ($error_message): ?>
-        <div class="form-message error"><?= htmlspecialchars($error_message) ?></div>
+            <div class="form-message error"><?= htmlspecialchars($error_message) ?></div>
         <?php endif; ?>
 
         <!-- Form thêm/sửa sản phẩm -->
@@ -135,15 +135,15 @@ if (isset($_GET['edit'])) {
             <div class="form-header">
                 <h2><?= $edit_product ? 'Sửa sản phẩm' : 'Thêm sản phẩm mới' ?></h2>
                 <?php if ($edit_product): ?>
-                <a href="?page=admin&subpage=admin-products" class="btn btn-add-product">
-                    <i class="fas fa-plus"></i> Thêm sản phẩm
-                </a>
+                    <a href="?page=admin&subpage=admin-products" class="btn btn-add-product">
+                        <i class="fas fa-plus"></i> Thêm sản phẩm
+                    </a>
                 <?php endif; ?>
             </div>
             <form action="?page=admin&subpage=admin-products" method="post" class="product-form">
                 <input type="hidden" name="action" value="<?= $edit_product ? 'edit' : 'add' ?>">
                 <?php if ($edit_product): ?>
-                <input type="hidden" name="id" value="<?= $edit_product['id'] ?>">
+                    <input type="hidden" name="id" value="<?= $edit_product['id'] ?>">
                 <?php endif; ?>
 
                 <div class="form-group">
@@ -159,10 +159,10 @@ if (isset($_GET['edit'])) {
                     <select id="category_id" name="category_id" required>
                         <option value="">Chọn danh mục</option>
                         <?php foreach ($categories as $category): ?>
-                        <option value="<?= $category['id'] ?>"
-                            <?= ($edit_product && $edit_product['category_id'] == $category['id']) ? 'selected' : '' ?>>
-                            <?= htmlspecialchars($category['display_name']) ?>
-                        </option>
+                            <option value="<?= $category['id'] ?>"
+                                <?= ($edit_product && $edit_product['category_id'] == $category['id']) ? 'selected' : '' ?>>
+                                <?= htmlspecialchars($category['display_name']) ?>
+                            </option>
                         <?php endforeach; ?>
                     </select>
                 </div>
@@ -238,64 +238,64 @@ if (isset($_GET['edit'])) {
                     class="search-input">
             </div>
             <?php if (empty($products)): ?>
-            <p>Không có sản phẩm nào.</p>
+                <p>Không có sản phẩm nào.</p>
             <?php else: ?>
-            <table class="products-table">
-                <thead>
-                    <tr>
-                        <th>Mã</th>
-                        <th>Tên</th>
-                        <th>Danh mục</th>
-                        <th>Giá</th>
-                        <th>Tồn kho</th>
-                        <th>Loại</th>
-                        <th>Hành động</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($products as $product): ?>
-                    <tr>
-                        <td><?= htmlspecialchars($product['code']) ?></td>
-                        <td><?= htmlspecialchars($product['name']) ?></td>
-                        <td><?= htmlspecialchars($product['category_name']) ?></td>
-                        <td><?= format_price($product['price']) ?></td>
-                        <td><?= $product['stock'] ?></td>
-                        <td><?= htmlspecialchars($product['type'] ?? 'N/A') ?></td>
-                        <td>
-                            <a href="?page=admin&subpage=admin-products&edit=<?= $product['id'] ?>"
-                                class="btn small">Sửa</a>
-                            <form action="?page=admin&subpage=admin-products" method="post" class="delete-form"
-                                style="display:inline;">
-                                <input type="hidden" name="action" value="delete">
-                                <input type="hidden" name="id" value="<?= $product['id'] ?>">
-                                <button type="submit" class="btn small danger">Xóa</button>
-                            </form>
-                        </td>
-                    </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
+                <table class="products-table">
+                    <thead>
+                        <tr>
+                            <th>Mã</th>
+                            <th>Tên</th>
+                            <th>Danh mục</th>
+                            <th>Giá</th>
+                            <th>Tồn kho</th>
+                            <th>Loại</th>
+                            <th>Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($products as $product): ?>
+                            <tr>
+                                <td><?= htmlspecialchars($product['code']) ?></td>
+                                <td><?= htmlspecialchars($product['name']) ?></td>
+                                <td><?= htmlspecialchars($product['category_name']) ?></td>
+                                <td><?= format_price($product['price']) ?></td>
+                                <td><?= $product['stock'] ?></td>
+                                <td><?= htmlspecialchars($product['type'] ?? 'N/A') ?></td>
+                                <td>
+                                    <a href="?page=admin&subpage=admin-products&edit=<?= $product['id'] ?>"
+                                        class="btn small">Sửa</a>
+                                    <form action="?page=admin&subpage=admin-products" method="post" class="delete-form"
+                                        style="display:inline;">
+                                        <input type="hidden" name="action" value="delete">
+                                        <input type="hidden" name="id" value="<?= $product['id'] ?>">
+                                        <button type="submit" class="btn small danger">Xóa</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
 
-            <!-- Phân trang -->
-            <?php if ($total_pages > 1): ?>
-            <div class="pagination">
-                <?php
+                <!-- Phân trang -->
+                <?php if ($total_pages > 1): ?>
+                    <div class="pagination">
+                        <?php
                         $query_params = $_GET;
                         unset($query_params['p']);
                         $base_url = 'index.php?' . http_build_query($query_params);
                         ?>
-                <?php if ($page > 1): ?>
-                <a href="<?= $base_url ?>&p=<?= $page - 1 ?>" class="pagination-btn prev">Trước</a>
+                        <?php if ($page > 1): ?>
+                            <a href="<?= $base_url ?>&p=<?= $page - 1 ?>" class="pagination-btn prev">Trước</a>
+                        <?php endif; ?>
+                        <?php for ($i = max(1, $page - 2); $i <= min($total_pages, $page + 2); $i++): ?>
+                            <a href="<?= $base_url ?>&p=<?= $i ?>"
+                                class="pagination-btn <?= $i === $page ? 'active' : '' ?>"><?= $i ?></a>
+                        <?php endfor; ?>
+                        <?php if ($page < $total_pages): ?>
+                            <a href="<?= $base_url ?>&p=<?= $page + 1 ?>" class="pagination-btn next">Sau</a>
+                        <?php endif; ?>
+                    </div>
                 <?php endif; ?>
-                <?php for ($i = max(1, $page - 2); $i <= min($total_pages, $page + 2); $i++): ?>
-                <a href="<?= $base_url ?>&p=<?= $i ?>"
-                    class="pagination-btn <?= $i === $page ? 'active' : '' ?>"><?= $i ?></a>
-                <?php endfor; ?>
-                <?php if ($page < $total_pages): ?>
-                <a href="<?= $base_url ?>&p=<?= $page + 1 ?>" class="pagination-btn next">Sau</a>
-                <?php endif; ?>
-            </div>
-            <?php endif; ?>
             <?php endif; ?>
         </div>
     </section>
