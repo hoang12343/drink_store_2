@@ -13,13 +13,13 @@ $error_message = '';
 if ($action) {
     if ($action === 'add' || $action === 'edit') {
         $user_data = [
-            'full_name' => filter_input(INPUT_POST, 'full_name', FILTER_SANITIZE_FULL_SPECIAL_CHARS),
-            'username' => filter_input(INPUT_POST, 'username', FILTER_SANITIZE_FULL_SPECIAL_CHARS),
+            'full_name' => htmlspecialchars(trim($_POST['full_name'] ?? ''), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+            'username' => htmlspecialchars(trim($_POST['username'] ?? ''), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
             'email' => filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL),
-            'phone' => filter_input(INPUT_POST, 'phone', FILTER_SANITIZE_FULL_SPECIAL_CHARS),
-            'address' => filter_input(INPUT_POST, 'address', FILTER_SANITIZE_FULL_SPECIAL_CHARS),
+            'phone' => trim($_POST['phone'] ?? ''),
+            'address' => htmlspecialchars(trim($_POST['address'] ?? ''), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
             'is_admin' => filter_input(INPUT_POST, 'is_admin', FILTER_VALIDATE_INT) ?: 0,
-            'password' => filter_input(INPUT_POST, 'password', FILTER_SANITIZE_FULL_SPECIAL_CHARS)
+            'password' => trim($_POST['password'] ?? '')
         ];
 
         // Validate email
@@ -56,19 +56,30 @@ if ($action) {
                         if ($stmt->fetchColumn() > 0) {
                             $error_message = 'Tên đăng nhập "' . htmlspecialchars($user_data['username']) . '" đã tồn tại. Vui lòng chọn tên khác.';
                         } else {
-                            $user_data['id'] = $user_id;
+                            // Tạo mảng tham số cho câu lệnh SQL
+                            $params = [
+                                'full_name' => $user_data['full_name'],
+                                'username' => $user_data['username'],
+                                'email' => $user_data['email'],
+                                'phone' => $user_data['phone'],
+                                'address' => $user_data['address'],
+                                'is_admin' => $user_data['is_admin'],
+                                'id' => $user_id
+                            ];
+
                             $query = "
                                 UPDATE users 
                                 SET full_name = :full_name, username = :username, email = :email, 
                                     phone = :phone, address = :address, is_admin = :is_admin
                             ";
                             if (!empty($user_data['password'])) {
-                                $user_data['password'] = password_hash($user_data['password'], PASSWORD_DEFAULT);
+                                $params['password'] = password_hash($user_data['password'], PASSWORD_DEFAULT);
                                 $query .= ", password = :password";
                             }
                             $query .= " WHERE id = :id";
+
                             $stmt = $pdo->prepare($query);
-                            $stmt->execute($user_data);
+                            $stmt->execute($params);
                             $success_message = 'Cập nhật người dùng thành công!';
                         }
                     } catch (PDOException $e) {
