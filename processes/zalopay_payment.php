@@ -2,7 +2,7 @@
 if (!defined('APP_START')) exit('No direct access');
 require_once '../includes/db_connect.php';
 require_once '../includes/session_start.php';
-require_once '../includes/config.php'; // File cấu hình chứa thông tin ZaloPay
+require_once '../includes/config.php';
 
 // Kiểm tra phiên đăng nhập và dữ liệu đầu vào
 if (!isset($_SESSION['logged_in']) || !isset($_POST['selected_items']) || !isset($_POST['total_amount'])) {
@@ -56,6 +56,7 @@ try {
     $stmt->execute(array_merge([$_SESSION['user_id']], $selected_items));
 
     $pdo->commit();
+    error_log("Order created successfully: Order ID=$order_id, User ID={$_SESSION['user_id']}");
 } catch (PDOException $e) {
     $pdo->rollBack();
     error_log("Error creating order: " . $e->getMessage());
@@ -68,11 +69,11 @@ $order = [
     'app_id' => ZALOPAY_CONFIG['app_id'],
     'app_user' => 'user_' . $_SESSION['user_id'],
     'app_time' => round(microtime(true) * 1000),
-    'amount' => (int)$total_amount, // ZaloPay yêu cầu số nguyên
+    'amount' => (int)$total_amount,
     'app_trans_id' => date('ymd') . '_' . $order_id,
     'embed_data' => json_encode([
         'order_id' => $order_id,
-        'redirecturl' => 'https://332d-2405-4802-1d47-d260-e5b3-debb-3508-fc9.ngrok-free.app/index.php?page=orders'
+        'redirecturl' => 'https://458f-27-67-176-14.ngrok-free.app/index.php?page=orders&check_trans_id=' . urlencode(date('ymd') . '_' . $order_id)
     ]),
     'item' => json_encode(array_map(function ($item) {
         return [
@@ -83,8 +84,8 @@ $order = [
         ];
     }, $items)),
     'description' => 'Thanh toán đơn hàng #' . $order_id,
-    'bank_code' => '', // Để trống để người dùng chọn ngân hàng
-    'callback_url' => 'https://332d-2405-4802-1d47-d260-e5b3-debb-3508-fc9.ngrok-free.app/processes/zalopay_callback.php'
+    'bank_code' => '',
+    'callback_url' => 'https://458f-27-67-176-14.ngrok-free.app/processes/zalopay_callback.php'
 ];
 
 // Tạo chữ ký
@@ -92,29 +93,34 @@ $data = $order['app_id'] . '|' . $order['app_trans_id'] . '|' . $order['app_user
     $order['amount'] . '|' . $order['app_time'] . '|' . $order['embed_data'] . '|' . $order['item'];
 $order['mac'] = hash_hmac('sha256', $data, ZALOPAY_CONFIG['key1']);
 
+error_log("ZaloPay payment request: Order ID=$order_id, Trans ID={$order['app_trans_id']}");
+
 // Gửi yêu cầu đến ZaloPay
 $ch = curl_init(ZALOPAY_CONFIG['endpoint']);
 curl_setopt($ch, CURLOPT_POST, 1);
 curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($order));
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/x-www-form-urlencoded']);
-curl_setopt($ch, CURLOPT_TIMEOUT, 30); // Timeout 30 giây
+curl_setopt($ch, CURLOPT_TIMEOUT, 30);
 $response = curl_exec($ch);
 
 // Kiểm tra lỗi cURL
 if ($response === false) {
     $error = curl_error($ch);
     curl_close($ch);
-    error_log("cURL error: " . $error);
+    error_log("cURL error in zalopay_payment: " . $error);
     header('Location: ../index.php?page=checkout&error=' . urlencode('Lỗi kết nối đến ZaloPay'));
     exit;
 }
 curl_close($ch);
 
 $result = json_decode($response, true);
+error_log("ZaloPay payment response: " . json_encode($result));
+
 if (isset($result['return_code']) && $result['return_code'] == 1) {
     $stmt = $pdo->prepare("UPDATE orders SET zalopay_trans_id = ? WHERE id = ?");
     $stmt->execute([$order['app_trans_id'], $order_id]);
+    error_log("Redirecting to ZaloPay order_url for Order ID=$order_id");
     header('Location: ' . $result['order_url']);
     exit;
 } else {

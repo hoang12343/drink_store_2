@@ -1,0 +1,76 @@
+:root {
+    --wine-red: #8B1E3F;
+    --wine-red-dark: #6B152F;
+    --off-white: #FFF8F0;
+    --text-dark: #333333;
+    --border-color: #E0E0E0;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.orders-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    background-color: #fff;
+    box-shadow: 0 2px 5px var(--shadow-color);
+}
+
+.orders-table th,
+.orders-table td {
+    border: 1px solid var(--border-color);
+    padding: 12px;
+    text-align: left;
+}
+
+.orders-table th {
+    background-color: var(--wine-red);
+    color: #fff;
+    font-weight: 600;
+}
+
+.orders-table td {
+    color: var(--text-dark);
+}
+
+.orders-table tr:nth-child(even) {
+    background-color: var(--off-white);
+}
+
+.form-message {
+    padding: 12px;
+    margin: 10px 0;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.form-message.success {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.form-message.error {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+h1 {
+    color: var(--wine-red);
+    margin-bottom: 20px;
+}
+
+@media (max-width: 768px) {
+    .orders-table th,
+    .orders-table td {
+        padding: 8px;
+        font-size: 14px;
+    }
+    .container {
+        padding: 10px;
+    }
+}

@@ -19,7 +19,7 @@ if ($action) {
     if ($action === 'edit') {
         $order_id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
         $status = filter_input(INPUT_POST, 'status', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        if ($order_id && in_array($status, ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'])) {
+        if ($order_id && in_array($status, ['pending', 'completed', 'failed', 'cancelled'])) {
             try {
                 $stmt = $pdo->prepare("UPDATE orders SET status = :status, updated_at = NOW() WHERE id = :id");
                 $stmt->execute(['status' => $status, 'id' => $order_id]);
@@ -141,15 +141,13 @@ if (isset($_GET['edit'])) {
                     <div class="form-group">
                         <label for="status">Trạng thái</label>
                         <select id="status" name="status" required>
-                            <option value="Pending" <?= $edit_order['status'] === 'Pending' ? 'selected' : '' ?>>Chờ xử lý
+                            <option value="pending" <?= $edit_order['status'] === 'pending' ? 'selected' : '' ?>>Chờ xử lý
                             </option>
-                            <option value="Processing" <?= $edit_order['status'] === 'Processing' ? 'selected' : '' ?>>Đang
-                                xử lý</option>
-                            <option value="Shipped" <?= $edit_order['status'] === 'Shipped' ? 'selected' : '' ?>>Đã giao
-                            </option>
-                            <option value="Delivered" <?= $edit_order['status'] === 'Delivered' ? 'selected' : '' ?>>Hoàn
+                            <option value="completed" <?= $edit_order['status'] === 'completed' ? 'selected' : '' ?>>Hoàn
                                 thành</option>
-                            <option value="Cancelled" <?= $edit_order['status'] === 'Cancelled' ? 'selected' : '' ?>>Hủy
+                            <option value="failed" <?= $edit_order['status'] === 'failed' ? 'selected' : '' ?>>Thất bại
+                            </option>
+                            <option value="cancelled" <?= $edit_order['status'] === 'cancelled' ? 'selected' : '' ?>>Hủy
                             </option>
                         </select>
                     </div>
@@ -168,13 +166,11 @@ if (isset($_GET['edit'])) {
                     <label for="status">Trạng thái</label>
                     <select id="status" name="status">
                         <option value="">Tất cả</option>
-                        <option value="Pending" <?= $status_filter === 'Pending' ? 'selected' : '' ?>>Chờ xử lý</option>
-                        <option value="Processing" <?= $status_filter === 'Processing' ? 'selected' : '' ?>>Đang xử lý
+                        <option value="pending" <?= $status_filter === 'pending' ? 'selected' : '' ?>>Chờ xử lý</option>
+                        <option value="completed" <?= $status_filter === 'completed' ? 'selected' : '' ?>>Hoàn thành
                         </option>
-                        <option value="Shipped" <?= $status_filter === 'Shipped' ? 'selected' : '' ?>>Đã giao</option>
-                        <option value="Delivered" <?= $status_filter === 'Delivered' ? 'selected' : '' ?>>Hoàn thành
-                        </option>
-                        <option value="Cancelled" <?= $status_filter === 'Cancelled' ? 'selected' : '' ?>>Hủy</option>
+                        <option value="failed" <?= $status_filter === 'failed' ? 'selected' : '' ?>>Thất bại</option>
+                        <option value="cancelled" <?= $status_filter === 'cancelled' ? 'selected' : '' ?>>Hủy</option>
                     </select>
                 </div>
                 <button type="submit" class="btn">Lọc</button>

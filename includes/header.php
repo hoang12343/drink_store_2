@@ -9,29 +9,31 @@ if (!defined('APP_START')) exit('No direct access');
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>Cửa hàng đồ uống - <?php echo ucfirst($current_page ?? 'home'); ?></title>
-    <link rel="stylesheet" href="assets/css/style.css">
-    <link rel="stylesheet" href="assets/css/header.css">
+    <link rel="stylesheet" href="assets/css/style.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="assets/css/header.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="assets/css/usermenu.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <?php if ($current_page === 'cart'): ?>
-    <link rel="stylesheet" href="assets/css/cart.css?v=<?php echo time(); ?>">
+        <link rel="stylesheet" href="assets/css/cart.css?v=<?php echo time(); ?>">
     <?php elseif (str_starts_with($current_page, 'admin/')): ?>
-    <link rel="stylesheet" href="assets/css/admin.css?v=<?php echo time(); ?>">
+        <link rel="stylesheet" href="assets/css/admin.css?v=<?php echo time(); ?>">
     <?php elseif ($current_page === 'products'): ?>
-    <link rel="stylesheet" href="assets/css/products.css?v=<?php echo time(); ?>">
+        <link rel="stylesheet" href="assets/css/products.css?v=<?php echo time(); ?>">
     <?php elseif ($current_page === 'contact'): ?>
-    <link rel="stylesheet" href="assets/css/contact.css?v=<?php echo time(); ?>">
+        <link rel="stylesheet" href="assets/css/contact.css?v=<?php echo time(); ?>">
     <?php elseif ($current_page === 'register' || $current_page === 'update_profile'): ?>
-    <link rel="stylesheet" href="assets/css/register.css?v=<?php echo time(); ?>">
+        <link rel="stylesheet" href="assets/css/register.css?v=<?php echo time(); ?>">
     <?php elseif ($current_page === 'checkout'): ?>
-    <link rel="stylesheet" href="assets/css/checkout.css?v=<?php echo time(); ?>">
+        <link rel="stylesheet" href="assets/css/checkout.css?v=<?php echo time(); ?>">
+    <?php elseif ($current_page === 'orders'): ?>
+        <link rel="stylesheet" href="assets/css/orders.css?v=<?php echo time(); ?>">
     <?php endif; ?>
     <script src="assets/js/script.js" defer></script>
     <script src="assets/js/usermenu.js" defer></script>
     <?php if ($current_page === 'products'): ?>
-    <script src="assets/js/products.js" defer></script>
+        <script src="assets/js/products.js" defer></script>
     <?php elseif ($current_page === 'contact'): ?>
-    <script src="assets/js/contact.js" defer></script>
+        <script src="assets/js/contact.js" defer></script>
     <?php endif; ?>
 </head>
 
@@ -48,7 +50,7 @@ if (!defined('APP_START')) exit('No direct access');
                 </div>
                 <div class="auth-links">
                     <?php if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true): ?>
-                    <?php
+                        <?php
                         $usermenu_file = ROOT_PATH . '/usermenu.php';
                         if (file_exists($usermenu_file)) {
                             include $usermenu_file;
@@ -67,8 +69,8 @@ if (!defined('APP_START')) exit('No direct access');
                         }
                         ?>
                     <?php else: ?>
-                    <a href="?page=login"><i class="fas fa-user"></i> Đăng nhập</a>
-                    <a href="?page=register"><i class="fas fa-user-plus"></i> Đăng ký</a>
+                        <a href="?page=login"><i class="fas fa-user"></i> Đăng nhập</a>
+                        <a href="?page=register"><i class="fas fa-user-plus"></i> Đăng ký</a>
                     <?php endif; ?>
                 </div>
             </div>
@@ -126,8 +128,8 @@ if (!defined('APP_START')) exit('No direct access');
                     ];
                     foreach ($main_menu_items as $key => $label) {
                         $active = ($current_page === $key || ($current_page === 'products' && isset($_GET['category']) && $_GET['category'] === $key)) ? 'active' : '';
-                        $url = in_array($key, ['home', 'promotion', 'knowledge', 'contact']) ? "?page=$key" : "?page=products&category=$key";
-                        echo "<li><a href='$url' class='$active'>" . ($key === 'contact' ? '<i class="fas fa-address-book"></i> ' : '') . "$label</a></li>";
+                        $url = in_array($key, ['home', 'knowledge', 'contact']) ? "?page=$key" : "?page=products&category=$key";
+                        echo "<li><a href='$url' class='$active'>" . ($key === 'contact' ? '<i class=\"fas fa-address-book\"></i> ' : '') . "$label</a></li>";
                     }
                     ?>
                 </ul>
