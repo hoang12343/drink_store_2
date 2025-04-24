@@ -1,8 +1,12 @@
 .footer {
     background: var(--cognac-brown);
     color: var(--off-white);
-    padding-top: 50px;
+    padding-top: 70px;
     margin-top: auto;
+    
+    text-align: center;
+    
+
     
 }
 
