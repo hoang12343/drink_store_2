@@ -152,7 +152,7 @@
 .btn {
     background-color: var(--cognac-brown);
     color: white;
-    padding: 10px 15px;
+    padding: 10px 15px; /* Điều chỉnh padding để khớp với input */
     border: none;
     border-radius: 4px;
     cursor: pointer;
@@ -160,6 +160,9 @@
     text-decoration: none;
     display: inline-flex;
     align-items: center;
+    height: 37px; /* Đặt chiều cao bằng với input */
+    box-sizing: border-box; /* Đảm bảo padding không làm tăng chiều cao */
+    margin-top: 22px;
 }
 
 .btn:hover {

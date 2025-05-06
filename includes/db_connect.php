@@ -21,5 +21,5 @@ try {
     ]);
 } catch (PDOException $e) {
     error_log("Database connection error: " . $e->getMessage());
-    die('Không thể kết nối đến cơ sở dữ liệu. Vui lòng thử lại sau.');
+    throw $e; // Ném ngoại lệ để mã gọi xử lý
 }

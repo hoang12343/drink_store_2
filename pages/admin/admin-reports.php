@@ -1,9 +1,83 @@
 <?php
+ob_start(); // Bắt đầu bộ đệm đầu ra
 if (!defined('APP_START')) {
     exit('No direct access');
 }
 
 require_once ROOT_PATH . '/includes/db_connect.php';
+
+// Handle CSV export
+if (isset($_GET['export']) && $_GET['export'] === 'csv') {
+    $start_date = filter_input(INPUT_GET, 'start_date', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?: date('Y-m-01');
+    $end_date = filter_input(INPUT_GET, 'end_date', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?: date('Y-m-t');
+
+    // Validate date range
+    if (!DateTime::createFromFormat('Y-m-d', $start_date) || !DateTime::createFromFormat('Y-m-d', $end_date)) {
+        ob_end_clean();
+        exit('Định dạng ngày không hợp lệ.');
+    } elseif (strtotime($end_date) < strtotime($start_date)) {
+        ob_end_clean();
+        exit('Ngày kết thúc phải sau ngày bắt đầu.');
+    }
+
+    try {
+        // Fetch users for export
+        $stmt = $pdo->prepare("
+            SELECT id, full_name, username, email, phone, is_admin, created_at 
+            FROM users 
+            WHERE created_at BETWEEN :start_date AND :end_date 
+            ORDER BY created_at DESC
+        ");
+        $stmt->execute(['start_date' => $start_date, 'end_date' => $end_date . ' 23:59:59']);
+        $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Xóa mọi đầu ra trước đó
+        ob_clean();
+
+        // Set headers for CSV
+        header('Content-Type: text/csv; charset=utf-8');
+        header('Content-Disposition: attachment; filename="user_report_' . $start_date . '_to_' . $end_date . '.csv"');
+
+        // Output CSV
+        $output = fopen('php://output', 'w');
+        fputs($output, "\xEF\xBB\xBF"); // UTF-8 BOM for Excel compatibility
+
+        // Định nghĩa tiêu đề với định dạng rõ ràng
+        fputcsv($output, [
+            'ID',
+            'Họ và tên',
+            'Tên đăng nhập',
+            'Email',
+            'Số điện thoại',
+            'Quyền',
+            'Ngày đăng ký'
+        ]);
+
+        // Ghi dữ liệu, định dạng số điện thoại và ngày tháng
+        foreach ($users as $user) {
+            fputcsv($output, [
+                $user['id'],
+                $user['full_name'],
+                $user['username'],
+                $user['email'],
+                '"' . $user['phone'] . '"', // Thêm dấu ngoặc kép để Excel nhận là văn bản
+                $user['is_admin'] ? 'Admin' : 'User',
+                DateTime::createFromFormat('Y-m-d H:i:s', $user['created_at'])->format('d/m/Y H:i:s') // Định dạng ngày tháng
+            ]);
+        }
+
+        fclose($output);
+        ob_end_flush(); // Gửi đầu ra và dừng bộ đệm
+        exit;
+    } catch (PDOException $e) {
+        ob_end_clean();
+        error_log("CSV export error: " . $e->getMessage());
+        exit('Lỗi khi xuất dữ liệu CSV. Vui lòng thử lại sau.');
+    }
+}
+
+// Xóa bộ đệm nếu không xuất CSV
+ob_end_clean();
 
 // Initialize variables
 $success_message = '';
@@ -62,31 +136,6 @@ try {
     $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
     $error_message = 'Lỗi khi lấy dữ liệu báo cáo: ' . $e->getMessage();
-}
-
-// Handle CSV export
-if (isset($_GET['export']) && $_GET['export'] === 'csv') {
-    header('Content-Type: text/csv; charset=utf-8');
-    header('Content-Disposition: attachment; filename="user_report_' . $start_date . '_to_' . $end_date . '.csv"');
-
-    $output = fopen('php://output', 'w');
-    fputs($output, "\xEF\xBB\xBF"); // UTF-8 BOM for Excel compatibility
-    fputcsv($output, ['ID', 'Họ và tên', 'Tên đăng nhập', 'Email', 'Số điện thoại', 'Quyền', 'Ngày đăng ký']);
-
-    foreach ($users as $user) {
-        fputcsv($output, [
-            $user['id'],
-            $user['full_name'],
-            $user['username'],
-            $user['email'],
-            $user['phone'],
-            $user['is_admin'] ? 'Admin' : 'User',
-            $user['created_at']
-        ]);
-    }
-
-    fclose($output);
-    exit;
 }
 ?>
 

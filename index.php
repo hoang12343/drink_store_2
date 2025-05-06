@@ -49,6 +49,18 @@ if (str_starts_with($page, 'admin/') && (!isset($_SESSION['logged_in']) || !isse
     exit;
 }
 
+// Xử lý xuất CSV trước khi bao gồm giao diện
+if ($page === 'admin/admin-reports' && isset($_GET['export']) && $_GET['export'] === 'csv') {
+    $page_file = ROOT_PATH . "/pages/$page.php";
+    if (file_exists($page_file)) {
+        include_once $page_file;
+    } else {
+        http_response_code(404);
+        include ROOT_PATH . '/pages/404.php';
+    }
+    exit; // Dừng xử lý ngay sau khi xuất CSV
+}
+
 // Xử lý đăng xuất
 if ($page === 'logout') {
     require_once 'processes/logout.php';

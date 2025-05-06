@@ -23,8 +23,9 @@ try {
     $stmt = $pdo->query("SELECT COUNT(*) as total_users FROM users");
     $total_users = $stmt->fetchColumn();
 
-    // Giả định dữ liệu cho đơn hàng (thay bằng truy vấn thực tế)
-    $total_orders = 0; // Thay bằng truy vấn từ bảng orders
+    // Tổng số đơn hàng
+    $stmt = $pdo->query("SELECT COUNT(*) as total_orders FROM orders");
+    $total_orders = $stmt->fetchColumn();
 } catch (PDOException $e) {
     $error_message = 'Lỗi khi lấy dữ liệu: ' . $e->getMessage();
 }
