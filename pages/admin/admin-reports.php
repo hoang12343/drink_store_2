@@ -5,13 +5,16 @@ if (!defined('APP_START')) {
 }
 
 require_once ROOT_PATH . '/includes/db_connect.php';
+require_once ROOT_PATH . '/vendor/autoload.php'; // Nạp autoload của Composer
 
-// Handle CSV export
-if (isset($_GET['export']) && $_GET['export'] === 'csv') {
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+
+// Handle export
+if (isset($_GET['export']) && $_GET['export'] === 'xlsx') {
     $start_date = filter_input(INPUT_GET, 'start_date', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?: date('Y-m-01');
     $end_date = filter_input(INPUT_GET, 'end_date', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?: date('Y-m-t');
 
-    // Validate date range
     if (!DateTime::createFromFormat('Y-m-d', $start_date) || !DateTime::createFromFormat('Y-m-d', $end_date)) {
         ob_end_clean();
         exit('Định dạng ngày không hợp lệ.');
@@ -21,7 +24,6 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
     }
 
     try {
-        // Fetch users for export
         $stmt = $pdo->prepare("
             SELECT id, full_name, username, email, phone, is_admin, created_at 
             FROM users 
@@ -31,52 +33,63 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
         $stmt->execute(['start_date' => $start_date, 'end_date' => $end_date . ' 23:59:59']);
         $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        // Xóa mọi đầu ra trước đó
         ob_clean();
 
-        // Set headers for CSV
-        header('Content-Type: text/csv; charset=utf-8');
-        header('Content-Disposition: attachment; filename="user_report_' . $start_date . '_to_' . $end_date . '.csv"');
+        // Tạo spreadsheet
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
 
-        // Output CSV
-        $output = fopen('php://output', 'w');
-        fputs($output, "\xEF\xBB\xBF"); // UTF-8 BOM for Excel compatibility
+        // Định nghĩa tiêu đề
+        $sheet->setCellValue('A1', 'ID');
+        $sheet->setCellValue('B1', 'Họ và tên');
+        $sheet->setCellValue('C1', 'Tên đăng nhập');
+        $sheet->setCellValue('D1', 'Email');
+        $sheet->setCellValue('E1', 'Số điện thoại');
+        $sheet->setCellValue('F1', 'Quyền');
+        $sheet->setCellValue('G1', 'Ngày đăng ký');
 
-        // Định nghĩa tiêu đề với định dạng rõ ràng
-        fputcsv($output, [
-            'ID',
-            'Họ và tên',
-            'Tên đăng nhập',
-            'Email',
-            'Số điện thoại',
-            'Quyền',
-            'Ngày đăng ký'
-        ]);
+        // Định dạng cột và độ rộng
+        $sheet->getColumnDimension('A')->setWidth(10);
+        $sheet->getColumnDimension('B')->setWidth(20);
+        $sheet->getColumnDimension('C')->setWidth(15);
+        $sheet->getColumnDimension('D')->setWidth(25);
+        $sheet->getColumnDimension('E')->setWidth(15);
+        $sheet->getColumnDimension('F')->setWidth(10);
+        $sheet->getColumnDimension('G')->setWidth(20);
 
-        // Ghi dữ liệu, định dạng số điện thoại và ngày tháng
+        // Định dạng ngày tháng
+        $sheet->getStyle('G2:G' . (count($users) + 1))
+            ->getNumberFormat()
+            ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_DATE_DATETIME);
+
+        // Ghi dữ liệu
+        $row = 2;
         foreach ($users as $user) {
-            fputcsv($output, [
-                $user['id'],
-                $user['full_name'],
-                $user['username'],
-                $user['email'],
-                '"' . $user['phone'] . '"', // Thêm dấu ngoặc kép để Excel nhận là văn bản
-                $user['is_admin'] ? 'Admin' : 'User',
-                DateTime::createFromFormat('Y-m-d H:i:s', $user['created_at'])->format('d/m/Y H:i:s') // Định dạng ngày tháng
-            ]);
+            $sheet->setCellValue('A' . $row, $user['id']);
+            $sheet->setCellValue('B' . $row, $user['full_name']);
+            $sheet->setCellValue('C' . $row, $user['username']);
+            $sheet->setCellValue('D' . $row, $user['email']);
+            $sheet->setCellValue('E' . $row, $user['phone']);
+            $sheet->setCellValue('F' . $row, $user['is_admin'] ? 'Admin' : 'User');
+            $sheet->setCellValue('G' . $row, DateTime::createFromFormat('Y-m-d H:i:s', $user['created_at'])->getTimestamp());
+            $row++;
         }
 
-        fclose($output);
-        ob_end_flush(); // Gửi đầu ra và dừng bộ đệm
+        // Xuất file
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="user_report_' . $start_date . '_to_' . $end_date . '.xlsx"');
+        header('Cache-Control: max-age=0');
+
+        $writer = new Xlsx($spreadsheet);
+        $writer->save('php://output');
         exit;
     } catch (PDOException $e) {
         ob_end_clean();
-        error_log("CSV export error: " . $e->getMessage());
-        exit('Lỗi khi xuất dữ liệu CSV. Vui lòng thử lại sau.');
+        error_log("Export error: " . $e->getMessage());
+        exit('Lỗi khi xuất dữ liệu. Vui lòng thử lại sau.');
     }
 }
 
-// Xóa bộ đệm nếu không xuất CSV
 ob_end_clean();
 
 // Initialize variables
@@ -102,12 +115,10 @@ if (!DateTime::createFromFormat('Y-m-d', $start_date) || !DateTime::createFromFo
 
 // Fetch report data
 try {
-    // Total users in date range
     $stmt = $pdo->prepare("SELECT COUNT(*) as total_users FROM users WHERE created_at BETWEEN :start_date AND :end_date");
     $stmt->execute(['start_date' => $start_date, 'end_date' => $end_date . ' 23:59:59']);
     $total_users = $stmt->fetchColumn();
 
-    // Admin vs User count
     $stmt = $pdo->prepare("
         SELECT is_admin, COUNT(*) as count 
         FROM users 
@@ -124,7 +135,6 @@ try {
         }
     }
 
-    // Recent users (limited to 50 for display)
     $stmt = $pdo->prepare("
         SELECT id, full_name, username, email, phone, is_admin, created_at 
         FROM users 
@@ -137,6 +147,15 @@ try {
 } catch (PDOException $e) {
     $error_message = 'Lỗi khi lấy dữ liệu báo cáo: ' . $e->getMessage();
 }
+
+// Define CSS files and check existence
+$css_files = [
+    'assets/css/admin/admin-variables.css',
+    'assets/css/admin/admin-header.css',
+    'assets/css/admin/admin-sidebar.css',
+    'assets/css/admin/admin-content.css',
+    'assets/css/admin/admin-reports.css'
+];
 ?>
 
 <!DOCTYPE html>
@@ -146,13 +165,17 @@ try {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Báo cáo Người dùng</title>
-    <link rel="stylesheet" href="assets/css/admin/admin-variables.css?v=<?php echo time(); ?>">
-    <link rel="stylesheet" href="assets/css/admin/admin-header.css?v=<?php echo time(); ?>">
-    <link rel="stylesheet" href="assets/css/admin/admin-sidebar.css?v=<?php echo time(); ?>">
-    <link rel="stylesheet" href="assets/css/admin/admin-content.css?v=<?php echo time(); ?>">
-    <link rel="stylesheet" href="assets/css/admin/admin-reports.css?v=<?php echo time(); ?>">
+    <?php
+    foreach ($css_files as $css_file) {
+        $full_path = ROOT_PATH . '/' . $css_file;
+        if (file_exists($full_path)) {
+            echo "<link rel='stylesheet' href='" . BASE_URL . $css_file . "'>";
+        } else {
+            error_log("Missing CSS file: $full_path");
+        }
+    }
+    ?>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <script src="assets/js/admin/admin-reports.js" defer></script>
 </head>
 
 <body>
@@ -182,9 +205,9 @@ try {
                         required>
                 </div>
                 <button type="submit" class="btn">Lọc</button>
-                <a href="?page=admin&subpage=admin-reports&start_date=<?= htmlspecialchars($start_date) ?>&end_date=<?= htmlspecialchars($end_date) ?>&export=csv"
+                <a href="?page=admin&subpage=admin-reports&start_date=<?= htmlspecialchars($start_date) ?>&end_date=<?= htmlspecialchars($end_date) ?>&export=xlsx"
                     class="btn btn-export">
-                    <i class="fas fa-download"></i> Xuất CSV
+                    <i class="fas fa-download"></i> Xuất Excel
                 </a>
             </form>
         </div>
@@ -196,17 +219,17 @@ try {
                 <div class="summary-card">
                     <i class="fas fa-users"></i>
                     <h3>Tổng người dùng</h3>
-                    <p><?= $total_users ?></p>
+                    <p><?= htmlspecialchars($total_users) ?></p>
                 </div>
                 <div class="summary-card">
                     <i class="fas fa-user-shield"></i>
                     <h3>Quản trị viên</h3>
-                    <p><?= $admin_count ?></p>
+                    <p><?= htmlspecialchars($admin_count) ?></p>
                 </div>
                 <div class="summary-card">
                     <i class="fas fa-user"></i>
                     <h3>Người dùng thường</h3>
-                    <p><?= $user_count ?></p>
+                    <p><?= htmlspecialchars($user_count) ?></p>
                 </div>
             </div>
         </div>

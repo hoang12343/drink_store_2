@@ -1,0 +1,16 @@
+{
+    "name": "nhom9/btl",
+    "autoload": {
+        "psr-4": {
+            "Nhom9\\Btl\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "nhom 9"
+        }
+    ],
+    "require": {
+        "phpoffice/phpspreadsheet": "1.29"
+    }
+}
