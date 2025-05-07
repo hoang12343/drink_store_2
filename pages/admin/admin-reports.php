@@ -55,12 +55,12 @@ if (isset($_GET['export']) && $_GET['export'] === 'xlsx') {
         $sheet->getColumnDimension('D')->setWidth(25);
         $sheet->getColumnDimension('E')->setWidth(15);
         $sheet->getColumnDimension('F')->setWidth(10);
-        $sheet->getColumnDimension('G')->setWidth(20);
+        $sheet->getColumnDimension('G')->setAutoSize(true); // Tự động điều chỉnh chiều rộng
 
         // Định dạng ngày tháng
         $sheet->getStyle('G2:G' . (count($users) + 1))
             ->getNumberFormat()
-            ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_DATE_DATETIME);
+            ->setFormatCode('dd/mm/yyyy hh:mm:ss');
 
         // Ghi dữ liệu
         $row = 2;
@@ -71,7 +71,14 @@ if (isset($_GET['export']) && $_GET['export'] === 'xlsx') {
             $sheet->setCellValue('D' . $row, $user['email']);
             $sheet->setCellValue('E' . $row, $user['phone']);
             $sheet->setCellValue('F' . $row, $user['is_admin'] ? 'Admin' : 'User');
-            $sheet->setCellValue('G' . $row, DateTime::createFromFormat('Y-m-d H:i:s', $user['created_at'])->getTimestamp());
+
+            // Xử lý ngày đăng ký
+            $date = DateTime::createFromFormat('Y-m-d H:i:s', $user['created_at']);
+            if ($date) {
+                $sheet->setCellValue('G' . $row, \PhpOffice\PhpSpreadsheet\Shared\Date::PHPToExcel($date));
+            } else {
+                $sheet->setCellValue('G' . $row, 'N/A');
+            }
             $row++;
         }
 
@@ -127,6 +134,7 @@ try {
     ");
     $stmt->execute(['start_date' => $start_date, 'end_date' => $end_date . ' 23:59:59']);
     $role_counts = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
     foreach ($role_counts as $row) {
         if ($row['is_admin'] == 1) {
             $admin_count = $row['count'];
