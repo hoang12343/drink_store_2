@@ -108,6 +108,170 @@ body {
     background: var(--wine-red-dark);
 }
 
+/* Best Sellers Section */
+.best-sellers {
+    padding: 40px 0;
+    background: var(--light-cream);
+}
+
+/* Products Grid (Best Sellers) */
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* Fixed 4 columns */
+    gap: 25px;
+    margin-top: 25px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    justify-items: center;
+}
+
+/* Product Card (Best Sellers) */
+a.product-card {
+    background-color: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 3px 10px var(--shadow);
+    transition: transform 0.3s, box-shadow 0.3s;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    width: 100%; /* Allow full width within grid */
+}
+
+a.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+a.product-card.clickable {
+    cursor: pointer;
+}
+
+.product-content {
+    display: flex;
+    padding: 20px;
+    gap: 15px;
+}
+
+.product-img {
+    flex: 0 0 110px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 110px;
+    height: 110px;
+    overflow: hidden;
+}
+
+.product-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: transform 0.3s;
+}
+
+a.product-card:hover .product-img img {
+    transform: scale(1.05);
+}
+
+.product-info {
+    flex: 1;
+}
+
+.product-labels {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.label-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.label-item i {
+    color: var(--wine-red);
+    width: 16px;
+    text-align: center;
+}
+
+.product-details {
+    padding: 0 20px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.product-name {
+    font-size: 1.1rem;
+    line-height: 1.4;
+    color: var(--wine-red-dark);
+    margin-bottom: 12px;
+    font-weight: 600;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.product-description {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 20px;
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.price-and-action {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    margin-top: auto;
+    background-color: var(--off-white);
+    border-top: 1px solid var(--border-brown);
+}
+
+.product-price {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--wine-red);
+    display: flex;
+    flex-direction: column;
+}
+
+.old-price {
+    font-size: 0.85rem;
+    color: #666;
+    text-decoration: line-through;
+    font-weight: normal;
+}
+
+.buy-now-btn {
+    background: var(--wine-red);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+}
+
+.buy-now-btn:hover {
+    background: var(--wine-red-dark);
+}
+
 /* Features Section - Full Width */
 .features {
     width: 100vw; /* Full viewport width */
@@ -165,6 +329,10 @@ body {
         padding: 0 15px;
     }
 
+    .products-grid {
+        grid-template-columns: repeat(3, 1fr); /* 3 columns on medium screens */
+    }
+
     .features .container {
         grid-template-columns: repeat(2, 1fr);
         gap: 12px; /* Reduced gap */
@@ -182,6 +350,10 @@ body {
         padding: 0 10px;
     }
 
+    .products-grid {
+        grid-template-columns: repeat(2, 1fr); /* 2 columns on tablets */
+    }
+
     .features .container {
         grid-template-columns: repeat(2, 1fr);
         gap: 10px; /* Reduced gap */
@@ -197,6 +369,10 @@ body {
     .categories-grid {
         grid-template-columns: 1fr; /* 1 column on mobile */
         padding: 0 10px;
+    }
+
+    .products-grid {
+        grid-template-columns: 1fr; /* 1 column on mobile */
     }
 
     .features .container {

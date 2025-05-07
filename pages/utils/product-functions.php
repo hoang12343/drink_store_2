@@ -172,3 +172,40 @@ function get_related_products($product_id, $limit = 4)
     }
     return $products;
 }
+
+/**
+ * Retrieve best-selling products based on order items
+ * @param int $limit Number of products to retrieve
+ * @return array Best-selling products
+ */
+function get_best_selling_products($limit = 4)
+{
+    global $pdo;
+    try {
+        $stmt = $pdo->prepare("
+            SELECT p.*, c.display_name AS category_name, SUM(oi.quantity) as total_sold
+            FROM products p
+            JOIN categories c ON p.category_id = c.id
+            JOIN order_items oi ON p.id = oi.product_id
+            JOIN orders o ON oi.order_id = o.id
+            WHERE o.status = 'completed'
+            GROUP BY p.id
+            ORDER BY total_sold DESC
+            LIMIT ?
+        ");
+        $stmt->execute([$limit]);
+        $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Format prices
+        foreach ($products as &$product) {
+            $product['display_price'] = format_price($product['price']);
+            if (!empty($product['old_price'])) {
+                $product['display_old_price'] = format_price($product['old_price']);
+            }
+        }
+        return $products;
+    } catch (PDOException $e) {
+        error_log("Error fetching best-selling products: " . $e->getMessage());
+        return [];
+    }
+}
