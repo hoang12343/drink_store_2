@@ -11,6 +11,7 @@
         }
     ],
     "require": {
-        "phpoffice/phpspreadsheet": "1.29"
+        "phpoffice/phpspreadsheet": "1.29",
+        "google/cloud-dialogflow": "^2.1"
     }
 }

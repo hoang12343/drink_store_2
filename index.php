@@ -141,6 +141,17 @@ if (str_starts_with($current_page, 'admin/')) {
         include ROOT_PATH . '/pages/404.php';
     }
     ?>
+
+    <!-- Include Chatbox (tạm thời bỏ điều kiện ẩn trên trang admin để debug) -->
+    <?php
+    $chatbox_file = ROOT_PATH . './pages/components/chatbox.php';
+    if (file_exists($chatbox_file)) {
+        include $chatbox_file;
+    } else {
+        echo '<p style="color: red;">Lỗi: Không tìm thấy file chatbox.php tại ' . htmlspecialchars($chatbox_file) . '</p>';
+        error_log('Missing chatbox.php at ' . $chatbox_file);
+    }
+    ?>
 </div>
 
 <?php

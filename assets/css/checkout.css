@@ -6,45 +6,56 @@
     --shadow-color: rgba(0, 0, 0, 0.1);
     --off-white: #FFF8F0;
     --text-dark: #333333;
+    --light-cream: #F8EDE3;
 }
 
 /* Container chính cho trang checkout */
 .checkout-page {
-    padding: 30px 15px;
+    padding: 40px 20px;
     max-width: 1200px;
     margin: 0 auto;
+    background: var(--light-cream);
+    display: flex;
+    justify-content: center;
 }
 
 /* Định dạng container nội dung */
 .container {
     background-color: #fff;
     border-radius: 8px;
-    box-shadow: 0 2px 10px var(--shadow-color);
-    padding: 20px;
-    margin: 0;
+    box-shadow: 0 4px 12px var(--shadow-color);
+    padding: 30px;
+    margin: 0 auto;
+    width: 100%;
+    max-width: 900px; /* Giới hạn chiều rộng để tránh lệch */
 }
 
 /* Tiêu đề trang */
 h2 {
-    font-size: 1.8rem;
+    font-size: 2rem;
     color: var(--wine-red);
-    margin-bottom: 20px;
-    font-weight: 600;
+    margin-bottom: 25px;
+    font-weight: 700;
+    text-align: center;
 }
 
 /* Tiêu đề danh sách sản phẩm */
 h3 {
-    font-size: 1.5rem;
+    font-size: 1.6rem;
     color: var(--text-dark);
     margin-bottom: 20px;
-    font-weight: 500;
+    font-weight: 600;
+    text-align: center;
 }
 
 /* Bảng sản phẩm */
 .table {
     width: 100%;
     border-collapse: collapse;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
+    background: var(--off-white);
+    border-radius: 8px;
+    overflow: hidden;
 }
 
 .table th, .table td {
@@ -54,35 +65,42 @@ h3 {
 }
 
 .table th {
-    background-color: var(--off-white);
+    background-color: var(--wine-red);
     font-weight: 600;
-    color: var(--text-dark);
+    color: #fff;
+    text-align: center;
 }
 
 .table td {
     font-size: 1rem;
     color: var(--text-dark);
+    text-align: center;
 }
 
 /* Thông báo lỗi */
 .form-message.error {
     background-color: #f8d7da;
     color: #721c24;
-    padding: 10px;
+    padding: 12px;
     border-radius: 4px;
     margin-bottom: 20px;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
+    text-align: center;
+    width: 100%;
 }
 
 /* Tổng tiền */
 .total-row.final {
     display: flex;
     justify-content: space-between;
-    padding: 10px 0;
-    font-size: 1.2rem;
+    align-items: center;
+    padding: 15px 0;
+    font-size: 1.3rem;
     font-weight: 700;
     color: var(--wine-red);
-    border-bottom: none;
+    border-top: 2px solid var(--border-color);
+    text-align: center;
+    margin-top: 20px;
 }
 
 /* Nút thanh toán */
@@ -90,27 +108,46 @@ h3 {
     background-color: var(--wine-red);
     color: white;
     border: none;
-    padding: 12px 25px;
-    border-radius: 4px;
+    padding: 15px 30px;
+    border-radius: 6px;
     font-weight: 600;
+    font-size: 1.1rem;
     cursor: pointer;
     width: 100%;
     text-align: center;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    margin-top: 20px;
 }
 
 .btn.btn-primary:hover {
     background-color: var(--wine-red-dark);
+    transform: translateY(-2px);
+}
+
+/* Form wrapper để căn giữa nút */
+form {
+    width: 100%;
+    display: flex;
+    justify-content: center;
 }
 
 /* Responsive design */
 @media (max-width: 768px) {
     .checkout-page {
-        padding: 15px;
+        padding: 20px 10px;
     }
 
     .container {
-        padding: 15px;
+        padding: 20px;
+        max-width: 100%;
+    }
+
+    h2 {
+        font-size: 1.8rem;
+    }
+
+    h3 {
+        font-size: 1.4rem;
     }
 
     .table th, .table td {
@@ -118,8 +155,41 @@ h3 {
         font-size: 0.9rem;
     }
 
+    .total-row.final {
+        font-size: 1.1rem;
+    }
+
     .btn.btn-primary {
-        padding: 10px 20px;
-        font-size: 0.9rem;
+        padding: 12px 20px;
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .table {
+        font-size: 0.85rem;
+    }
+
+    .table th, .table td {
+        padding: 8px;
+    }
+
+    h2 {
+        font-size: 1.6rem;
+    }
+
+    h3 {
+        font-size: 1.3rem;
+    }
+
+    .btn.btn-primary {
+        padding: 10px 15px;
+        font-size: 0.95rem;
+    }
+
+    .total-row.final {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
     }
 }
