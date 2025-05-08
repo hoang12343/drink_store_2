@@ -13,16 +13,7 @@ function format_price($price)
     return number_format($price, 0, ',', '.') . ' VND';
 }
 
-/**
- * Retrieve products with filtering, sorting, and pagination
- * @param string $category Comma-separated category names or 'all'
- * @param string $search Search term
- * @param string $sort Sorting option
- * @param int $limit Number of products per page
- * @param array $filters Additional filters (price, country, etc.)
- * @param int $page Current page number
- * @return array Products and total count
- */
+
 function get_products($category, $search, $sort, $limit, $filters, $page)
 {
     global $pdo;
