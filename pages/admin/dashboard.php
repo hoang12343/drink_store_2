@@ -35,69 +35,6 @@ try {
     $error_message = 'Lỗi khi lấy danh sách năm: ' . $e->getMessage();
 }
 
-// Xử lý xuất Excel
-if (isset($_GET['export']) && $_GET['export'] === 'xlsx') {
-    if (!DateTime::createFromFormat('Y-m-d', $start_date) || !DateTime::createFromFormat('Y-m-d', $end_date)) {
-        exit('Định dạng ngày không hợp lệ.');
-    } elseif (strtotime($end_date) < strtotime($start_date)) {
-        exit('Ngày kết thúc phải sau ngày bắt đầu.');
-    }
-
-    try {
-        $stmt = $pdo->prepare("
-            SELECT o.id, u.full_name, o.total_amount, o.created_at
-            FROM orders o
-            JOIN users u ON o.user_id = u.id
-            WHERE o.status = 'completed' AND o.created_at BETWEEN :start_date AND :end_date
-            ORDER BY o.created_at DESC
-        ");
-        $stmt->execute(['start_date' => $start_date, 'end_date' => $end_date . ' 23:59:59']);
-        $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        $spreadsheet = new Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet();
-
-        $sheet->setCellValue('A1', 'ID Đơn hàng');
-        $sheet->setCellValue('B1', 'Khách hàng');
-        $sheet->setCellValue('C1', 'Tổng tiền (VNĐ)');
-        $sheet->setCellValue('D1', 'Ngày đặt');
-
-        $sheet->getColumnDimension('A')->setWidth(15);
-        $sheet->getColumnDimension('B')->setWidth(20);
-        $sheet->getColumnDimension('C')->setWidth(15);
-        $sheet->getColumnDimension('D')->setAutoSize(true);
-
-        $sheet->getStyle('C2:C' . (count($orders) + 1))
-            ->getNumberFormat()
-            ->setFormatCode('#,##0');
-
-        $sheet->getStyle('D2:D' . (count($orders) + 1))
-            ->getNumberFormat()
-            ->setFormatCode('dd/mm/yyyy hh:mm:ss');
-
-        $row = 2;
-        foreach ($orders as $order) {
-            $sheet->setCellValue('A' . $row, $order['id']);
-            $sheet->setCellValue('B' . $row, $order['full_name']);
-            $sheet->setCellValue('C' . $row, $order['total_amount']);
-            $date = DateTime::createFromFormat('Y-m-d H:i:s', $order['created_at']);
-            $sheet->setCellValue('D' . $row, $date ? \PhpOffice\PhpSpreadsheet\Shared\Date::PHPToExcel($date) : 'N/A');
-            $row++;
-        }
-
-        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment; filename="revenue_report_' . $start_date . '_to_' . $end_date . '.xlsx"');
-        header('Cache-Control: max-age=0');
-
-        $writer = new Xlsx($spreadsheet);
-        $writer->save('php://output');
-        exit;
-    } catch (PDOException $e) {
-        error_log("Export error: " . $e->getMessage());
-        exit('Lỗi khi xuất dữ liệu. Vui lòng thử lại sau.');
-    }
-}
-
 // Validate date range
 if (!DateTime::createFromFormat('Y-m-d', $start_date) || !DateTime::createFromFormat('Y-m-d', $end_date)) {
     $error_message = 'Định dạng ngày không hợp lệ.';
@@ -259,6 +196,12 @@ try {
 
         <div class="admin-dashboard revenue-section">
             <h2>Tổng doanh thu</h2>
+            <script>
+                // Fallback for exportChart
+                window.exportChart = window.exportChart || function() {
+                    alert('Chức năng xuất biểu đồ chưa sẵn sàng. Vui lòng thử lại sau.');
+                };
+            </script>
             <form action="?page=admin&subpage=dashboard" method="get" class="report-filter-form">
                 <input type="hidden" name="page" value="admin">
                 <input type="hidden" name="subpage" value="dashboard">
@@ -294,17 +237,16 @@ try {
                         required>
                 </div>
                 <button type="submit" class="btn">Lọc</button>
-                <a href="?page=admin&subpage=dashboard&start_date=<?= htmlspecialchars($start_date) ?>&end_date=<?= htmlspecialchars($end_date) ?>&filter_type=<?= htmlspecialchars($filter_type) ?>&selected_year=<?= htmlspecialchars($selected_year) ?>&export=xlsx"
-                    class="btn btn-export">
-                    <i class="fas fa-download"></i> Xuất Excel
-                </a>
+                <button type="button" class="btn btn-export-chart" onclick="exportChart()">
+                    <i class="fas fa-chart-bar"></i> Xuất biểu đồ
+                </button>
             </form>
 
             <div class="revenue-cards">
                 <div class="dashboard-card"
                     title="Tổng doanh thu từ lúc bắt đầu kinh doanh đến hiện tại. Số đơn hàng: <?php echo $total_order_count; ?>">
                     <i class="fas fa-money-bill-wave"></i>
-                    <h3>Tổng doanh thu </h3>
+                    <h3>Tổng doanh thu từ đầu đến nay</h3>
                     <p><?= number_format($total_revenue, 0, ',', '.') ?> VNĐ</p>
                     <a href="?page=admin&subpage=admin-orders&status=completed" class="btn">Xem chi tiết</a>
                 </div>

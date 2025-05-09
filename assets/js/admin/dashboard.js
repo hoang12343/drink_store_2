@@ -1,5 +1,14 @@
+// Define exportChart immediately as a fallback
+window.exportChart = function () {
+  console.warn("exportChart called before chart initialization");
+  alert("Biểu đồ chưa sẵn sàng. Vui lòng thử lại sau.");
+};
+
+console.log("dashboard.js loaded");
+
 document.addEventListener("DOMContentLoaded", function () {
-  // Chart rendering
+  let chartInstance = null;
+
   const ctx = document.getElementById("revenueChart").getContext("2d");
 
   function formatDateLabel(dateStr) {
@@ -61,7 +70,7 @@ document.addEventListener("DOMContentLoaded", function () {
     data = revenueData.map((item) => parseFloat(item.revenue));
   }
 
-  new Chart(ctx, {
+  chartInstance = new Chart(ctx, {
     type: "bar",
     data: {
       labels: labels,
@@ -124,14 +133,17 @@ document.addEventListener("DOMContentLoaded", function () {
     },
   });
 
-  // Toggle functionality for All Years Revenue card
-  const toggleButton = document.querySelector(".toggle-years");
-  const hiddenYears = document.querySelector(".hidden-years");
-  if (toggleButton && hiddenYears) {
-    toggleButton.addEventListener("click", function () {
-      const isHidden = hiddenYears.style.display === "none";
-      hiddenYears.style.display = isHidden ? "block" : "none";
-      toggleButton.textContent = isHidden ? "Thu gọn" : "Xem thêm";
-    });
-  }
+  // Override exportChart with the actual implementation
+  window.exportChart = function () {
+    if (chartInstance) {
+      const link = document.createElement("a");
+      link.href = chartInstance.toBase64Image();
+      link.download = `revenue_chart_${start_date}_to_${end_date}.png`;
+      link.click();
+      console.log("Chart exported successfully");
+    } else {
+      console.warn("Chart instance not available");
+      alert("Biểu đồ chưa sẵn sàng. Vui lòng thử lại sau.");
+    }
+  };
 });

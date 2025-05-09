@@ -106,7 +106,7 @@ $best_selling_products = get_best_selling_products();
                                 <?php endif; ?>
                                 <?php if (!empty($product['abv'])): ?>
                                     <div class="label-item"><i
-                                            class="fas fa-percentage"></i><?= htmlspecialchars($product['abv']) ?>%</div>
+                                            class="fas fa-percentage"></i><?= htmlspecialchars($product['abv']) ?></div>
                                 <?php endif; ?>
                             </div>
                         </div>
