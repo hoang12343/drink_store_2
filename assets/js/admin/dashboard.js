@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
+  // Chart rendering
   const ctx = document.getElementById("revenueChart").getContext("2d");
 
   function formatDateLabel(dateStr) {
@@ -122,4 +123,15 @@ document.addEventListener("DOMContentLoaded", function () {
       },
     },
   });
+
+  // Toggle functionality for All Years Revenue card
+  const toggleButton = document.querySelector(".toggle-years");
+  const hiddenYears = document.querySelector(".hidden-years");
+  if (toggleButton && hiddenYears) {
+    toggleButton.addEventListener("click", function () {
+      const isHidden = hiddenYears.style.display === "none";
+      hiddenYears.style.display = isHidden ? "block" : "none";
+      toggleButton.textContent = isHidden ? "Thu gọn" : "Xem thêm";
+    });
+  }
 });

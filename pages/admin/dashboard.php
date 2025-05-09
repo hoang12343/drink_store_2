@@ -15,12 +15,25 @@ $error_message = '';
 $start_date = filter_input(INPUT_GET, 'start_date', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?: date('Y-m-01');
 $end_date = filter_input(INPUT_GET, 'end_date', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?: date('Y-m-t');
 $filter_type = filter_input(INPUT_GET, 'filter_type', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?: 'month';
+$selected_year = filter_input(INPUT_GET, 'selected_year', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?: 'all';
 $total_revenue = 0;
 $revenue_data = [];
 $yearly_revenue = 0;
 $daily_revenue = 0;
+$monthly_revenue = 0;
 $current_year = date('Y');
 $current_date = date('Y-m-d');
+$current_month_start = date('Y-m-01');
+$current_month_end = date('Y-m-t');
+
+// Lấy danh sách các năm có đơn hàng
+try {
+    $stmt = $pdo->query("SELECT DISTINCT YEAR(created_at) as year FROM orders WHERE status = 'completed' ORDER BY year DESC");
+    $available_years = $stmt->fetchAll(PDO::FETCH_COLUMN);
+} catch (PDOException $e) {
+    $available_years = [];
+    $error_message = 'Lỗi khi lấy danh sách năm: ' . $e->getMessage();
+}
 
 // Xử lý xuất Excel
 if (isset($_GET['export']) && $_GET['export'] === 'xlsx') {
@@ -113,15 +126,24 @@ try {
     $stmt = $pdo->query("SELECT COUNT(*) as total_orders FROM orders");
     $total_orders = $stmt->fetchColumn();
 
+    // Tổng doanh thu từ lúc bắt đầu đến hiện tại
     $stmt = $pdo->prepare("
-        SELECT SUM(total_amount) as total_revenue
+        SELECT SUM(total_amount) as total_revenue, COUNT(id) as order_count
         FROM orders
-        WHERE status = 'completed' AND created_at BETWEEN :start_date AND :end_date
+        WHERE status = 'completed'
     ");
-    $stmt->execute(['start_date' => $start_date, 'end_date' => $end_date . ' 23:59:59']);
-    $total_revenue = $stmt->fetchColumn() ?: 0;
+    $stmt->execute();
+    $total_revenue_data = $stmt->fetch(PDO::FETCH_ASSOC);
+    $total_revenue = $total_revenue_data['total_revenue'] ?: 0;
+    $total_order_count = $total_revenue_data['order_count'] ?: 0;
 
-    // Lấy doanh thu theo ngày/tháng/năm
+    // Lấy doanh thu theo ngày/tháng/năm cho biểu đồ
+    if ($selected_year !== 'all') {
+        $start_date = $selected_year . '-01-01';
+        $end_date = $selected_year . '-12-31';
+        $filter_type = 'month';
+    }
+
     if ($filter_type === 'day') {
         $stmt = $pdo->prepare("
             SELECT DATE_FORMAT(created_at, '%Y-%m-%d') as period, SUM(total_amount) as revenue
@@ -165,6 +187,15 @@ try {
     ");
     $stmt->execute(['current_date' => $current_date]);
     $daily_revenue = $stmt->fetchColumn() ?: 0;
+
+    // Lấy doanh thu tháng hiện tại
+    $stmt = $pdo->prepare("
+        SELECT SUM(total_amount) as monthly_revenue
+        FROM orders
+        WHERE status = 'completed' AND created_at BETWEEN :month_start AND :month_end
+    ");
+    $stmt->execute(['month_start' => $current_month_start, 'month_end' => $current_month_end . ' 23:59:59']);
+    $monthly_revenue = $stmt->fetchColumn() ?: 0;
 } catch (PDOException $e) {
     $error_message = 'Lỗi khi lấy dữ liệu: ' . $e->getMessage();
 }
@@ -224,18 +255,6 @@ try {
                 </p>
                 <a href="?page=admin&subpage=admin-inventory" class="btn">Quản lý kho</a>
             </div>
-            <div class="dashboard-card">
-                <i class="fas fa-money-bill-wave"></i>
-                <h3>Tổng doanh thu năm <?php echo $current_year; ?></h3>
-                <p><?= number_format($yearly_revenue, 0, ',', '.') ?> VNĐ</p>
-                <a href="?page=admin&subpage=admin-orders&status=completed" class="btn">Xem chi tiết</a>
-            </div>
-            <div class="dashboard-card">
-                <i class="fas fa-calendar-day"></i>
-                <h3>Doanh thu ngày <?php echo date('d/m/Y'); ?></h3>
-                <p><?= number_format($daily_revenue, 0, ',', '.') ?> VNĐ</p>
-                <a href="?page=admin&subpage=admin-orders&status=completed" class="btn">Xem chi tiết</a>
-            </div>
         </div>
 
         <div class="admin-dashboard revenue-section">
@@ -253,6 +272,18 @@ try {
                     </select>
                 </div>
                 <div class="form-group">
+                    <label for="selected_year">Năm</label>
+                    <select id="selected_year" name="selected_year" required>
+                        <option value="all" <?php echo $selected_year === 'all' ? 'selected' : ''; ?>>Tất cả</option>
+                        <?php foreach ($available_years as $year): ?>
+                            <option value="<?= htmlspecialchars($year) ?>"
+                                <?php echo $selected_year === $year ? 'selected' : ''; ?>>
+                                <?= htmlspecialchars($year) ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <div class="form-group">
                     <label for="start_date">Từ ngày</label>
                     <input type="date" id="start_date" name="start_date" value="<?= htmlspecialchars($start_date) ?>"
                         required>
@@ -263,17 +294,38 @@ try {
                         required>
                 </div>
                 <button type="submit" class="btn">Lọc</button>
-                <a href="?page=admin&subpage=dashboard&start_date=<?= htmlspecialchars($start_date) ?>&end_date=<?= htmlspecialchars($end_date) ?>&filter_type=<?= htmlspecialchars($filter_type) ?>&export=xlsx"
+                <a href="?page=admin&subpage=dashboard&start_date=<?= htmlspecialchars($start_date) ?>&end_date=<?= htmlspecialchars($end_date) ?>&filter_type=<?= htmlspecialchars($filter_type) ?>&selected_year=<?= htmlspecialchars($selected_year) ?>&export=xlsx"
                     class="btn btn-export">
                     <i class="fas fa-download"></i> Xuất Excel
                 </a>
             </form>
 
-            <div class="dashboard-card">
-                <i class="fas fa-money-bill-wave"></i>
-                <h3>Tổng doanh thu</h3>
-                <p><?= number_format($total_revenue, 0, ',', '.') ?> VNĐ</p>
-                <a href="?page=admin&subpage=admin-orders&status=completed" class="btn">Xem chi tiết</a>
+            <div class="revenue-cards">
+                <div class="dashboard-card"
+                    title="Tổng doanh thu từ lúc bắt đầu kinh doanh đến hiện tại. Số đơn hàng: <?php echo $total_order_count; ?>">
+                    <i class="fas fa-money-bill-wave"></i>
+                    <h3>Tổng doanh thu </h3>
+                    <p><?= number_format($total_revenue, 0, ',', '.') ?> VNĐ</p>
+                    <a href="?page=admin&subpage=admin-orders&status=completed" class="btn">Xem chi tiết</a>
+                </div>
+                <div class="dashboard-card" title="Doanh thu năm <?php echo $current_year; ?>">
+                    <i class="fas fa-money-bill-wave"></i>
+                    <h3>Doanh thu năm <?php echo $current_year; ?></h3>
+                    <p><?= number_format($yearly_revenue, 0, ',', '.') ?> VNĐ</p>
+                    <a href="?page=admin&subpage=admin-orders&status=completed" class="btn">Xem chi tiết</a>
+                </div>
+                <div class="dashboard-card" title="Doanh thu ngày <?php echo date('d/m/Y'); ?>">
+                    <i class="fas fa-calendar-day"></i>
+                    <h3>Doanh thu ngày <?php echo date('d/m/Y'); ?></h3>
+                    <p><?= number_format($daily_revenue, 0, ',', '.') ?> VNĐ</p>
+                    <a href="?page=admin&subpage=admin-orders&status=completed" class="btn">Xem chi tiết</a>
+                </div>
+                <div class="dashboard-card" title="Doanh thu tháng <?php echo date('m/Y'); ?>">
+                    <i class="fas fa-calendar-alt"></i>
+                    <h3>Doanh thu tháng <?php echo date('m/Y'); ?></h3>
+                    <p><?= number_format($monthly_revenue, 0, ',', '.') ?> VNĐ</p>
+                    <a href="?page=admin&subpage=admin-orders&status=completed" class="btn">Xem chi tiết</a>
+                </div>
             </div>
 
             <div class="revenue-chart">
@@ -283,6 +335,7 @@ try {
                     const filterType = '<?php echo $filter_type; ?>';
                     const start_date = '<?php echo $start_date; ?>';
                     const end_date = '<?php echo $end_date; ?>';
+                    const selected_year = '<?php echo $selected_year; ?>';
                 </script>
             </div>
         </div>
