@@ -12,7 +12,7 @@ function initFilterToggle() {
   if (productsHeader && leftBar) {
     const filterToggle = document.createElement("button");
     filterToggle.classList.add("filter-toggle");
-    filterToggle.textContent = "Lọc sản phẩm";
+
     productsHeader.prepend(filterToggle);
 
     filterToggle.addEventListener("click", function () {
