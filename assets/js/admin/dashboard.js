@@ -1,34 +1,65 @@
 document.addEventListener("DOMContentLoaded", function () {
-  // Lấy canvas
   const ctx = document.getElementById("revenueChart").getContext("2d");
 
-  // Tạo nhãn cố định từ tháng 1 đến tháng 12
-  const labels = [
-    "Tháng 1",
-    "Tháng 2",
-    "Tháng 3",
-    "Tháng 4",
-    "Tháng 5",
-    "Tháng 6",
-    "Tháng 7",
-    "Tháng 8",
-    "Tháng 9",
-    "Tháng 10",
-    "Tháng 11",
-    "Tháng 12",
-  ];
+  function formatDateLabel(dateStr) {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString("vi-VN", {
+      day: "2-digit",
+      month: "2-digit",
+    });
+  }
 
-  // Khởi tạo dữ liệu doanh thu với giá trị 0 cho tất cả các tháng
-  const data = new Array(12).fill(0);
+  let labels = [];
+  let data = [];
 
-  // Ánh xạ dữ liệu từ monthlyRevenue
-  monthlyRevenue.forEach((item) => {
-    // Giả sử item.month có định dạng "YYYY-MM"
-    const monthIndex = parseInt(item.month.split("-")[1]) - 1; // Lấy số tháng (0-11)
-    data[monthIndex] = parseFloat(item.revenue);
-  });
+  if (filterType === "day") {
+    const start = new Date(start_date);
+    const end = new Date(end_date);
+    const dayCount = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
 
-  // Tạo biểu đồ cột
+    labels = Array.from({ length: dayCount }, (_, i) => {
+      const date = new Date(start);
+      date.setDate(start.getDate() + i);
+      return date.toISOString().split("T")[0];
+    });
+
+    data = new Array(dayCount).fill(0);
+
+    revenueData.forEach((item) => {
+      const index = labels.indexOf(item.period);
+      if (index !== -1) {
+        data[index] = parseFloat(item.revenue);
+      }
+    });
+
+    labels = labels.map(formatDateLabel);
+  } else if (filterType === "month") {
+    labels = [
+      "Tháng 1",
+      "Tháng 2",
+      "Tháng 3",
+      "Tháng 4",
+      "Tháng 5",
+      "Tháng 6",
+      "Tháng 7",
+      "Tháng 8",
+      "Tháng 9",
+      "Tháng 10",
+      "Tháng 11",
+      "Tháng 12",
+    ];
+
+    data = new Array(12).fill(0);
+
+    revenueData.forEach((item) => {
+      const monthIndex = parseInt(item.period.split("-")[1]) - 1;
+      data[monthIndex] = parseFloat(item.revenue);
+    });
+  } else {
+    labels = revenueData.map((item) => `Năm ${item.period}`);
+    data = revenueData.map((item) => parseFloat(item.revenue));
+  }
+
   new Chart(ctx, {
     type: "bar",
     data: {
@@ -37,8 +68,8 @@ document.addEventListener("DOMContentLoaded", function () {
         {
           label: "Doanh thu (VNĐ)",
           data: data,
-          backgroundColor: "rgba(139, 94, 52, 0.6)", // Màu cognac-brown nhạt
-          borderColor: "rgba(139, 94, 52, 1)", // Màu cognac-brown đậm
+          backgroundColor: "rgba(139, 94, 52, 0.6)",
+          borderColor: "rgba(139, 94, 52, 1)",
           borderWidth: 1,
         },
       ],
@@ -62,7 +93,12 @@ document.addEventListener("DOMContentLoaded", function () {
         x: {
           title: {
             display: true,
-            text: "Tháng",
+            text:
+              filterType === "day"
+                ? "Ngày"
+                : filterType === "month"
+                ? "Tháng"
+                : "Năm",
           },
         },
       },

@@ -4,7 +4,7 @@ if (!defined('APP_START')) {
 }
 
 require_once ROOT_PATH . '/includes/db_connect.php';
-require_once ROOT_PATH . '/vendor/autoload.php'; // Nạp autoload của Composer
+require_once ROOT_PATH . '/vendor/autoload.php';
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -14,8 +14,13 @@ $success_message = '';
 $error_message = '';
 $start_date = filter_input(INPUT_GET, 'start_date', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?: date('Y-m-01');
 $end_date = filter_input(INPUT_GET, 'end_date', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?: date('Y-m-t');
+$filter_type = filter_input(INPUT_GET, 'filter_type', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?: 'month';
 $total_revenue = 0;
-$monthly_revenue = [];
+$revenue_data = [];
+$yearly_revenue = 0;
+$daily_revenue = 0;
+$current_year = date('Y');
+$current_date = date('Y-m-d');
 
 // Xử lý xuất Excel
 if (isset($_GET['export']) && $_GET['export'] === 'xlsx') {
@@ -36,33 +41,27 @@ if (isset($_GET['export']) && $_GET['export'] === 'xlsx') {
         $stmt->execute(['start_date' => $start_date, 'end_date' => $end_date . ' 23:59:59']);
         $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        // Tạo spreadsheet
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 
-        // Định nghĩa tiêu đề
         $sheet->setCellValue('A1', 'ID Đơn hàng');
         $sheet->setCellValue('B1', 'Khách hàng');
         $sheet->setCellValue('C1', 'Tổng tiền (VNĐ)');
         $sheet->setCellValue('D1', 'Ngày đặt');
 
-        // Định dạng cột và độ rộng
         $sheet->getColumnDimension('A')->setWidth(15);
         $sheet->getColumnDimension('B')->setWidth(20);
         $sheet->getColumnDimension('C')->setWidth(15);
         $sheet->getColumnDimension('D')->setAutoSize(true);
 
-        // Định dạng số tiền
         $sheet->getStyle('C2:C' . (count($orders) + 1))
             ->getNumberFormat()
             ->setFormatCode('#,##0');
 
-        // Định dạng ngày tháng
         $sheet->getStyle('D2:D' . (count($orders) + 1))
             ->getNumberFormat()
             ->setFormatCode('dd/mm/yyyy hh:mm:ss');
 
-        // Ghi dữ liệu
         $row = 2;
         foreach ($orders as $order) {
             $sheet->setCellValue('A' . $row, $order['id']);
@@ -73,7 +72,6 @@ if (isset($_GET['export']) && $_GET['export'] === 'xlsx') {
             $row++;
         }
 
-        // Xuất file
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment; filename="revenue_report_' . $start_date . '_to_' . $end_date . '.xlsx"');
         header('Cache-Control: max-age=0');
@@ -98,29 +96,23 @@ if (!DateTime::createFromFormat('Y-m-d', $start_date) || !DateTime::createFromFo
     $end_date = date('Y-m-t');
 }
 
-// Lấy thống kê kho hàng và doanh thu
+// Lấy thống kê
 try {
-    // Tổng số sản phẩm
     $stmt = $pdo->query("SELECT COUNT(*) as total_products FROM products");
     $total_products = $stmt->fetchColumn();
 
-    // Tổng số lượng tồn kho
     $stmt = $pdo->query("SELECT SUM(stock) as total_stock FROM products");
     $total_stock = $stmt->fetchColumn() ?: 0;
 
-    // Số sản phẩm gần hết hàng (stock < 10)
     $stmt = $pdo->query("SELECT COUNT(*) as low_stock FROM products WHERE stock < 10");
     $low_stock = $stmt->fetchColumn();
 
-    // Tổng số người dùng
     $stmt = $pdo->query("SELECT COUNT(*) as total_users FROM users");
     $total_users = $stmt->fetchColumn();
 
-    // Tổng số đơn hàng
     $stmt = $pdo->query("SELECT COUNT(*) as total_orders FROM orders");
     $total_orders = $stmt->fetchColumn();
 
-    // Tổng doanh thu từ các đơn hàng hoàn thành trong khoảng thời gian
     $stmt = $pdo->prepare("
         SELECT SUM(total_amount) as total_revenue
         FROM orders
@@ -129,16 +121,50 @@ try {
     $stmt->execute(['start_date' => $start_date, 'end_date' => $end_date . ' 23:59:59']);
     $total_revenue = $stmt->fetchColumn() ?: 0;
 
-    // Lấy doanh thu theo tháng
-    $stmt = $pdo->prepare("
-        SELECT DATE_FORMAT(created_at, '%Y-%m') as month, SUM(total_amount) as revenue
-        FROM orders
-        WHERE status = 'completed' AND created_at BETWEEN :start_date AND :end_date
-        GROUP BY DATE_FORMAT(created_at, '%Y-%m')
-        ORDER BY month ASC
-    ");
+    // Lấy doanh thu theo ngày/tháng/năm
+    if ($filter_type === 'day') {
+        $stmt = $pdo->prepare("
+            SELECT DATE_FORMAT(created_at, '%Y-%m-%d') as period, SUM(total_amount) as revenue
+            FROM orders
+            WHERE status = 'completed' AND created_at BETWEEN :start_date AND :end_date
+            GROUP BY DATE_FORMAT(created_at, '%Y-%m-%d')
+            ORDER BY period ASC
+        ");
+    } elseif ($filter_type === 'month') {
+        $stmt = $pdo->prepare("
+            SELECT DATE_FORMAT(created_at, '%Y-%m') as period, SUM(total_amount) as revenue
+            FROM orders
+            WHERE status = 'completed' AND created_at BETWEEN :start_date AND :end_date
+            GROUP BY DATE_FORMAT(created_at, '%Y-%m')
+            ORDER BY period ASC
+        ");
+    } else {
+        $stmt = $pdo->prepare("
+            SELECT DATE_FORMAT(created_at, '%Y') as period, SUM(total_amount) as revenue
+            FROM orders
+            WHERE status = 'completed' AND created_at BETWEEN :start_date AND :end_date
+            GROUP BY DATE_FORMAT(created_at, '%Y')
+            ORDER BY period ASC
+        ");
+    }
     $stmt->execute(['start_date' => $start_date, 'end_date' => $end_date . ' 23:59:59']);
-    $monthly_revenue = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $revenue_data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    $stmt = $pdo->prepare("
+        SELECT SUM(total_amount) as yearly_revenue
+        FROM orders
+        WHERE status = 'completed' AND YEAR(created_at) = :year
+    ");
+    $stmt->execute(['year' => $current_year]);
+    $yearly_revenue = $stmt->fetchColumn() ?: 0;
+
+    $stmt = $pdo->prepare("
+        SELECT SUM(total_amount) as daily_revenue
+        FROM orders
+        WHERE status = 'completed' AND DATE(created_at) = :current_date
+    ");
+    $stmt->execute(['current_date' => $current_date]);
+    $daily_revenue = $stmt->fetchColumn() ?: 0;
 } catch (PDOException $e) {
     $error_message = 'Lỗi khi lấy dữ liệu: ' . $e->getMessage();
 }
@@ -198,15 +224,34 @@ try {
                 </p>
                 <a href="?page=admin&subpage=admin-inventory" class="btn">Quản lý kho</a>
             </div>
+            <div class="dashboard-card">
+                <i class="fas fa-money-bill-wave"></i>
+                <h3>Tổng doanh thu năm <?php echo $current_year; ?></h3>
+                <p><?= number_format($yearly_revenue, 0, ',', '.') ?> VNĐ</p>
+                <a href="?page=admin&subpage=admin-orders&status=completed" class="btn">Xem chi tiết</a>
+            </div>
+            <div class="dashboard-card">
+                <i class="fas fa-calendar-day"></i>
+                <h3>Doanh thu ngày <?php echo date('d/m/Y'); ?></h3>
+                <p><?= number_format($daily_revenue, 0, ',', '.') ?> VNĐ</p>
+                <a href="?page=admin&subpage=admin-orders&status=completed" class="btn">Xem chi tiết</a>
+            </div>
         </div>
 
-        <!-- Revenue Section -->
         <div class="admin-dashboard revenue-section">
             <h2>Tổng doanh thu</h2>
-            <!-- Filter Form -->
             <form action="?page=admin&subpage=dashboard" method="get" class="report-filter-form">
                 <input type="hidden" name="page" value="admin">
                 <input type="hidden" name="subpage" value="dashboard">
+                <div class="form-group">
+                    <label for="filter_type">Kiểu hiển thị</label>
+                    <select id="filter_type" name="filter_type" required>
+                        <option value="day" <?php echo $filter_type === 'day' ? 'selected' : ''; ?>>Theo ngày</option>
+                        <option value="month" <?php echo $filter_type === 'month' ? 'selected' : ''; ?>>Theo tháng
+                        </option>
+                        <option value="year" <?php echo $filter_type === 'year' ? 'selected' : ''; ?>>Theo năm</option>
+                    </select>
+                </div>
                 <div class="form-group">
                     <label for="start_date">Từ ngày</label>
                     <input type="date" id="start_date" name="start_date" value="<?= htmlspecialchars($start_date) ?>"
@@ -218,13 +263,12 @@ try {
                         required>
                 </div>
                 <button type="submit" class="btn">Lọc</button>
-                <a href="?page=admin&subpage=dashboard&start_date=<?= htmlspecialchars($start_date) ?>&end_date=<?= htmlspecialchars($end_date) ?>&export=xlsx"
+                <a href="?page=admin&subpage=dashboard&start_date=<?= htmlspecialchars($start_date) ?>&end_date=<?= htmlspecialchars($end_date) ?>&filter_type=<?= htmlspecialchars($filter_type) ?>&export=xlsx"
                     class="btn btn-export">
                     <i class="fas fa-download"></i> Xuất Excel
                 </a>
             </form>
 
-            <!-- Revenue Card -->
             <div class="dashboard-card">
                 <i class="fas fa-money-bill-wave"></i>
                 <h3>Tổng doanh thu</h3>
@@ -232,11 +276,13 @@ try {
                 <a href="?page=admin&subpage=admin-orders&status=completed" class="btn">Xem chi tiết</a>
             </div>
 
-            <!-- Revenue Chart -->
             <div class="revenue-chart">
                 <canvas id="revenueChart"></canvas>
                 <script>
-                    const monthlyRevenue = <?php echo json_encode($monthly_revenue); ?>;
+                    const revenueData = <?php echo json_encode($revenue_data); ?>;
+                    const filterType = '<?php echo $filter_type; ?>';
+                    const start_date = '<?php echo $start_date; ?>';
+                    const end_date = '<?php echo $end_date; ?>';
                 </script>
             </div>
         </div>

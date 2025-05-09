@@ -6,7 +6,7 @@
 }
 
 .admin-dashboard.revenue-section {
-    display: block; /* Bỏ grid cho phần Tổng doanh thu */
+    display: block;
 }
 
 .dashboard-card {
@@ -65,7 +65,8 @@
     margin-bottom: 5px;
 }
 
-.report-filter-form input[type="date"] {
+.report-filter-form input[type="date"],
+.report-filter-form select {
     width: 100%;
     padding: 8px;
     border: 1px solid var(--text-light);
@@ -102,8 +103,8 @@
 }
 
 .revenue-section .dashboard-card {
-    max-width: 400px; /* Giới hạn chiều rộng thẻ tổng doanh thu */
-    margin: 0 auto; /* Căn giữa thẻ */
+    max-width: 400px;
+    margin: 0 auto;
     margin-bottom: 20px;
 }
 
@@ -136,7 +137,7 @@
     }
 
     .revenue-section .dashboard-card {
-        max-width: 100%; /* Mở rộng thẻ trên mobile */
+        max-width: 100%;
     }
 
     .revenue-chart {
@@ -144,6 +145,6 @@
     }
 
     .revenue-chart canvas {
-        height: 300px !important; /* Giảm chiều cao trên mobile */
+        height: 300px !important;
     }
 }
