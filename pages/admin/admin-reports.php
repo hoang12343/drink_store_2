@@ -280,7 +280,7 @@ ob_end_clean();
                 </div>
                 <div class="summary-card">
                     <i class="fas fa-user"></i>
-                    <h3>Người dùng thường</h3>
+                    <h3>Người dùng</h3>
                     <p><?= htmlspecialchars($user_count) ?></p>
                 </div>
             </div>

@@ -52,8 +52,10 @@ function route_request($default = 'home'): string
             'admin-inventory',
             'admin-orders',
             'admin-users',
+            'admin-contacts',
             'admin-reports',
-            'admin-settings'
+            'admin-settings',
+            'reply_contact'
         ];
         return in_array($admin_subpage, $valid_admin_subpages) ? "admin/$admin_subpage" : 'admin/dashboard';
     }

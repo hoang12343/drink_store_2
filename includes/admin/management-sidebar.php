@@ -30,6 +30,9 @@ if (!defined('APP_START')) {
                 <li><a href="?page=admin&subpage=admin-users"
                         class="<?php echo $admin_subpage === 'admin-users' ? 'active' : ''; ?>"><i
                             class="fas fa-users"></i> Người dùng</a></li>
+                <li><a href="?page=admin&subpage=admin-contacts"
+                        class="<?php echo $admin_subpage === 'admin-contacts' ? 'active' : ''; ?>"><i
+                            class="fas fa-envelope"></i> Liên hệ</a></li>
                 <li><a href="?page=admin&subpage=admin-reports"
                         class="<?php echo $admin_subpage === 'admin-reports' ? 'active' : ''; ?>"><i
                             class="fas fa-chart-bar"></i> Báo cáo</a></li>

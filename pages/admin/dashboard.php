@@ -160,10 +160,6 @@ try {
     <section class="content admin-page">
         <h1>Tổng quan</h1>
 
-        <?php if (isset($error_message)): ?>
-            <div class="form-message error"><?= htmlspecialchars($error_message) ?></div>
-        <?php endif; ?>
-
         <div class="admin-dashboard">
             <div class="dashboard-card">
                 <i class="fas fa-boxes"></i>

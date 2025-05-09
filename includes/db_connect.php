@@ -1,4 +1,9 @@
 <?php
+// Khởi tạo session
+if (!isset($_SESSION)) {
+    session_start();
+}
+
 if (!defined('APP_START')) {
     define('APP_START', true);
 }
@@ -21,5 +26,5 @@ try {
     ]);
 } catch (PDOException $e) {
     error_log("Database connection error: " . $e->getMessage());
-    throw $e; // Ném ngoại lệ để mã gọi xử lý
+    throw $e;
 }

@@ -145,6 +145,221 @@
     height: 400px !important;
 }
 
+.table-responsive {
+    overflow-x: auto;
+    margin-bottom: 20px;
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+    box-shadow: 0 2px 10px var(--shadow-color);
+    border-radius: 8px;
+}
+
+.admin-table th,
+.admin-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--text-light);
+}
+
+.admin-table th {
+    background-color: var(--cognac-brown);
+    color: white;
+    font-size: 0.9rem;
+}
+
+.admin-table td {
+    font-size: 0.85rem;
+    color: var(--text-dark);
+}
+
+.admin-table tr:hover {
+    background-color: #f9f9f9;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 0.85rem;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+}
+
+.btn-reply {
+    background-color: #007bff;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    margin-left: 5px;
+}
+
+.btn-reply:hover {
+    background-color: #0056b3;
+}
+
+.btn-toggle-read, .btn-toggle-important {
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    border: none;
+    cursor: pointer;
+    margin: 2px;
+}
+
+.btn-toggle-read.active, .btn-toggle-read[data-read="1"] {
+    background-color: #28a745;
+    color: white;
+}
+
+.btn-toggle-read:not(.active), .btn-toggle-read[data-read="0"] {
+    background-color: #6c757d;
+    color: white;
+}
+
+.btn-toggle-important.active, .btn-toggle-important[data-important="1"] {
+    background-color: #ffc107;
+    color: black;
+}
+
+.btn-toggle-important:not(.active), .btn-toggle-important[data-important="0"] {
+    background-color: #6c757d;
+    color: white;
+}
+
+.btn-export {
+    background-color: #28a745;
+    color: white;
+}
+
+.btn-export:hover {
+    background-color: #218838;
+}
+
+.btn-export i {
+    margin-right: 5px;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.pagination .btn {
+    padding: 8px 12px;
+    font-size: 0.9rem;
+    background-color: var(--cognac-brown);
+    color: white;
+    border-radius: 4px;
+    text-decoration: none;
+}
+
+.pagination .btn:hover {
+    background-color: #8b5e34;
+}
+
+.pagination .btn.active {
+    background-color: #6b4e31;
+    cursor: default;
+}
+
+.form-message {
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+
+.form-message.success {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.form-message.error {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    max-width: 500px;
+    width: 100%;
+}
+
+.modal-content h2 {
+    margin-bottom: 20px;
+    color: var(--cognac-brown);
+}
+
+.btn-cancel {
+    background-color: #6c757d;
+    margin-left: 10px;
+}
+
+.btn-cancel:hover {
+    background-color: #5a6268;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .admin-table {
+        display: block;
+    }
+    .admin-table thead {
+        display: none;
+    }
+    .admin-table tbody, .admin-table tr {
+        display: block;
+    }
+    .admin-table tr {
+        margin-bottom: 15px;
+        border: 1px solid var(--text-light);
+        border-radius: 4px;
+        padding: 10px;
+    }
+    .admin-table td {
+        display: block;
+        text-align: left;
+        padding: 5px 10px;
+        border: none;
+    }
+    .admin-table td:before {
+        content: attr(data-label);
+        font-weight: bold;
+        display: block;
+        color: var(--cognac-brown);
+        margin-bottom: 5px;
+    }
+    .admin-table td[data-label="Hành Động"], .admin-table td[data-label="Trạng Thái"] {
+        text-align: center;
+    }
+}
+
 @media (max-width: 768px) {
     .admin-dashboard {
         grid-template-columns: 1fr;
