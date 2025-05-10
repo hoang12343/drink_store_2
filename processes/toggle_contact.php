@@ -1,21 +1,22 @@
 <?php
 session_start();
 define('APP_START', true);
-require_once '../includes/db_connect.php';
+define('ROOT_PATH', __DIR__ . '/..');
+require_once ROOT_PATH . '/includes/db_connect.php';
+
+// Kiểm tra quyền quản trị
+if (!isset($_SESSION['logged_in']) || !isset($_SESSION['is_admin']) || $_SESSION['is_admin'] !== 1) {
+    header('Content-Type: application/json');
+    echo json_encode(['success' => false, 'message' => 'Không có quyền truy cập']);
+    exit;
+}
 
 header('Content-Type: application/json');
 $response = ['success' => false, 'message' => 'Lỗi không xác định'];
 
-// Chuyển từ GET sang POST
 $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
 $action = filter_input(INPUT_POST, 'action', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 $value = filter_input(INPUT_POST, 'value', FILTER_VALIDATE_INT);
-
-// Loại bỏ kiểm tra CSRF token
-// $csrf_token = filter_input(INPUT_POST, 'csrf_token', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-// if (!$csrf_token || $csrf_token !== $_SESSION['csrf_token']) {
-//     $response['message'] = 'CSRF token không hợp lệ';
-// } else
 
 if ($id && in_array($action, ['read', 'important']) && in_array($value, [0, 1])) {
     try {

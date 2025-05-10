@@ -3,11 +3,7 @@ if (!defined('APP_START')) {
     exit('No direct access');
 }
 
-// Đảm bảo CSRF token được tạo
-if (!isset($_SESSION['csrf_token'])) {
-    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-    error_log("Created new CSRF token in contact.php: " . $_SESSION['csrf_token']);
-}
+
 ?>
 
 <!DOCTYPE html>

@@ -3,6 +3,9 @@ if (!defined('APP_START')) {
     exit('No direct access');
 }
 
+// Thêm định nghĩa cho DEVELOPMENT_MODE
+define('DEVELOPMENT_MODE', true); // Đặt thành false khi triển khai sản phẩm
+
 define('ZALOPAY_CONFIG', [
     'app_id' => '553',
     'key1' => '9phuAOYhan4urywHTh0ndEXiV3pKHr5Q',

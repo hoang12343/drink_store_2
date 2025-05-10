@@ -2,40 +2,18 @@
 if (!defined('APP_START')) {
     exit('No direct access');
 }
-
-// Fallback for random_bytes if not available
-if (!function_exists('random_bytes')) {
-    function random_bytes($length)
-    {
-        $bytes = '';
-        if (function_exists('openssl_random_pseudo_bytes')) {
-            $bytes = openssl_random_pseudo_bytes($length);
-        } elseif (is_readable('/dev/urandom') && ($handle = fopen('/dev/urandom', 'rb'))) {
-            $bytes = fread($handle, $length);
-            fclose($handle);
-        } else {
-            throw new Exception('No secure random number generator available');
-        }
-        if (strlen($bytes) !== $length) {
-            throw new Exception('Unable to generate random bytes');
-        }
-        return $bytes;
-    }
+define('ROOT_PATH', __DIR__ . '/..');
+// Kiểm tra nếu BASE_URL chưa được định nghĩa để tránh lỗi
+if (!defined('BASE_URL')) {
+    define('BASE_URL', rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\') . '/');
 }
 
 require_once ROOT_PATH . '/includes/db_connect.php';
 require_once ROOT_PATH . '/vendor/autoload.php';
 
-// Import namespaces at the top
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
-// Loại bỏ khởi tạo CSRF token
-// if (!isset($_SESSION['csrf_token'])) {
-//     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-// }
-
-// Khởi tạo biến
 $success_message = filter_input(INPUT_GET, 'success', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?: '';
 $error_message = filter_input(INPUT_GET, 'error', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?: '';
 $search_name = filter_input(INPUT_GET, 'search_name', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?: '';
@@ -45,25 +23,18 @@ $current_page = filter_input(INPUT_GET, 'p', FILTER_VALIDATE_INT, ['options' => 
 $items_per_page = 10;
 $offset = ($current_page - 1) * $items_per_page;
 $contacts = [];
-$total_pages = 1; // Đảm bảo biến này luôn được định nghĩa
+$total_pages = 1;
 
-// Xử lý các hành động
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Xử lý xóa liên hệ
     if (isset($_POST['action']) && $_POST['action'] === 'delete') {
         $contact_id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
-        $csrf_token = filter_input(INPUT_POST, 'csrf_token', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
-        // Kiểm tra CSRF token
-        if (!$csrf_token || !isset($_SESSION['csrf_token']) || $csrf_token !== $_SESSION['csrf_token']) {
-            $error_message = 'Yêu cầu không hợp lệ';
-        } else if ($contact_id) {
+        if ($contact_id) {
             try {
                 $stmt = $pdo->prepare("DELETE FROM contacts WHERE id = :id");
                 $stmt->bindValue(':id', $contact_id, PDO::PARAM_INT);
                 $stmt->execute();
 
-                // Xóa cache nếu có
                 if (function_exists('glob')) {
                     array_map('unlink', glob(ROOT_PATH . '/cache/contacts_*.cache'));
                 }
@@ -76,7 +47,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Xây dựng truy vấn
 $query = "SELECT * FROM contacts WHERE 1=1";
 $params = [];
 if ($search_name) {
@@ -92,26 +62,21 @@ if ($search_subject) {
     $params[':subject'] = "%$search_subject%";
 }
 
-// Bộ nhớ đệm
 $cache_key = 'contacts_' . md5($query . serialize($params) . $offset . $items_per_page);
 $cache_file = ROOT_PATH . '/cache/' . $cache_key . '.cache';
-$cache_time = 300; // 5 phút
+$cache_time = 300;
 
-// Lấy dữ liệu
 try {
-    // Kiểm tra cache
     if (file_exists($cache_file) && (time() - filemtime($cache_file)) < $cache_time) {
         $cached_data = unserialize(file_get_contents($cache_file));
         $contacts = $cached_data['contacts'] ?? [];
         $total_pages = $cached_data['total_pages'] ?? 1;
     } else {
-        // Đếm tổng số bản ghi
         $count_stmt = $pdo->prepare($query);
         $count_stmt->execute($params);
         $total_records = $count_stmt->rowCount();
         $total_pages = ceil($total_records / $items_per_page);
 
-        // Lấy dữ liệu với giới hạn
         $query .= " ORDER BY created_at DESC LIMIT :offset, :items_per_page";
         $stmt = $pdo->prepare($query);
         foreach ($params as $key => $value) {
@@ -122,7 +87,6 @@ try {
         $stmt->execute();
         $contacts = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        // Lưu cache
         if (!is_dir(ROOT_PATH . '/cache')) {
             mkdir(ROOT_PATH . '/cache', 0755, true);
         }
@@ -137,7 +101,6 @@ try {
     $total_pages = 1;
 }
 
-// Xử lý xuất Excel
 if (isset($_GET['export']) && $_GET['export'] === 'xlsx') {
     try {
         $stmt = $pdo->prepare($query);
@@ -151,11 +114,9 @@ if (isset($_GET['export']) && $_GET['export'] === 'xlsx') {
         $sheet = $spreadsheet->getActiveSheet();
         $sheet->setTitle('Danh sách Liên hệ');
 
-        // Đặt tiêu đề cột
         $headers = ['ID', 'Họ và Tên', 'Email', 'Số Điện Thoại', 'Tiêu Đề', 'Nội Dung', 'Ngày Gửi', 'Đã Đọc', 'Quan Trọng'];
         $sheet->fromArray($headers, NULL, 'A1');
 
-        // Điền dữ liệu
         $row = 2;
         foreach ($contacts as $contact) {
             $sheet->fromArray([
@@ -172,12 +133,10 @@ if (isset($_GET['export']) && $_GET['export'] === 'xlsx') {
             $row++;
         }
 
-        // Tự động điều chỉnh độ rộng cột
         foreach (range('A', 'I') as $col) {
             $sheet->getColumnDimension($col)->setAutoSize(true);
         }
 
-        // Xuất file
         $writer = new Xlsx($spreadsheet);
         $filename = 'contacts_' . date('Ymd_His') . '.xlsx';
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -198,20 +157,19 @@ if (isset($_GET['export']) && $_GET['export'] === 'xlsx') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quản lý Liên hệ - Quản trị</title>
-    <link rel="stylesheet" href="assets/css/admin/admin-variables.css?v=<?php echo time(); ?>">
-    <link rel="stylesheet" href="assets/css/admin/admin-header.css?v=<?php echo time(); ?>">
-    <link rel="stylesheet" href="assets/css/admin/admin-sidebar.css?v=<?php echo time(); ?>">
-    <link rel="stylesheet" href="assets/css/admin/admin-content.css?v=<?php echo time(); ?>">
-    <link rel="stylesheet" href="assets/css/admin/admin-dashboard.css?v=<?php echo time(); ?>">
-    <link rel="stylesheet" href="assets/css/admin/admin-contacts.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>assets/css/admin/admin-variables.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>assets/css/admin/admin-header.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>assets/css/admin/admin-sidebar.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>assets/css/admin/admin-content.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>assets/css/admin/admin-dashboard.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>assets/css/admin/admin-contacts.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <script src="assets/js/admin.js" defer></script>
-    <script src="assets/js/admin/admin-contacts.js" defer></script>
+    <script src="<?php echo BASE_URL; ?>assets/js/admin.js" defer></script>
+    <script src="<?php echo BASE_URL; ?>assets/js/admin/admin-contacts.js" defer></script>
 </head>
 
 <body>
     <section class="content admin-page">
-        <input type="hidden" id="csrf_token" value="">
         <h1>Quản lý Liên hệ</h1>
 
         <?php if ($success_message): ?>
@@ -225,7 +183,6 @@ if (isset($_GET['export']) && $_GET['export'] === 'xlsx') {
         <form action="?page=admin&subpage=admin-contacts" method="get" class="report-filter-form">
             <input type="hidden" name="page" value="admin">
             <input type="hidden" name="subpage" value="admin-contacts">
-            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
             <div class="form-group">
                 <label for="search_name">Họ và Tên</label>
                 <input type="text" id="search_name" name="search_name"
@@ -294,8 +251,6 @@ if (isset($_GET['export']) && $_GET['export'] === 'xlsx') {
                                         style="display:inline;">
                                         <input type="hidden" name="action" value="delete">
                                         <input type="hidden" name="id" value="<?php echo $contact['id']; ?>">
-                                        <input type="hidden" name="csrf_token"
-                                            value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
                                         <button type="submit" class="btn btn-danger">
                                             <i class="fas fa-trash"></i> Xóa
                                         </button>
@@ -335,10 +290,8 @@ if (isset($_GET['export']) && $_GET['export'] === 'xlsx') {
         <div class="modal" id="replyModal" style="display: none;">
             <div class="modal-content">
                 <h2>Trả lời Tin Nhắn</h2>
-                <form id="replyForm" action="processes/reply_contact.php" method="post">
+                <form id="replyForm" action="<?php echo BASE_URL; ?>processes/reply_contact.php" method="post">
                     <input type="hidden" name="contact_id" id="replyContactId">
-                    <!-- Loại bỏ CSRF token -->
-                    <!-- <input type="hidden" name="csrf_token" id="reply_csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token'] ?? ''); ?>"> -->
                     <div class="form-group">
                         <label for="reply_email">Gửi tới</label>
                         <input type="email" id="reply_email" name="email" readonly>
@@ -362,3 +315,4 @@ if (isset($_GET['export']) && $_GET['export'] === 'xlsx') {
 </body>
 
 </html>
+?>
