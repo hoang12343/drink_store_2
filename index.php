@@ -2,12 +2,11 @@
 define('APP_START', true);
 define('ROOT_PATH', __DIR__);
 
-// Dynamically define BASE_URL to adapt to server directory
+// Định nghĩa BASE_URL động
 define('BASE_URL', rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\') . '/');
 
 // Kết nối database và khởi tạo session
 require_once ROOT_PATH . '/includes/db_connect.php';
-require_once ROOT_PATH . '/includes/session_start.php';
 
 // Xử lý session timeout (30 phút)
 $timeout = 1800;
@@ -43,7 +42,7 @@ function route_request($default = 'home'): string
     ];
     $page = filter_input(INPUT_GET, 'page', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?? $default;
 
-    // Handle admin subpages
+    // Xử lý admin subpages
     if ($page === 'admin') {
         $admin_subpage = filter_input(INPUT_GET, 'subpage', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?? 'dashboard';
         $valid_admin_subpages = [
@@ -55,8 +54,12 @@ function route_request($default = 'home'): string
             'admin-contacts',
             'admin-reports',
             'admin-settings',
-            'reply_contact'
+            'reply_contact' // Thêm để xử lý trả lời liên hệ
         ];
+        if ($admin_subpage === 'reply_contact') {
+            require_once ROOT_PATH . '/processes/reply_contact.php';
+            exit;
+        }
         return in_array($admin_subpage, $valid_admin_subpages) ? "admin/$admin_subpage" : 'admin/dashboard';
     }
 
@@ -97,41 +100,45 @@ if ($page === 'logout') {
     exit;
 }
 
-// Xử lý trang contact_process
+// Xử lý liên hệ
 if ($page === 'contact_process') {
+    // Đảm bảo session và APP_START đã được khởi tạo
+    if (!defined('APP_START')) {
+        define('APP_START', true);
+    }
     require_once ROOT_PATH . '/processes/contact_process.php';
     exit;
 }
 
-// Bao gồm header hoặc admin-header và sidebar cho admin
+// Bao gồm header
 $header_file = str_starts_with($current_page, 'admin/')
     ? ROOT_PATH . '/includes/admin/admin-header.php'
     : ROOT_PATH . '/includes/header.php';
-
-if (!file_exists($header_file)) {
+if (file_exists($header_file)) {
+    include $header_file;
+} else {
     error_log('Missing header file at ' . $header_file);
-    die('Lỗi: Không tìm thấy file header tại ' . $header_file);
+    die('Lỗi: Không tìm thấy file header.');
 }
-include $header_file;
 
+// Bao gồm sidebar cho admin
 if (str_starts_with($current_page, 'admin/')) {
     $sidebar_file = ROOT_PATH . '/includes/admin/management-sidebar.php';
     if (file_exists($sidebar_file)) {
         include $sidebar_file;
     } else {
         error_log('Missing management-sidebar.php at ' . $sidebar_file);
-        echo '<p>Lỗi: Không tìm thấy file sidebar tại ' . $sidebar_file . '</p>';
+        echo '<p>Lỗi: Không tìm thấy file sidebar.</p>';
     }
 }
 ?>
 
 <div class="container">
-    <?php if (isset($_GET['success']) && $_GET['success'] === 'registered'): ?>
-        <div class="form-message success">Đăng ký thành công! Vui lòng đăng nhập.</div>
-    <?php elseif (isset($_GET['timeout']) && $_GET['timeout'] === '1'): ?>
-        <div class="form-message error">Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.</div>
-    <?php elseif (isset($_GET['error'])): ?>
-        <div class="form-message error"><?= htmlspecialchars($_GET['error']) ?></div>
+    <?php if (isset($_SESSION['flash_message'])): ?>
+    <div class="form-message <?php echo $_SESSION['flash_message']['type']; ?>">
+        <?php echo htmlspecialchars($_SESSION['flash_message']['message']); ?>
+    </div>
+    <?php unset($_SESSION['flash_message']); ?>
     <?php endif; ?>
 
     <?php
@@ -144,31 +151,29 @@ if (str_starts_with($current_page, 'admin/')) {
     }
     ?>
 
-    <!-- Include Chatbox (tạm thời bỏ điều kiện ẩn trên trang admin để debug) -->
     <?php
-    $chatbox_file = ROOT_PATH . './pages/components/chatbox.php';
+    $chatbox_file = ROOT_PATH . '/pages/components/chatbox.php';
     if (file_exists($chatbox_file)) {
         include $chatbox_file;
     } else {
-        echo '<p style="color: red;">Lỗi: Không tìm thấy file chatbox.php tại ' . htmlspecialchars($chatbox_file) . '</p>';
         error_log('Missing chatbox.php at ' . $chatbox_file);
+        echo '<p>Lỗi: Không tìm thấy file chatbox.</p>';
     }
     ?>
 </div>
 
 <?php
-// Bao gồm footer cho non-admin pages
 if (!str_starts_with($current_page, 'admin/')) {
     $footer_file = ROOT_PATH . '/includes/footer.php';
     if (file_exists($footer_file)) {
         include $footer_file;
     } else {
         error_log('Missing footer.php at ' . $footer_file);
-        echo '<p>Lỗi: Không tìm thấy file footer tại ' . $footer_file . '</p>';
+        echo '<p>Lỗi: Không tìm thấy file footer.</p>';
     }
 }
 
-// Liên kết JavaScript với kiểm tra file tồn tại
+// Bao gồm JavaScript
 $js_files = [];
 if ($page === 'cart') {
     $js_files[] = ROOT_PATH . '/assets/js/cart.js';
@@ -178,6 +183,8 @@ if ($page === 'cart') {
         $js_files[] = ROOT_PATH . '/assets/js/admin/admin-reports.js';
     } elseif ($page === 'admin/admin-products') {
         $js_files[] = ROOT_PATH . '/assets/js/admin/admin-products.js';
+    } elseif ($page === 'admin/admin-contacts') {
+        $js_files[] = ROOT_PATH . '/assets/js/admin/admin-contacts.js';
     }
 }
 

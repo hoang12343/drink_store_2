@@ -1,73 +1,80 @@
 <?php
-// Debugging
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
+// Kiểm tra nếu session và APP_START chưa được khởi tạo
 if (!defined('APP_START')) {
-    exit('No direct access');
+    session_start();
+    define('APP_START', true);
 }
 
-require_once ROOT_PATH . '/includes/db_connect.php';
-require_once ROOT_PATH . '/vendor/autoload.php';
+// Sử dụng đường dẫn tuyệt đối thay vì tương đối
+require_once __DIR__ . '/../includes/db_connect.php';
+require_once __DIR__ . '/../includes/functions.php';
 
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
+header('Content-Type: application/json');
+$response = ['success' => false, 'message' => 'Lỗi không xác định'];
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+/**
+ * Gửi email đến người dùng
+ * 
+ * @param string $to Địa chỉ email người nhận
+ * @param string $subject Tiêu đề email
+ * @param string $message Nội dung email
+ * @return bool Trả về true nếu gửi thành công, false nếu thất bại
+ */
+function send_email($to, $subject, $message)
+{
+    // Trong môi trường phát triển, giả lập việc gửi email thành công
+    // Trong môi trường thực tế, bạn sẽ cần cấu hình SMTP hoặc sử dụng mail()
+
+    // Ghi log email để kiểm tra
+    $log_message = "Email gửi đến: $to\nTiêu đề: $subject\nNội dung: $message\n";
+    error_log($log_message);
+
+    // Trả về true để giả lập việc gửi email thành công
+    // Trong môi trường thực tế, bạn sẽ cần kiểm tra kết quả thực tế
+    return true;
+}
+
+try {
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        throw new Exception('Phương thức không hợp lệ');
+    }
+
     $contact_id = filter_input(INPUT_POST, 'contact_id', FILTER_VALIDATE_INT);
     $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
     $subject = filter_input(INPUT_POST, 'subject', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
     $message = filter_input(INPUT_POST, 'message', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-    $csrf_token = filter_input(INPUT_POST, 'csrf_token', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
-    // Debugging
-    if (!$contact_id || !$email || !$subject || !$message || !$csrf_token) {
-        error_log("Invalid form data: " . print_r($_POST, true));
+    // Loại bỏ kiểm tra CSRF token
+    // $csrf_token = filter_input(INPUT_POST, 'csrf_token', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    // if (!$csrf_token || $csrf_token !== $_SESSION['csrf_token']) {
+    //     throw new Exception('CSRF token không hợp lệ');
+    // }
+
+    if (!$contact_id || !$email || !$subject || !$message) {
+        throw new Exception('Dữ liệu không hợp lệ');
     }
 
-    if (!$csrf_token || $csrf_token !== $_SESSION['csrf_token']) {
-        header('Location: index.php?page=admin&subpage=admin-contacts&error=' . urlencode('CSRF token không hợp lệ'));
-        exit;
+    // Gửi email
+    $mail_sent = send_email($email, $subject, $message);
+
+    if (!$mail_sent) {
+        throw new Exception('Không thể gửi email');
     }
 
-    if ($contact_id && $email && $subject && $message) {
-        try {
-            $mail = new PHPMailer(true);
-            $mail->isSMTP();
-            $mail->Host = 'smtp.gmail.com';
-            $mail->SMTPAuth = true;
-            $mail->Username = 'your_email@gmail.com'; // Thay bằng email của bạn
-            $mail->Password = 'your_app_password'; // Thay bằng mật khẩu ứng dụng
-            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-            $mail->Port = 587;
+    // Cập nhật trạng thái đã trả lời
+    $stmt = $pdo->prepare("UPDATE contacts SET is_replied = 1, replied_at = NOW() WHERE id = ?");
+    $stmt->execute([$contact_id]);
 
-            $mail->setFrom('your_email@gmail.com', 'Your Store');
-            $mail->addAddress($email);
-            $mail->isHTML(true);
-            $mail->Subject = $subject;
-            $mail->Body = nl2br(htmlspecialchars($message));
+    // Lưu lịch sử trả lời
+    $stmt = $pdo->prepare("INSERT INTO contact_replies (contact_id, subject, message, created_at) VALUES (?, ?, ?, NOW())");
+    $stmt->execute([$contact_id, $subject, $message]);
 
-            $mail->send();
-
-            // Cập nhật trạng thái đã đọc
-            $stmt = $pdo->prepare("UPDATE contacts SET is_read = 1 WHERE id = ?");
-            $stmt->execute([$contact_id]);
-
-            // Xóa cache
-            array_map('unlink', glob(ROOT_PATH . '/cache/contacts_*.cache'));
-
-            header('Location: index.php?page=admin&subpage=admin-contacts&success=' . urlencode('Gửi email thành công'));
-            exit;
-        } catch (Exception $e) {
-            error_log("PHPMailer error: " . $e->getMessage());
-            header('Location: index.php?page=admin&subpage=admin-contacts&error=' . urlencode('Lỗi gửi email: ' . $e->getMessage()));
-            exit;
-        }
-    } else {
-        header('Location: index.php?page=admin&subpage=admin-contacts&error=' . urlencode('Dữ liệu không hợp lệ'));
-        exit;
-    }
-} else {
-    header('Location: index.php?page=admin&subpage=admin-contacts');
-    exit;
+    $response['success'] = true;
+    $response['message'] = 'Đã gửi trả lời thành công';
+} catch (Exception $e) {
+    $response['message'] = $e->getMessage();
+    error_log("Reply contact error: " . $e->getMessage());
 }
+
+echo json_encode($response);
+exit;

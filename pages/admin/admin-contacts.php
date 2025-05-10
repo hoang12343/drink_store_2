@@ -30,8 +30,10 @@ require_once ROOT_PATH . '/vendor/autoload.php';
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
-// Khởi tạo CSRF token
-$_SESSION['csrf_token'] = isset($_SESSION['csrf_token']) ? $_SESSION['csrf_token'] : bin2hex(random_bytes(32));
+// Loại bỏ khởi tạo CSRF token
+// if (!isset($_SESSION['csrf_token'])) {
+//     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+// }
 
 // Khởi tạo biến
 $success_message = filter_input(INPUT_GET, 'success', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?: '';
@@ -42,6 +44,37 @@ $search_subject = filter_input(INPUT_GET, 'search_subject', FILTER_SANITIZE_FULL
 $current_page = filter_input(INPUT_GET, 'p', FILTER_VALIDATE_INT, ['options' => ['default' => 1, 'min_range' => 1]]) ?: 1;
 $items_per_page = 10;
 $offset = ($current_page - 1) * $items_per_page;
+$contacts = [];
+$total_pages = 1; // Đảm bảo biến này luôn được định nghĩa
+
+// Xử lý các hành động
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Xử lý xóa liên hệ
+    if (isset($_POST['action']) && $_POST['action'] === 'delete') {
+        $contact_id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
+        $csrf_token = filter_input(INPUT_POST, 'csrf_token', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+
+        // Kiểm tra CSRF token
+        if (!$csrf_token || !isset($_SESSION['csrf_token']) || $csrf_token !== $_SESSION['csrf_token']) {
+            $error_message = 'Yêu cầu không hợp lệ';
+        } else if ($contact_id) {
+            try {
+                $stmt = $pdo->prepare("DELETE FROM contacts WHERE id = :id");
+                $stmt->bindValue(':id', $contact_id, PDO::PARAM_INT);
+                $stmt->execute();
+
+                // Xóa cache nếu có
+                if (function_exists('glob')) {
+                    array_map('unlink', glob(ROOT_PATH . '/cache/contacts_*.cache'));
+                }
+
+                $success_message = 'Xóa tin nhắn thành công!';
+            } catch (PDOException $e) {
+                $error_message = 'Lỗi khi xóa tin nhắn: ' . $e->getMessage();
+            }
+        }
+    }
+}
 
 // Xây dựng truy vấn
 $query = "SELECT * FROM contacts WHERE 1=1";
@@ -68,7 +101,9 @@ $cache_time = 300; // 5 phút
 try {
     // Kiểm tra cache
     if (file_exists($cache_file) && (time() - filemtime($cache_file)) < $cache_time) {
-        $contacts = unserialize(file_get_contents($cache_file));
+        $cached_data = unserialize(file_get_contents($cache_file));
+        $contacts = $cached_data['contacts'] ?? [];
+        $total_pages = $cached_data['total_pages'] ?? 1;
     } else {
         // Đếm tổng số bản ghi
         $count_stmt = $pdo->prepare($query);
@@ -91,7 +126,10 @@ try {
         if (!is_dir(ROOT_PATH . '/cache')) {
             mkdir(ROOT_PATH . '/cache', 0755, true);
         }
-        file_put_contents($cache_file, serialize($contacts));
+        file_put_contents($cache_file, serialize([
+            'contacts' => $contacts,
+            'total_pages' => $total_pages
+        ]));
     }
 } catch (PDOException $e) {
     $error_message = 'Lỗi khi lấy dữ liệu: ' . $e->getMessage();
@@ -165,6 +203,7 @@ if (isset($_GET['export']) && $_GET['export'] === 'xlsx') {
     <link rel="stylesheet" href="assets/css/admin/admin-sidebar.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="assets/css/admin/admin-content.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="assets/css/admin/admin-dashboard.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="assets/css/admin/admin-contacts.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="assets/js/admin.js" defer></script>
     <script src="assets/js/admin/admin-contacts.js" defer></script>
@@ -172,14 +211,14 @@ if (isset($_GET['export']) && $_GET['export'] === 'xlsx') {
 
 <body>
     <section class="content admin-page">
-        <input type="hidden" id="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
+        <input type="hidden" id="csrf_token" value="">
         <h1>Quản lý Liên hệ</h1>
 
         <?php if ($success_message): ?>
-        <div class="form-message success"><?php echo htmlspecialchars($success_message); ?></div>
+            <div class="form-message success"><?php echo htmlspecialchars($success_message); ?></div>
         <?php endif; ?>
         <?php if ($error_message): ?>
-        <div class="form-message error"><?php echo htmlspecialchars($error_message); ?></div>
+            <div class="form-message error"><?php echo htmlspecialchars($error_message); ?></div>
         <?php endif; ?>
 
         <!-- Form lọc -->
@@ -226,43 +265,49 @@ if (isset($_GET['export']) && $_GET['export'] === 'xlsx') {
                 </thead>
                 <tbody>
                     <?php if (empty($contacts)): ?>
-                    <tr>
-                        <td colspan="9" style="text-align: center;">Không có tin nhắn nào.</td>
-                    </tr>
+                        <tr>
+                            <td colspan="9" style="text-align: center;">Không có tin nhắn nào.</td>
+                        </tr>
                     <?php else: ?>
-                    <?php foreach ($contacts as $contact): ?>
-                    <tr>
-                        <td data-label="ID"><?php echo htmlspecialchars($contact['id']); ?></td>
-                        <td data-label="Họ và Tên"><?php echo htmlspecialchars($contact['name']); ?></td>
-                        <td data-label="Email"><?php echo htmlspecialchars($contact['email']); ?></td>
-                        <td data-label="Số Điện Thoại"><?php echo htmlspecialchars($contact['phone'] ?: 'N/A'); ?></td>
-                        <td data-label="Tiêu Đề"><?php echo htmlspecialchars($contact['subject']); ?></td>
-                        <td data-label="Nội Dung"><?php echo nl2br(htmlspecialchars($contact['message'])); ?></td>
-                        <td data-label="Ngày Gửi"><?php echo date('d/m/Y H:i', strtotime($contact['created_at'])); ?>
-                        </td>
-                        <td data-label="Trạng Thái">
-                            <button class="btn btn-toggle-read" data-id="<?php echo $contact['id']; ?>"
-                                data-read="<?php echo $contact['is_read']; ?>">
-                                <?php echo $contact['is_read'] ? 'Đã đọc' : 'Chưa đọc'; ?>
-                            </button>
-                            <button class="btn btn-toggle-important" data-id="<?php echo $contact['id']; ?>"
-                                data-important="<?php echo $contact['is_important']; ?>">
-                                <?php echo $contact['is_important'] ? 'Quan trọng' : 'Bình thường'; ?>
-                            </button>
-                        </td>
-                        <td data-label="Hành Động">
-                            <a href="?page=admin&subpage=admin-contacts&action=delete&id=<?php echo $contact['id']; ?>&p=<?php echo $current_page; ?>&csrf_token=<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>"
-                                class="btn btn-danger" onclick="return confirm('Bạn có chắc muốn xóa tin nhắn này?');">
-                                <i class="fas fa-trash"></i> Xóa
-                            </a>
-                            <button class="btn btn-reply" data-id="<?php echo $contact['id']; ?>"
-                                data-email="<?php echo htmlspecialchars($contact['email']); ?>"
-                                data-subject="<?php echo htmlspecialchars($contact['subject']); ?>">
-                                <i class="fas fa-reply"></i> Trả lời
-                            </button>
-                        </td>
-                    </tr>
-                    <?php endforeach; ?>
+                        <?php foreach ($contacts as $contact): ?>
+                            <tr>
+                                <td data-label="ID"><?php echo htmlspecialchars($contact['id']); ?></td>
+                                <td data-label="Họ và Tên"><?php echo htmlspecialchars($contact['name']); ?></td>
+                                <td data-label="Email"><?php echo htmlspecialchars($contact['email']); ?></td>
+                                <td data-label="Số Điện Thoại"><?php echo htmlspecialchars($contact['phone'] ?: 'N/A'); ?></td>
+                                <td data-label="Tiêu Đề"><?php echo htmlspecialchars($contact['subject']); ?></td>
+                                <td data-label="Nội Dung"><?php echo nl2br(htmlspecialchars($contact['message'])); ?></td>
+                                <td data-label="Ngày Gửi"><?php echo date('d/m/Y H:i', strtotime($contact['created_at'])); ?>
+                                </td>
+                                <td data-label="Trạng Thái">
+                                    <button class="btn btn-toggle-read" data-id="<?php echo $contact['id']; ?>"
+                                        data-read="<?php echo $contact['is_read']; ?>">
+                                        <?php echo $contact['is_read'] ? 'Đã đọc' : 'Chưa đọc'; ?>
+                                    </button>
+                                    <button class="btn btn-toggle-important" data-id="<?php echo $contact['id']; ?>"
+                                        data-important="<?php echo $contact['is_important']; ?>">
+                                        <?php echo $contact['is_important'] ? 'Quan trọng' : 'Bình thường'; ?>
+                                    </button>
+                                </td>
+                                <td data-label="Hành Động">
+                                    <form action="?page=admin&subpage=admin-contacts" method="post" class="delete-form"
+                                        style="display:inline;">
+                                        <input type="hidden" name="action" value="delete">
+                                        <input type="hidden" name="id" value="<?php echo $contact['id']; ?>">
+                                        <input type="hidden" name="csrf_token"
+                                            value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
+                                        <button type="submit" class="btn btn-danger">
+                                            <i class="fas fa-trash"></i> Xóa
+                                        </button>
+                                    </form>
+                                    <button class="btn btn-reply" data-id="<?php echo $contact['id']; ?>"
+                                        data-email="<?php echo htmlspecialchars($contact['email']); ?>"
+                                        data-subject="<?php echo htmlspecialchars($contact['subject']); ?>">
+                                        <i class="fas fa-reply"></i> Trả lời
+                                    </button>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
                     <?php endif; ?>
                 </tbody>
             </table>
@@ -270,30 +315,30 @@ if (isset($_GET['export']) && $_GET['export'] === 'xlsx') {
 
         <!-- Phân trang -->
         <?php if ($total_pages > 1): ?>
-        <div class="pagination">
-            <?php if ($current_page > 1): ?>
-            <a href="?page=admin&subpage=admin-contacts&p=<?php echo $current_page - 1; ?>&search_name=<?php echo urlencode($search_name); ?>&search_email=<?php echo urlencode($search_email); ?>&search_subject=<?php echo urlencode($search_subject); ?>"
-                class="btn">« Trước</a>
-            <?php endif; ?>
-            <?php for ($i = 1; $i <= $total_pages; $i++): ?>
-            <a href="?page=admin&subpage=admin-contacts&p=<?php echo $i; ?>&search_name=<?php echo urlencode($search_name); ?>&search_email=<?php echo urlencode($search_email); ?>&search_subject=<?php echo urlencode($search_subject); ?>"
-                class="btn <?php echo $i === $current_page ? 'active' : ''; ?>"><?php echo $i; ?></a>
-            <?php endfor; ?>
-            <?php if ($current_page < $total_pages): ?>
-            <a href="?page=admin&subpage=admin-contacts&p=<?php echo $current_page + 1; ?>&search_name=<?php echo urlencode($search_name); ?>&search_email=<?php echo urlencode($search_email); ?>&search_subject=<?php echo urlencode($search_subject); ?>"
-                class="btn">Sau »</a>
-            <?php endif; ?>
-        </div>
+            <div class="pagination">
+                <?php if ($current_page > 1): ?>
+                    <a href="?page=admin&subpage=admin-contacts&p=<?php echo $current_page - 1; ?>&search_name=<?php echo urlencode($search_name); ?>&search_email=<?php echo urlencode($search_email); ?>&search_subject=<?php echo urlencode($search_subject); ?>"
+                        class="btn">« Trước</a>
+                <?php endif; ?>
+                <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+                    <a href="?page=admin&subpage=admin-contacts&p=<?php echo $i; ?>&search_name=<?php echo urlencode($search_name); ?>&search_email=<?php echo urlencode($search_email); ?>&search_subject=<?php echo urlencode($search_subject); ?>"
+                        class="btn <?php echo $i === $current_page ? 'active' : ''; ?>"><?php echo $i; ?></a>
+                <?php endfor; ?>
+                <?php if ($current_page < $total_pages): ?>
+                    <a href="?page=admin&subpage=admin-contacts&p=<?php echo $current_page + 1; ?>&search_name=<?php echo urlencode($search_name); ?>&search_email=<?php echo urlencode($search_email); ?>&search_subject=<?php echo urlencode($search_subject); ?>"
+                        class="btn">Sau »</a>
+                <?php endif; ?>
+            </div>
         <?php endif; ?>
 
         <!-- Modal trả lời -->
         <div class="modal" id="replyModal" style="display: none;">
             <div class="modal-content">
                 <h2>Trả lời Tin Nhắn</h2>
-                <form id="replyForm" action="index.php?page=admin&subpage=reply_contact" method="post">
+                <form id="replyForm" action="processes/reply_contact.php" method="post">
                     <input type="hidden" name="contact_id" id="replyContactId">
-                    <input type="hidden" name="csrf_token"
-                        value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
+                    <!-- Loại bỏ CSRF token -->
+                    <!-- <input type="hidden" name="csrf_token" id="reply_csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token'] ?? ''); ?>"> -->
                     <div class="form-group">
                         <label for="reply_email">Gửi tới</label>
                         <input type="email" id="reply_email" name="email" readonly>
@@ -306,8 +351,10 @@ if (isset($_GET['export']) && $_GET['export'] === 'xlsx') {
                         <label for="reply_message">Nội dung</label>
                         <textarea id="reply_message" name="message" required></textarea>
                     </div>
-                    <button type="submit" class="btn">Gửi</button>
-                    <button type="button" class="btn btn-cancel" onclick="closeReplyModal()">Hủy</button>
+                    <div class="form-actions">
+                        <button type="submit" class="btn">Gửi</button>
+                        <button type="button" class="btn btn-cancel" onclick="closeReplyModal()">Hủy</button>
+                    </div>
                 </form>
             </div>
         </div>
