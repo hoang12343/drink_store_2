@@ -352,8 +352,8 @@ $("#replyForm").on("submit", function (e) {
           text: response.message,
           confirmButtonText: "OK",
         }).then(() => {
-          $("#replyModal").modal("hide"); // Đóng modal
-          location.reload(); // Làm mới trang
+          $("#replyModal").modal("hide");
+          location.reload();
         });
       } else {
         Swal.fire({

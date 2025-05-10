@@ -43,7 +43,7 @@ function send_email($to, $subject, $message)
             error_log("SMTP Config: " . print_r($smtp_config, true));
 
             // Triển khai gửi email thực tế ở đây
-            // Ví dụ: sử dụng mail() hoặc PHPMailer
+            // Ví dụ: sử dụng PHPMailer
             return true; // Giả lập thành công
         } else {
             error_log("SMTP_CONFIG not defined");
