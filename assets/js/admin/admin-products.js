@@ -99,10 +99,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
       tableRows.forEach((row) => {
         const code = row
-          .querySelector("td:nth-child(1)")
-          .textContent.toLowerCase();
-        const name = row
           .querySelector("td:nth-child(2)")
+          .textContent.toLowerCase(); // Điều chỉnh chỉ số cột do thêm cột hình ảnh
+        const name = row
+          .querySelector("td:nth-child(3)")
           .textContent.toLowerCase();
 
         if (code.includes(searchTerm) || name.includes(searchTerm)) {
@@ -113,4 +113,18 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
   }
+
+  // Hiệu ứng hover phóng to hình ảnh
+  const productImages = document.querySelectorAll(".product-table-image");
+  productImages.forEach((img) => {
+    img.addEventListener("mouseenter", () => {
+      img.style.transform = "scale(1.5)";
+      img.style.zIndex = "10";
+      img.style.transition = "transform 0.3s ease";
+    });
+    img.addEventListener("mouseleave", () => {
+      img.style.transform = "scale(1)";
+      img.style.zIndex = "1";
+    });
+  });
 });

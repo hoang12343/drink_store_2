@@ -243,6 +243,7 @@ if (isset($_GET['edit'])) {
                 <table class="products-table">
                     <thead>
                         <tr>
+                            <th>Hình ảnh</th>
                             <th>Mã</th>
                             <th>Tên</th>
                             <th>Danh mục</th>
@@ -255,6 +256,10 @@ if (isset($_GET['edit'])) {
                     <tbody>
                         <?php foreach ($products as $product): ?>
                             <tr>
+                                <td>
+                                    <img src="<?= htmlspecialchars($product['image'] ?? 'assets/images/placeholder.jpg') ?>"
+                                        alt="<?= htmlspecialchars($product['name']) ?>" class="product-table-image">
+                                </td> <!-- Cột hình ảnh -->
                                 <td><?= htmlspecialchars($product['code']) ?></td>
                                 <td><?= htmlspecialchars($product['name']) ?></td>
                                 <td><?= htmlspecialchars($product['category_name']) ?></td>
