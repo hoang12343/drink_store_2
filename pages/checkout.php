@@ -11,6 +11,10 @@ if (!isset($_SESSION['logged_in'])) {
 // Lấy danh sách sản phẩm được chọn từ giỏ hàng
 $selected_items = [];
 $total_amount = 0;
+$discount = 0;
+$shipping = 0;
+$subtotal = 0;
+
 if (isset($_POST['selected_items'])) {
     $selected_item_ids = json_decode($_POST['selected_items'], true);
     if (!is_array($selected_item_ids) || empty($selected_item_ids)) {
@@ -29,12 +33,26 @@ if (isset($_POST['selected_items'])) {
     $selected_items = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     foreach ($selected_items as $item) {
-        $total_amount += $item['price'] * $item['quantity'];
+        $subtotal += $item['price'] * $item['quantity'];
     }
+
+    // Áp dụng mã giảm giá từ session
+    if (isset($_SESSION['promo_code']) && abs($subtotal - $_SESSION['promo_code']['subtotal']) < 0.01) {
+        $discount = floatval($_SESSION['promo_code']['discount']);
+        $shipping = floatval($_SESSION['promo_code']['shipping']);
+        $total_amount = floatval($_SESSION['promo_code']['total']);
+    } else {
+        // Xóa session promo_code nếu không hợp lệ
+        unset($_SESSION['promo_code']);
+        $shipping = $subtotal >= 1000000 ? 0 : 30000;
+        $total_amount = $subtotal - $discount + $shipping;
+    }
+
+    error_log("checkout.php - Subtotal: $subtotal, Discount: $discount, Shipping: $shipping, Total: $total_amount");
 }
 
 // Nếu không có sản phẩm hoặc tổng tiền không hợp lệ, chuyển về giỏ hàng
-if (empty($selected_items) || $total_amount <= 0) {
+if (empty($selected_items) || $subtotal <= 0) {
     header('Location: ../index.php?page=cart&error=' . urlencode('Vui lòng chọn sản phẩm để thanh toán'));
     exit;
 }
@@ -78,6 +96,16 @@ if (empty($selected_items) || $total_amount <= 0) {
                     <?php endforeach; ?>
                 </tbody>
             </table>
+            <?php if ($discount > 0): ?>
+                <div class="total-row">
+                    <span>Giảm giá (<?= htmlspecialchars($_SESSION['promo_code']['code']) ?>):</span>
+                    <span>-<?= number_format($discount, 0, ',', '.') ?> VNĐ</span>
+                </div>
+            <?php endif; ?>
+            <div class="total-row">
+                <span>Phí vận chuyển:</span>
+                <span><?= number_format($shipping, 0, ',', '.') ?> VNĐ</span>
+            </div>
             <div class="total-row final">
                 <span>Tổng tiền:</span>
                 <span><?= number_format($total_amount, 0, ',', '.') ?> VNĐ</span>
@@ -87,6 +115,11 @@ if (empty($selected_items) || $total_amount <= 0) {
                 <input type="hidden" name="selected_items"
                     value='<?= htmlspecialchars(json_encode(array_column($selected_items, 'id'))) ?>'>
                 <input type="hidden" name="total_amount" value="<?= $total_amount ?>">
+                <input type="hidden" name="discount" value="<?= $discount ?>">
+                <input type="hidden" name="shipping" value="<?= $shipping ?>">
+                <?php if (isset($_SESSION['promo_code'])): ?>
+                    <input type="hidden" name="promo_code" value="<?= htmlspecialchars($_SESSION['promo_code']['code']) ?>">
+                <?php endif; ?>
                 <button type="submit" class="btn btn-primary">Thanh toán qua ZaloPay</button>
             </form>
         </div>
