@@ -44,6 +44,11 @@ document.addEventListener("DOMContentLoaded", () => {
     console.log("Form submission started");
     e.preventDefault();
 
+    // Ngăn gửi nhiều lần
+    if (submitBtn.disabled) {
+      return;
+    }
+
     let hasError = false;
     let errorMessage = "";
 

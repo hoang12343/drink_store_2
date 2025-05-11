@@ -75,6 +75,7 @@ try {
             error_log("SMTP Debug [$level]: $str");
         };
 
+        // Chỉ gửi mail một lần
         $mail->send();
         error_log("Email sent to: $email, Subject: $subject");
     } catch (Exception $e) {
