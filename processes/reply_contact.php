@@ -1,66 +1,26 @@
 <?php
-// Đảm bảo rằng file này không được truy cập trực tiếp
+ini_set('display_errors', 0);
+error_reporting(E_ALL);
+
 if (!defined('APP_START')) {
     define('APP_START', true);
 }
 
-// Include các file cần thiết
-$root_path = dirname(dirname(__FILE__));
-define('ROOT_PATH', $root_path);
+require_once __DIR__ . '/../includes/config.php';
+require_once __DIR__ . '/../includes/db_connect.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 
-require_once ROOT_PATH . '/includes/config.php';
-require_once ROOT_PATH . '/includes/db_connect.php';
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 
 header('Content-Type: application/json');
 $response = ['success' => false, 'message' => 'Gửi trả lời thất bại. Vui lòng thử lại!'];
-
-/**
- * Gửi email đến người dùng
- * 
- * @param string $to Địa chỉ email người nhận
- * @param string $subject Tiêu đề email
- * @param string $message Nội dung email
- * @return bool Trả về true nếu gửi thành công, false nếu thất bại
- */
-function send_email($to, $subject, $message)
-{
-    // Ghi log email để kiểm tra
-    $log_message = "Email gửi đến: $to\nTiêu đề: $subject\nNội dung: $message\n";
-    error_log($log_message);
-
-    // Trong môi trường phát triển, chỉ ghi log và trả về true
-    if (defined('DEVELOPMENT_MODE') && DEVELOPMENT_MODE === true) {
-        return true;
-    }
-
-    // Triển khai gửi email thực tế
-    try {
-        // Sử dụng cấu hình SMTP từ config.php
-        if (defined('SMTP_CONFIG')) {
-            $smtp_config = SMTP_CONFIG;
-
-            // Ghi log cấu hình SMTP để debug
-            error_log("SMTP Config: " . print_r($smtp_config, true));
-
-            // Triển khai gửi email thực tế ở đây
-            // Ví dụ: sử dụng PHPMailer
-            return true; // Giả lập thành công
-        } else {
-            error_log("SMTP_CONFIG not defined");
-            return false;
-        }
-    } catch (Exception $e) {
-        error_log("Email sending error: " . $e->getMessage());
-        return false;
-    }
-}
 
 try {
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         throw new Exception('Yêu cầu không hợp lệ. Vui lòng sử dụng đúng phương thức!');
     }
 
-    // Kiểm tra kết nối cơ sở dữ liệu
     if (!isset($pdo) || !($pdo instanceof PDO)) {
         throw new Exception('Lỗi kết nối cơ sở dữ liệu. Vui lòng liên hệ quản trị viên!');
     }
@@ -74,14 +34,40 @@ try {
         throw new Exception('Dữ liệu không hợp lệ. Vui lòng kiểm tra lại thông tin!');
     }
 
-    // Ghi log để debug
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        throw new Exception('Email không hợp lệ!');
+    }
+
     error_log("Attempting to reply to contact ID: $contact_id, Email: $email");
 
-    // Gửi email
-    $mail_sent = send_email($email, $subject, $message);
+    // Cấu hình PHPMailer
+    $mail = new PHPMailer(true);
+    try {
+        $mail->isSMTP();
+        $mail->Host = SMTP_CONFIG['host'];
+        $mail->SMTPAuth = true;
+        $mail->Username = SMTP_CONFIG['username'];
+        $mail->Password = SMTP_CONFIG['password'];
+        $mail->SMTPSecure = SMTP_CONFIG['secure'] === 'tls' ? PHPMailer::ENCRYPTION_STARTTLS : PHPMailer::ENCRYPTION_SMTPS;
+        $mail->Port = SMTP_CONFIG['port'];
+        $mail->setFrom(SMTP_CONFIG['username'], SMTP_CONFIG['from_name']);
+        $mail->addAddress($email);
+        $mail->Subject = $subject;
+        $mail->Body = nl2br(htmlspecialchars_decode($message));
+        $mail->isHTML(true);
 
-    if (!$mail_sent) {
-        throw new Exception('Không thể gửi email. Vui lòng kiểm tra cấu hình email!');
+        $mail->send();
+        error_log("Email sent to: $email, Subject: $subject");
+    } catch (Exception $e) {
+        error_log("PHPMailer error: " . $mail->ErrorInfo);
+        throw new Exception('Không thể gửi email: ' . $mail->ErrorInfo);
+    }
+
+    // Kiểm tra bảng contact_replies
+    $stmt = $pdo->prepare("SHOW TABLES LIKE 'contact_replies'");
+    $stmt->execute();
+    if ($stmt->rowCount() == 0) {
+        throw new Exception('Bảng contact_replies không tồn tại.');
     }
 
     // Lưu lịch sử trả lời
@@ -93,7 +79,7 @@ try {
         throw new Exception('Không thể lưu lịch sử trả lời. Vui lòng thử lại!');
     }
 
-    // Xóa cache nếu có
+    // Xóa cache
     if (function_exists('glob')) {
         array_map('unlink', glob(ROOT_PATH . '/cache/contacts_*.cache'));
     }
@@ -101,8 +87,8 @@ try {
     $response['success'] = true;
     $response['message'] = 'Đã gửi trả lời thành công!';
 } catch (Exception $e) {
-    $response['message'] = $e->getMessage();
     error_log("Reply contact error: " . $e->getMessage());
+    $response['message'] = $e->getMessage();
 }
 
 echo json_encode($response);

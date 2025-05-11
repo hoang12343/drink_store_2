@@ -1,59 +1,52 @@
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("contactForm");
-  if (!form) {
-    console.warn("Contact form not found");
-    return;
-  }
+  if (!form) return;
 
   const inputs = form.querySelectorAll("input[required], textarea[required]");
   const emailInput = form.querySelector("#email");
   const submitBtn = form.querySelector(".submit-btn");
+  let formMessage = document.querySelector(".form-message");
 
-  // Hàm hiển thị thông báo
-  const showMessage = (message, type) => {
-    console.log(`Showing message: ${message} (${type})`);
-
-    // Xóa thông báo cũ
-    const existingMessage = document.querySelector(".form-message");
-    if (existingMessage) {
-      existingMessage.remove();
-    }
-
-    // Tạo thông báo mới
-    const messageDiv = document.createElement("div");
-    messageDiv.className = `form-message ${type}`;
-    messageDiv.textContent = message;
-
-    // Chèn vào đầu form container
-    const formContainer = form.closest(".contact-form");
-    formContainer.insertBefore(messageDiv, formContainer.firstChild);
-
-    // Tự động xóa sau 5 giây
+  if (formMessage) {
     setTimeout(() => {
-      if (messageDiv.parentNode) {
-        messageDiv.remove();
+      if (formMessage.parentNode) {
+        formMessage.remove();
       }
     }, 5000);
+  }
 
-    // Cuộn lên đầu
-    window.scrollTo(0, 0);
-  };
-
-  // Hàm kiểm tra định dạng email
   const isValidEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   };
 
-  // Xử lý submit form
+  const showMessage = (message, type) => {
+    console.log(`Showing message: ${message} (${type})`);
+    if (formMessage && formMessage.parentNode) {
+      formMessage.remove();
+    }
+
+    formMessage = document.createElement("div");
+    formMessage.className = `form-message ${type}`;
+    formMessage.textContent = message;
+    const formContainer = form.closest(".contact-form");
+    formContainer.insertBefore(formMessage, formContainer.firstChild);
+
+    setTimeout(() => {
+      if (formMessage.parentNode) {
+        formMessage.remove();
+      }
+    }, 5000);
+    window.scrollTo(0, 0);
+  };
+
   form.addEventListener("submit", (e) => {
-    e.preventDefault();
     console.log("Form submission started");
+    e.preventDefault();
 
     let hasError = false;
     let errorMessage = "";
 
-    // Kiểm tra các trường bắt buộc
     inputs.forEach((input) => {
       if (!input.value.trim()) {
         hasError = true;
@@ -64,7 +57,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 
-    // Kiểm tra định dạng email
     if (emailInput.value && !isValidEmail(emailInput.value)) {
       hasError = true;
       emailInput.classList.add("error");
@@ -76,7 +68,6 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // Gửi AJAX
     const formData = new FormData(form);
     const originalText = submitBtn.textContent;
     submitBtn.textContent = "Đang gửi...";
@@ -101,19 +92,25 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
           const jsonData = JSON.parse(data);
           if (jsonData.success) {
-            showMessage(jsonData.message, "success");
+            showMessage(
+              jsonData.message || "Gửi liên hệ thành công",
+              "success"
+            );
             form.reset();
           } else {
             showMessage(jsonData.message || "Có lỗi xảy ra", "error");
           }
         } catch (e) {
           console.error("JSON parse error:", e, "Response:", data);
-          showMessage("Phản hồi không hợp lệ từ máy chủ", "error");
+          showMessage(
+            "Phản hồi không hợp lệ từ máy chủ. Vui lòng thử lại.",
+            "error"
+          );
         }
       })
       .catch((error) => {
         console.error("Fetch error:", error);
-        showMessage(`Lỗi: ${error.message}`, "error");
+        showMessage(`Đã xảy ra lỗi: ${error.message}`, "error");
       })
       .finally(() => {
         submitBtn.textContent = originalText;
@@ -121,7 +118,6 @@ document.addEventListener("DOMContentLoaded", () => {
       });
   });
 
-  // Xóa lỗi khi nhập lại
   inputs.forEach((input) => {
     input.addEventListener("input", () => {
       input.classList.remove("error");

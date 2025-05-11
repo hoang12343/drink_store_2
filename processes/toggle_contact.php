@@ -1,4 +1,7 @@
 <?php
+ini_set('display_errors', 0);
+error_reporting(E_ALL);
+
 session_start();
 define('APP_START', true);
 define('ROOT_PATH', __DIR__ . '/..');
@@ -20,6 +23,15 @@ $value = filter_input(INPUT_POST, 'value', FILTER_VALIDATE_INT);
 
 if ($id && in_array($action, ['read', 'important']) && in_array($value, [0, 1])) {
     try {
+        // Kiểm tra bảng contacts
+        $stmt = $pdo->prepare("SHOW TABLES LIKE 'contacts'");
+        $stmt->execute();
+        if ($stmt->rowCount() == 0) {
+            $response['message'] = 'Bảng contacts không tồn tại.';
+            echo json_encode($response);
+            exit;
+        }
+
         $column = $action === 'read' ? 'is_read' : 'is_important';
         $stmt = $pdo->prepare("UPDATE contacts SET $column = ? WHERE id = ?");
         $stmt->execute([$value, $id]);
@@ -33,7 +45,7 @@ if ($id && in_array($action, ['read', 'important']) && in_array($value, [0, 1]))
         $response['message'] = 'Cập nhật thành công';
     } catch (PDOException $e) {
         error_log("Database error: " . $e->getMessage());
-        $response['message'] = 'Lỗi: ' . $e->getMessage();
+        $response['message'] = 'Lỗi cơ sở dữ liệu: ' . $e->getMessage();
     }
 } else {
     $response['message'] = 'Dữ liệu không hợp lệ';

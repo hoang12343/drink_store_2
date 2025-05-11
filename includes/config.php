@@ -4,7 +4,7 @@ if (!defined('APP_START')) {
 }
 
 // Thêm định nghĩa cho DEVELOPMENT_MODE
-define('DEVELOPMENT_MODE', true); // Đặt thành false khi triển khai sản phẩm
+define('DEVELOPMENT_MODE', false); // Đặt thành false khi triển khai sản phẩm
 
 define('ZALOPAY_CONFIG', [
     'app_id' => '553',
@@ -17,8 +17,9 @@ define('ZALOPAY_CONFIG', [
 define('ADMIN_EMAIL', 'admin@yourstore.com');
 define('SMTP_CONFIG', [
     'host' => 'smtp.gmail.com',
-    'username' => 'hoanggg322004@gmail.com', // Thay đổi thành email thực của bạn
-    'password' => 'thaj pooj yqse rpjh', // Thay đổi thành mật khẩu ứng dụng (không phải mật khẩu Gmail)
+    'username' => 'hoanggg322004@gmail.com',
+    'password' => 'cadbcbebneitmpnq', // Xác minh hoặc thay bằng App Password mới (16 ký tự, không dấu cách)
     'port' => 587,
-    'secure' => 'tls'
+    'secure' => 'tls',
+    'from_name' => 'Drink Store'
 ]);
