@@ -7,6 +7,7 @@ require_once 'utils/product-functions.php';
 require_once 'components/product-card.php';
 
 $product_id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
+$comment_page = filter_input(INPUT_GET, 'comment_page', FILTER_SANITIZE_NUMBER_INT) ?: 1;
 $product = get_product_by_id($product_id);
 
 if (!$product) {
@@ -14,6 +15,12 @@ if (!$product) {
     include 'pages/404.php';
     exit;
 }
+
+$comments_data = get_product_comments($product_id, $comment_page, 10);
+$comments = $comments_data['comments'];
+$total_comments = $comments_data['total_comments'];
+$comments_per_page = 10;
+$total_pages = ceil($total_comments / $comments_per_page);
 ?>
 
 <link rel="stylesheet" href="assets/css/product-detail.css?v=<?= time() ?>">
@@ -120,6 +127,73 @@ if (!$product) {
     <div class="product-description-section">
         <h2>Mô tả sản phẩm</h2>
         <p><?= htmlspecialchars($product['description'] ?? 'Không có mô tả') ?></p>
+    </div>
+
+    <!-- Product Comments -->
+    <div class="product-comments-section">
+        <h2>Bình luận sản phẩm</h2>
+
+        <!-- Comment Form -->
+        <?php if (isset($_SESSION['logged_in']) && $_SESSION['logged_in']): ?>
+            <form id="comment-form" action="processes/add_comment.php" method="POST">
+                <input type="hidden" name="product_id" value="<?= htmlspecialchars($product['id']) ?>">
+                <div class="comment-input">
+                    <textarea name="comment_text" placeholder="Viết bình luận của bạn..." required></textarea>
+                    <button type="submit" class="submit-comment-btn">Gửi bình luận</button>
+                </div>
+            </form>
+        <?php else: ?>
+            <p>Vui lòng <a
+                    href="index.php?page=login&redirect=<?= urlencode('index.php?page=product-detail&id=' . $product['id']) ?>">đăng
+                    nhập</a> để gửi bình luận.</p>
+        <?php endif; ?>
+
+        <!-- Comments List -->
+        <div class="comments-list">
+            <?php if (empty($comments)): ?>
+                <p>Chưa có bình luận nào cho sản phẩm này.</p>
+            <?php else: ?>
+                <?php
+                $displayed_comments = []; // Prevent duplicate comments
+                foreach ($comments as $comment):
+                    if (!empty(trim($comment['comment_text'])) && !in_array($comment['id'], $displayed_comments)):
+                        $displayed_comments[] = $comment['id'];
+                ?>
+                        <div class="comment-item" data-comment-id="<?= htmlspecialchars($comment['id']) ?>">
+                            <div class="comment-header">
+                                <span class="comment-user"><?= htmlspecialchars($comment['full_name']) ?></span>
+                                <span class="comment-date"><?= date('d/m/Y H:i', strtotime($comment['created_at'])) ?></span>
+                            </div>
+                            <p class="comment-text"><?= htmlspecialchars($comment['comment_text']) ?></p>
+                        </div>
+                    <?php endif; ?>
+                <?php endforeach; ?>
+            <?php endif; ?>
+        </div>
+
+        <!-- Pagination -->
+        <?php if ($total_pages > 1): ?>
+            <div class="pagination">
+                <?php if ($comment_page > 1): ?>
+                    <a href="#" class="pagination-btn" data-page="<?= $comment_page - 1 ?>"
+                        data-product-id="<?= htmlspecialchars($product['id']) ?>">Trước</a>
+                <?php endif; ?>
+
+                <?php
+                $start_page = max(1, $comment_page - 2);
+                $end_page = min($total_pages, $comment_page + 2);
+                for ($i = $start_page; $i <= $end_page; $i++):
+                ?>
+                    <a href="#" class="pagination-btn <?= $i === $comment_page ? 'active' : '' ?>" data-page="<?= $i ?>"
+                        data-product-id="<?= htmlspecialchars($product['id']) ?>"><?= $i ?></a>
+                <?php endfor; ?>
+
+                <?php if ($comment_page < $total_pages): ?>
+                    <a href="#" class="pagination-btn" data-page="<?= $comment_page + 1 ?>"
+                        data-product-id="<?= htmlspecialchars($product['id']) ?>">Sau</a>
+                <?php endif; ?>
+            </div>
+        <?php endif; ?>
     </div>
 
     <!-- Related Products -->

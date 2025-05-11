@@ -205,6 +205,10 @@ if ($page === 'cart') {
         $js_files[] = ROOT_PATH . '/assets/js/admin/admin-contacts.js';
     }
 }
+// Add JavaScript for product-detail page
+if ($page === 'product-detail') {
+    $js_files[] = ROOT_PATH . '/assets/js/product-detail.js';
+}
 
 foreach ($js_files as $js_file) {
     if (file_exists($js_file)) {

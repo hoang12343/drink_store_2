@@ -4,6 +4,8 @@ document.addEventListener("DOMContentLoaded", () => {
   initQuantitySelector();
   initActionButtons();
   initRelatedProductsNavigation();
+  initCommentForm();
+  initPagination();
 });
 
 function initThumbnailGallery() {
@@ -139,9 +141,9 @@ function addToCart(productCode, quantity, redirectToCart = false) {
         notification.className = "cart-notification";
         notification.textContent = "Sản phẩm đã được thêm vào giỏ hàng!";
         notification.style.cssText = `
-                position: fixed; top: 20px; right: 20px; background: #8B0000; color: white;
-                padding: 10px 20px; border-radius: 5px; z-index: 1000;
-            `;
+                    position: fixed; top: 20px; right: 20px; background: #8B0000; color: white;
+                    padding: 10px 20px; border-radius: 5px; z-index: 1000;
+                `;
         document.body.appendChild(notification);
         setTimeout(() => notification.remove(), 3000);
 
@@ -188,10 +190,8 @@ function initRelatedProductsNavigation() {
       return;
     }
 
-    // Make the entire card clickable for navigation
     if (card.classList.contains("clickable")) {
       card.addEventListener("click", function (e) {
-        // Prevent navigation if clicking on buttons or links
         if (
           e.target.tagName === "BUTTON" ||
           e.target.tagName === "A" ||
@@ -200,25 +200,21 @@ function initRelatedProductsNavigation() {
         ) {
           return;
         }
-
         navigateToProductDetail(productId);
       });
       card.style.cursor = "pointer";
     }
 
-    // Make image clickable
     const productImage = card.querySelector(".product-img");
     if (productImage) {
       makeClickableForDetail(productImage, productId);
     }
 
-    // Make title clickable
     const productTitle = card.querySelector(".product-name");
     if (productTitle) {
       makeClickableForDetail(productTitle, productId);
     }
 
-    // Handle buy-now button separately (navigates to product detail)
     const buyNowBtn = card.querySelector(".buy-now-btn");
     if (buyNowBtn) {
       buyNowBtn.addEventListener("click", function (e) {
@@ -241,4 +237,175 @@ function makeClickableForDetail(element, productId) {
 function navigateToProductDetail(productId) {
   window.location.href =
     "index.php?page=product-detail&id=" + encodeURIComponent(productId);
+}
+
+function initCommentForm() {
+  const commentForm = document.querySelector("#comment-form");
+  if (!commentForm) {
+    console.log("Comment form not found, user may not be logged in");
+    return;
+  }
+
+  commentForm.addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    const commentText = commentForm.querySelector("textarea").value.trim();
+    if (!commentText) {
+      alert("Bình luận không được để trống");
+      return;
+    }
+
+    const formData = new FormData(commentForm);
+    fetch(commentForm.action, {
+      method: "POST",
+      body: formData,
+    })
+      .then((response) => {
+        if (!response.ok)
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        return response.json();
+      })
+      .then((data) => {
+        if (data.success && data.comment && data.comment.comment_text) {
+          commentForm.querySelector("textarea").value = "";
+          loadComments(1, formData.get("product_id")); // Reload comments for page 1
+
+          const notification = document.createElement("div");
+          notification.className = "cart-notification";
+          notification.textContent = data.message;
+          notification.style.cssText = `
+                        position: fixed; top: 20px; right: 20px; background: #8B0000; color: white;
+                        padding: 10px 20px; border-radius: 5px; z-index: 1000;
+                    `;
+          document.body.appendChild(notification);
+          setTimeout(() => notification.remove(), 3000);
+        } else {
+          alert(data.message || "Lỗi khi gửi bình luận.");
+          if (data.message === "Vui lòng đăng nhập để gửi bình luận") {
+            window.location.href =
+              "index.php?page=login&redirect=" +
+              encodeURIComponent(window.location.href);
+          }
+        }
+      })
+      .catch((error) => {
+        console.error("Error submitting comment:", error);
+        alert("Lỗi hệ thống. Vui lòng thử lại sau.");
+      });
+  });
+}
+
+function initPagination() {
+  const paginationButtons = document.querySelectorAll(".pagination-btn");
+  paginationButtons.forEach((button) => {
+    button.addEventListener("click", function (e) {
+      e.preventDefault();
+      const page = parseInt(this.getAttribute("data-page"));
+      const productId = this.getAttribute("data-product-id");
+      loadComments(page, productId);
+    });
+  });
+}
+
+function loadComments(page, productId) {
+  fetch(`processes/get_comments.php?page=${page}&product_id=${productId}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+    .then((response) => {
+      if (!response.ok)
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      return response.json();
+    })
+    .then((data) => {
+      const commentsList = document.querySelector(".comments-list");
+      const paginationContainer = document.querySelector(".pagination");
+
+      // Update comments list
+      commentsList.innerHTML = "";
+      if (data.comments.length === 0) {
+        commentsList.innerHTML =
+          "<p>Chưa có bình luận nào cho sản phẩm này.</p>";
+      } else {
+        const displayedComments = [];
+        data.comments.forEach((comment) => {
+          if (!displayedComments.includes(comment.id)) {
+            displayedComments.push(comment.id);
+            const commentItem = document.createElement("div");
+            commentItem.className = "comment-item";
+            commentItem.setAttribute("data-comment-id", comment.id);
+            commentItem.innerHTML = `
+                            <div class="comment-header">
+                                <span class="comment-user">${
+                                  comment.full_name
+                                }</span>
+                                <span class="comment-date">${new Date(
+                                  comment.created_at
+                                ).toLocaleString("vi-VN", {
+                                  day: "2-digit",
+                                  month: "2-digit",
+                                  year: "numeric",
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                })}</span>
+                            </div>
+                            <p class="comment-text">${comment.comment_text}</p>
+                        `;
+            commentsList.appendChild(commentItem);
+          }
+        });
+      }
+
+      // Update pagination
+      if (paginationContainer) {
+        const totalPages = data.total_pages;
+        const currentPage = data.current_page;
+
+        paginationContainer.innerHTML = "";
+        if (totalPages > 1) {
+          if (currentPage > 1) {
+            const prevBtn = document.createElement("a");
+            prevBtn.href = "#";
+            prevBtn.className = "pagination-btn";
+            prevBtn.setAttribute("data-page", currentPage - 1);
+            prevBtn.setAttribute("data-product-id", productId);
+            prevBtn.textContent = "Trước";
+            paginationContainer.appendChild(prevBtn);
+          }
+
+          const startPage = Math.max(1, currentPage - 2);
+          const endPage = Math.min(totalPages, currentPage + 2);
+          for (let i = startPage; i <= endPage; i++) {
+            const pageBtn = document.createElement("a");
+            pageBtn.href = "#";
+            pageBtn.className = `pagination-btn ${
+              i === currentPage ? "active" : ""
+            }`;
+            pageBtn.setAttribute("data-page", i);
+            pageBtn.setAttribute("data-product-id", productId);
+            pageBtn.textContent = i;
+            paginationContainer.appendChild(pageBtn);
+          }
+
+          if (currentPage < totalPages) {
+            const nextBtn = document.createElement("a");
+            nextBtn.href = "#";
+            nextBtn.className = "pagination-btn";
+            nextBtn.setAttribute("data-page", currentPage + 1);
+            nextBtn.setAttribute("data-product-id", productId);
+            nextBtn.textContent = "Sau";
+            paginationContainer.appendChild(nextBtn);
+          }
+
+          // Re-attach event listeners to new pagination buttons
+          initPagination();
+        }
+      }
+    })
+    .catch((error) => {
+      console.error("Error loading comments:", error);
+      alert("Lỗi khi tải bình luận. Vui lòng thử lại sau.");
+    });
 }

@@ -13,7 +13,16 @@ function format_price($price)
     return number_format($price, 0, ',', '.') . ' VND';
 }
 
-
+/**
+ * Retrieve products based on category, search, sort, limit, filters, and page
+ * @param string $category Category name or 'all'
+ * @param string $search Search query
+ * @param string $sort Sort option
+ * @param int $limit Number of products per page
+ * @param array $filters Additional filters (price, country, etc.)
+ * @param int $page Current page number
+ * @return array Products and total count
+ */
 function get_products($category, $search, $sort, $limit, $filters, $page)
 {
     global $pdo;
@@ -198,5 +207,54 @@ function get_best_selling_products($limit = 4)
     } catch (PDOException $e) {
         error_log("Error fetching best-selling products: " . $e->getMessage());
         return [];
+    }
+}
+
+/**
+ * Retrieve comments for a product with pagination
+ * @param int $product_id Product ID
+ * @param int $page Current page number
+ * @param int $limit Number of comments per page
+ * @return array List of comments and total count
+ */
+function get_product_comments($product_id, $page = 1, $limit = 10)
+{
+    global $pdo;
+    try {
+        $offset = ($page - 1) * $limit;
+
+        // Count total comments
+        $count_stmt = $pdo->prepare("
+            SELECT COUNT(*) 
+            FROM product_comments pc
+            WHERE pc.product_id = :product_id
+            AND TRIM(pc.comment_text) != ''
+        ");
+        $count_stmt->execute(['product_id' => $product_id]);
+        $total_comments = $count_stmt->fetchColumn();
+
+        // Fetch comments for the current page
+        $stmt = $pdo->prepare("
+            SELECT pc.id, pc.product_id, pc.user_id, pc.comment_text, pc.created_at, u.full_name
+            FROM product_comments pc
+            JOIN users u ON pc.user_id = u.id
+            WHERE pc.product_id = :product_id
+            AND TRIM(pc.comment_text) != ''
+            ORDER BY pc.created_at DESC
+            LIMIT :limit OFFSET :offset
+        ");
+        $stmt->bindValue(':product_id', $product_id, PDO::PARAM_INT);
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+        $stmt->execute();
+        $comments = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        return [
+            'comments' => $comments,
+            'total_comments' => $total_comments
+        ];
+    } catch (PDOException $e) {
+        error_log('Error fetching comments: ' . $e->getMessage());
+        return ['comments' => [], 'total_comments' => 0];
     }
 }

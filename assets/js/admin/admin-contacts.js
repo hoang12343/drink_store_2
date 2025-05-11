@@ -58,9 +58,12 @@ document.addEventListener("DOMContentLoaded", function () {
   // Xử lý gửi form trả lời qua AJAX
   const replyForm = document.getElementById("replyForm");
   if (replyForm) {
-    // Xóa các sự kiện submit cũ (nếu có)
-    replyForm.removeEventListener("submit", handleFormSubmit);
-    replyForm.addEventListener("submit", handleFormSubmit);
+    // Xóa tất cả các event listener cũ
+    const newReplyForm = replyForm.cloneNode(true);
+    replyForm.parentNode.replaceChild(newReplyForm, replyForm);
+
+    // Thêm event listener mới
+    newReplyForm.addEventListener("submit", handleFormSubmit);
   }
 
   function handleFormSubmit(e) {
