@@ -5,17 +5,19 @@ error_reporting(E_ALL);
 session_start();
 define('APP_START', true);
 define('ROOT_PATH', __DIR__ . '/..');
-require_once ROOT_PATH . '/includes/db_connect.php';
 
-// Kiểm tra quyền quản trị
-if (!isset($_SESSION['logged_in']) || !isset($_SESSION['is_admin']) || $_SESSION['is_admin'] !== 1) {
-    header('Content-Type: application/json');
-    echo json_encode(['success' => false, 'message' => 'Không có quyền truy cập']);
-    exit;
-}
+error_log("Processing request in toggle_contact.php");
+
+require_once ROOT_PATH . '/includes/db_connect.php';
 
 header('Content-Type: application/json');
 $response = ['success' => false, 'message' => 'Lỗi không xác định'];
+
+// Kiểm tra quyền quản trị
+if (!isset($_SESSION['logged_in']) || !isset($_SESSION['is_admin']) || $_SESSION['is_admin'] !== 1) {
+    echo json_encode(['success' => false, 'message' => 'Không có quyền truy cập']);
+    exit;
+}
 
 $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
 $action = filter_input(INPUT_POST, 'action', FILTER_SANITIZE_FULL_SPECIAL_CHARS);

@@ -31,14 +31,18 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  // Mở modal trả lời
   function openReplyModal(id, email, subject) {
     document.getElementById("replyModal").style.display = "block";
     document.getElementById("replyContactId").value = id;
     document.getElementById("reply_email").value = email;
-    document.getElementById("reply_subject").value = `Re: ${subject}`;
+    document.getElementById("reply_subject").value = `Re: ${decodeURIComponent(
+      subject
+    )}`;
     document.getElementById("reply_message").focus();
   }
 
+  // Đóng modal trả lời
   window.closeReplyModal = function () {
     document.getElementById("replyModal").style.display = "none";
     document.getElementById("replyForm").reset();
@@ -48,7 +52,6 @@ document.addEventListener("DOMContentLoaded", function () {
   document.getElementById("replyForm").addEventListener("submit", function (e) {
     e.preventDefault();
 
-    // Hiển thị trạng thái đang gửi
     const submitBtn = this.querySelector('button[type="submit"]');
     const originalText = submitBtn.textContent;
     submitBtn.textContent = "Đang gửi...";
@@ -56,13 +59,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const formData = new FormData(this);
 
-    // Log dữ liệu form để debug
     console.log("Form data:");
     for (let [key, value] of formData.entries()) {
       console.log(`${key}: ${value}`);
     }
 
-    // Sử dụng đường dẫn tuyệt đối
     const url = window.location.origin + "/processes/reply_contact.php";
     console.log("Sending request to:", url);
 
@@ -73,16 +74,24 @@ document.addEventListener("DOMContentLoaded", function () {
       .then((response) => {
         console.log("Response status:", response.status);
         if (!response.ok) {
-          throw new Error(`Server responded with status: ${response.status}`);
+          return response.text().then((text) => {
+            console.log("Error response:", text);
+            throw new Error(
+              `Server responded with status: ${
+                response.status
+              }, Response: ${text.substring(0, 200)}`
+            );
+          });
         }
         return response.text();
       })
       .then((text) => {
         console.log("Raw response:", text);
 
-        // Kiểm tra nếu phản hồi chứa HTML (thường là lỗi PHP)
         if (text.includes("<!DOCTYPE html>") || text.includes("<br />")) {
-          throw new Error("Lỗi máy chủ. Phản hồi chứa HTML.");
+          const errorSnippet =
+            text.substring(0, 200) + (text.length > 200 ? "..." : "");
+          throw new Error(`Lỗi máy chủ. Phản hồi chứa HTML: ${errorSnippet}`);
         }
 
         let data;
@@ -90,7 +99,9 @@ document.addEventListener("DOMContentLoaded", function () {
           data = JSON.parse(text);
         } catch (e) {
           console.error("Invalid JSON:", text);
-          throw new Error("Phản hồi không hợp lệ từ máy chủ");
+          throw new Error(
+            `Phản hồi không hợp lệ từ máy chủ: ${text.substring(0, 200)}`
+          );
         }
 
         if (data.success) {
@@ -111,6 +122,7 @@ document.addEventListener("DOMContentLoaded", function () {
       });
   });
 
+  // Xử lý nút trả lời
   document.querySelectorAll(".btn-reply").forEach((button) => {
     button.addEventListener("click", function () {
       const id = this.dataset.id;
@@ -120,6 +132,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
+  // Xử lý toggle read
   document.querySelectorAll(".btn-toggle-read").forEach((button) => {
     button.addEventListener("click", function () {
       const id = this.dataset.id;
@@ -136,7 +149,6 @@ document.addEventListener("DOMContentLoaded", function () {
       );
       const url = baseUrl + "processes/toggle_contact.php";
 
-      // Ghi log request
       logToConsole(
         `Gửi request AJAX:<br>URL: ${url}<br>Phương thức: POST<br>Dữ liệu: id=${id}, action=read, value=${isRead}`,
         "info"
@@ -148,16 +160,24 @@ document.addEventListener("DOMContentLoaded", function () {
       })
         .then((response) => {
           if (!response.ok) {
-            logToConsole(
-              `Lỗi kết nối: ${response.status} ${response.statusText}`,
-              "error"
-            );
-            throw new Error("Lỗi kết nối: " + response.status);
+            return response.text().then((text) => {
+              logToConsole(
+                `Lỗi kết nối: ${response.status} ${
+                  response.statusText
+                }, Response: ${text.substring(0, 200)}`,
+                "error"
+              );
+              throw new Error(
+                `Lỗi kết nối: ${response.status}, Response: ${text.substring(
+                  0,
+                  200
+                )}`
+              );
+            });
           }
           return response.text();
         })
         .then((text) => {
-          // Ghi log phản hồi
           logToConsole(
             `Phản hồi từ server:<br>${text.substring(0, 200)}${
               text.length > 200 ? "..." : ""
@@ -165,15 +185,14 @@ document.addEventListener("DOMContentLoaded", function () {
             "info"
           );
 
-          // Kiểm tra nếu phản hồi chứa HTML
           if (text.includes("<!DOCTYPE html>") || text.includes("<br />")) {
+            const errorSnippet =
+              text.substring(0, 200) + (text.length > 200 ? "..." : "");
             logToConsole(
-              `Lỗi: Phản hồi chứa HTML:<br>${text.substring(0, 200)}${
-                text.length > 200 ? "..." : ""
-              }`,
+              `Lỗi: Phản hồi chứa HTML:<br>${errorSnippet}`,
               "error"
             );
-            throw new Error("Lỗi máy chủ. Phản hồi chứa HTML.");
+            throw new Error(`Lỗi máy chủ. Phản hồi chứa HTML: ${errorSnippet}`);
           }
 
           let data;
@@ -192,7 +211,9 @@ document.addEventListener("DOMContentLoaded", function () {
               }`,
               "error"
             );
-            throw new Error("Phản hồi không hợp lệ từ máy chủ");
+            throw new Error(
+              `Phản hồi không hợp lệ từ máy chủ: ${text.substring(0, 200)}`
+            );
           }
 
           if (data.success) {
@@ -206,11 +227,12 @@ document.addEventListener("DOMContentLoaded", function () {
         })
         .catch((error) => {
           logToConsole(`Lỗi: ${error.message}`, "error");
-          alert("Lỗi kết nối: " + error);
+          alert("Lỗi: " + error.message);
         });
     });
   });
 
+  // Xử lý toggle important
   document.querySelectorAll(".btn-toggle-important").forEach((button) => {
     button.addEventListener("click", function () {
       const id = this.dataset.id;
@@ -227,7 +249,6 @@ document.addEventListener("DOMContentLoaded", function () {
       );
       const url = baseUrl + "processes/toggle_contact.php";
 
-      // Ghi log request
       logToConsole(
         `Gửi request AJAX:<br>URL: ${url}<br>Phương thức: POST<br>Dữ liệu: id=${id}, action=important, value=${isImportant}`,
         "info"
@@ -239,16 +260,24 @@ document.addEventListener("DOMContentLoaded", function () {
       })
         .then((response) => {
           if (!response.ok) {
-            logToConsole(
-              `Lỗi kết nối: ${response.status} ${response.statusText}`,
-              "error"
-            );
-            throw new Error("Lỗi kết nối: " + response.status);
+            return response.text().then((text) => {
+              logToConsole(
+                `Lỗi kết nối: ${response.status} ${
+                  response.statusText
+                }, Response: ${text.substring(0, 200)}`,
+                "error"
+              );
+              throw new Error(
+                `Lỗi kết nối: ${response.status}, Response: ${text.substring(
+                  0,
+                  200
+                )}`
+              );
+            });
           }
           return response.text();
         })
         .then((text) => {
-          // Ghi log phản hồi
           logToConsole(
             `Phản hồi từ server:<br>${text.substring(0, 200)}${
               text.length > 200 ? "..." : ""
@@ -256,15 +285,14 @@ document.addEventListener("DOMContentLoaded", function () {
             "info"
           );
 
-          // Kiểm tra nếu phản hồi chứa HTML
           if (text.includes("<!DOCTYPE html>") || text.includes("<br />")) {
+            const errorSnippet =
+              text.substring(0, 200) + (text.length > 200 ? "..." : "");
             logToConsole(
-              `Lỗi: Phản hồi chứa HTML:<br>${text.substring(0, 200)}${
-                text.length > 200 ? "..." : ""
-              }`,
+              `Lỗi: Phản hồi chứa HTML:<br>${errorSnippet}`,
               "error"
             );
-            throw new Error("Lỗi máy chủ. Phản hồi chứa HTML.");
+            throw new Error(`Lỗi máy chủ. Phản hồi chứa HTML: ${errorSnippet}`);
           }
 
           let data;
@@ -283,7 +311,9 @@ document.addEventListener("DOMContentLoaded", function () {
               }`,
               "error"
             );
-            throw new Error("Phản hồi không hợp lệ từ máy chủ");
+            throw new Error(
+              `Phản hồi không hợp lệ từ máy chủ: ${text.substring(0, 200)}`
+            );
           }
 
           if (data.success) {
@@ -297,11 +327,12 @@ document.addEventListener("DOMContentLoaded", function () {
         })
         .catch((error) => {
           logToConsole(`Lỗi: ${error.message}`, "error");
-          alert("Lỗi kết nối: " + error);
+          alert("Lỗi: " + error.message);
         });
     });
   });
 
+  // Xuất contacts
   window.exportContacts = function () {
     const searchName = document.getElementById("search_name").value;
     const searchEmail = document.getElementById("search_email").value;
@@ -313,7 +344,7 @@ document.addEventListener("DOMContentLoaded", function () {
     )}&search_subject=${encodeURIComponent(searchSubject)}`;
   };
 
-  // Hàm ghi log vào bảng điều khiển gỡ lỗi
+  // Ghi log debug
   function logToConsole(message, type = "info") {
     const debugLog = document.getElementById("debugLog");
     if (!debugLog) return;
@@ -322,10 +353,10 @@ document.addEventListener("DOMContentLoaded", function () {
     logEntry.className = `log-entry log-${type}`;
     logEntry.innerHTML = `[${new Date().toLocaleTimeString()}] ${message}`;
     debugLog.appendChild(logEntry);
-    debugLog.scrollTop = debugLog.scrollHeight; // Cuộn xuống cuối
+    debugLog.scrollTop = debugLog.scrollHeight;
   }
 
-  // Xử lý xóa log
+  // Xóa log debug
   const clearDebugButton = document.getElementById("clearDebugLog");
   if (clearDebugButton) {
     clearDebugButton.addEventListener("click", function () {
@@ -333,45 +364,4 @@ document.addEventListener("DOMContentLoaded", function () {
       logToConsole("Log đã được xóa", "info");
     });
   }
-});
-// Gửi yêu cầu trả lời
-$("#replyForm").on("submit", function (e) {
-  e.preventDefault();
-  const formData = $(this).serialize();
-  $.ajax({
-    url: "processes/reply_contact.php",
-    type: "POST",
-    data: formData,
-    dataType: "json",
-    success: function (response) {
-      console.log("Raw response:", response);
-      if (response.success) {
-        Swal.fire({
-          icon: "success",
-          title: "Thành công",
-          text: response.message,
-          confirmButtonText: "OK",
-        }).then(() => {
-          $("#replyModal").modal("hide");
-          location.reload();
-        });
-      } else {
-        Swal.fire({
-          icon: "error",
-          title: "Lỗi",
-          text: response.message,
-          confirmButtonText: "OK",
-        });
-      }
-    },
-    error: function (xhr, status, error) {
-      console.error("AJAX error:", status, error);
-      Swal.fire({
-        icon: "error",
-        title: "Lỗi",
-        text: "Đã xảy ra lỗi khi gửi trả lời. Vui lòng thử lại!",
-        confirmButtonText: "OK",
-      });
-    },
-  });
 });
