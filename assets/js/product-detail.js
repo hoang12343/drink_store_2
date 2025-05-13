@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-  console.log("product-detail.js loaded");
+  console.log("product-detail.js loaded at", new Date().toISOString());
   initThumbnailGallery();
   initQuantitySelector();
   initActionButtons();
@@ -8,6 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initPagination();
 });
 
+// Initialize thumbnail gallery for product images
 function initThumbnailGallery() {
   const thumbnails = document.querySelectorAll(".thumbnail");
   const mainImage = document.querySelector(".main-image img");
@@ -17,14 +18,17 @@ function initThumbnailGallery() {
   }
 
   thumbnails.forEach((thumbnail) => {
-    thumbnail.addEventListener("click", () => {
+    const newThumbnail = thumbnail.cloneNode(true);
+    thumbnail.replaceWith(newThumbnail);
+    newThumbnail.addEventListener("click", () => {
       thumbnails.forEach((t) => t.classList.remove("active"));
-      thumbnail.classList.add("active");
-      mainImage.src = thumbnail.src;
+      newThumbnail.classList.add("active");
+      mainImage.src = newThumbnail.src;
     });
   });
 }
 
+// Initialize quantity selector (increase/decrease buttons and input)
 function initQuantitySelector() {
   const decreaseBtn = document.querySelector(".quantity-btn.decrease");
   const increaseBtn = document.querySelector(".quantity-btn.increase");
@@ -37,34 +41,42 @@ function initQuantitySelector() {
 
   const maxStock = parseInt(quantityInput.getAttribute("max") || 10);
 
-  decreaseBtn.addEventListener("click", () => {
-    let value = parseInt(quantityInput.value);
+  // Clone to remove existing events
+  const newDecreaseBtn = decreaseBtn.cloneNode(true);
+  const newIncreaseBtn = increaseBtn.cloneNode(true);
+  const newQuantityInput = quantityInput.cloneNode(true);
+  decreaseBtn.replaceWith(newDecreaseBtn);
+  increaseBtn.replaceWith(newIncreaseBtn);
+  quantityInput.replaceWith(newQuantityInput);
+
+  newDecreaseBtn.addEventListener("click", () => {
+    let value = parseInt(newQuantityInput.value, 10);
     if (value > 1) {
-      quantityInput.value = value - 1;
+      newQuantityInput.value = value - 1;
     }
   });
 
-  increaseBtn.addEventListener("click", () => {
-    let value = parseInt(quantityInput.value);
+  newIncreaseBtn.addEventListener("click", () => {
+    let value = parseInt(newQuantityInput.value, 10);
     if (value < maxStock) {
-      quantityInput.value = value + 1;
+      newQuantityInput.value = value + 1;
     }
   });
 
-  quantityInput.addEventListener("change", () => {
-    let value = parseInt(quantityInput.value);
-    let max = parseInt(quantityInput.max);
-    let min = parseInt(quantityInput.min);
+  newQuantityInput.addEventListener("change", () => {
+    let value = parseInt(newQuantityInput.value, 10);
+    const max = parseInt(newQuantityInput.max, 10) || maxStock;
+    const min = parseInt(newQuantityInput.min, 10) || 1;
 
     if (isNaN(value) || value < min) {
-      quantityInput.value = min;
-    }
-    if (value > max) {
-      quantityInput.value = max;
+      newQuantityInput.value = min;
+    } else if (value > max) {
+      newQuantityInput.value = max;
     }
   });
 }
 
+// Initialize action buttons (add to cart, buy now)
 function initActionButtons() {
   const addToCartBtn = document.querySelector(".add-to-cart-btn");
   const buyNowBtn = document.querySelector(".buy-now-btn");
@@ -80,34 +92,52 @@ function initActionButtons() {
     return;
   }
 
+  // Shared handler to prevent multiple calls
+  const handleAddToCart = (productCode, quantity, redirectToCart) => {
+    if (handleAddToCart.isProcessing) {
+      console.warn("Add to cart is already processing");
+      return;
+    }
+    handleAddToCart.isProcessing = true;
+
+    addToCart(productCode, quantity, redirectToCart).finally(() => {
+      handleAddToCart.isProcessing = false;
+    });
+  };
+
   if (addToCartBtn) {
-    addToCartBtn.addEventListener("click", () => {
-      const productCode = addToCartBtn.getAttribute("data-product-code");
-      const quantity = parseInt(quantityInput.value);
+    const newAddToCartBtn = addToCartBtn.cloneNode(true);
+    addToCartBtn.replaceWith(newAddToCartBtn);
+    newAddToCartBtn.addEventListener("click", () => {
+      const productCode = newAddToCartBtn.getAttribute("data-product-code");
+      const quantity = parseInt(quantityInput.value, 10);
       console.log("Add to cart clicked", { productCode, quantity });
 
       if (quantity > 5) {
         if (
           confirm(`Bạn có chắc muốn thêm ${quantity} sản phẩm vào giỏ hàng?`)
         ) {
-          addToCart(productCode, quantity);
+          handleAddToCart(productCode, quantity, false);
         }
       } else {
-        addToCart(productCode, quantity);
+        handleAddToCart(productCode, quantity, false);
       }
     });
   }
 
   if (buyNowBtn) {
-    buyNowBtn.addEventListener("click", () => {
-      const productCode = buyNowBtn.getAttribute("data-product-code");
-      const quantity = parseInt(quantityInput.value);
+    const newBuyNowBtn = buyNowBtn.cloneNode(true);
+    buyNowBtn.replaceWith(newBuyNowBtn);
+    newBuyNowBtn.addEventListener("click", () => {
+      const productCode = newBuyNowBtn.getAttribute("data-product-code");
+      const quantity = parseInt(quantityInput.value, 10);
       console.log("Buy now clicked", { productCode, quantity });
-      addToCart(productCode, quantity, true);
+      handleAddToCart(productCode, quantity, true);
     });
   }
 }
 
+// Add product to cart via API
 function addToCart(productCode, quantity, redirectToCart = false) {
   if (!productCode || quantity < 1) {
     console.error("Invalid product code or quantity", {
@@ -115,10 +145,15 @@ function addToCart(productCode, quantity, redirectToCart = false) {
       quantity,
     });
     alert("Dữ liệu không hợp lệ. Vui lòng thử lại.");
-    return;
+    return Promise.reject();
   }
 
-  fetch("/processes/add_to_cart.php", {
+  console.log("Calling addToCart API", {
+    productCode,
+    quantity,
+    redirectToCart,
+  });
+  return fetch("/processes/add_to_cart.php", {
     method: "POST",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
@@ -129,21 +164,21 @@ function addToCart(productCode, quantity, redirectToCart = false) {
     }),
   })
     .then((response) => {
-      console.log("Fetch response status:", response.status);
+      console.log("addToCart response status:", response.status);
       if (!response.ok)
         throw new Error(`HTTP error! Status: ${response.status}`);
       return response.json();
     })
     .then((data) => {
-      console.log("Fetch response data:", data);
+      console.log("addToCart response data:", data);
       if (data.success) {
         const notification = document.createElement("div");
         notification.className = "cart-notification";
         notification.textContent = "Sản phẩm đã được thêm vào giỏ hàng!";
         notification.style.cssText = `
-                    position: fixed; top: 20px; right: 20px; background: #8B0000; color: white;
-                    padding: 10px 20px; border-radius: 5px; z-index: 1000;
-                `;
+          position: fixed; top: 20px; right: 20px; background: #8B0000; color: white;
+          padding: 10px 20px; border-radius: 5px; z-index: 1000;
+        `;
         document.body.appendChild(notification);
         setTimeout(() => notification.remove(), 3000);
 
@@ -173,11 +208,12 @@ function addToCart(productCode, quantity, redirectToCart = false) {
       }
     })
     .catch((error) => {
-      console.error("Fetch error:", error);
+      console.error("addToCart fetch error:", error);
       alert("Lỗi hệ thống. Vui lòng thử lại sau.");
     });
 }
 
+// Initialize navigation for related products
 function initRelatedProductsNavigation() {
   const productCards = document.querySelectorAll(
     ".related-products-section .product-card"
@@ -191,7 +227,9 @@ function initRelatedProductsNavigation() {
     }
 
     if (card.classList.contains("clickable")) {
-      card.addEventListener("click", function (e) {
+      const newCard = card.cloneNode(true);
+      card.replaceWith(newCard);
+      newCard.addEventListener("click", function (e) {
         if (
           e.target.tagName === "BUTTON" ||
           e.target.tagName === "A" ||
@@ -202,7 +240,7 @@ function initRelatedProductsNavigation() {
         }
         navigateToProductDetail(productId);
       });
-      card.style.cursor = "pointer";
+      newCard.style.cursor = "pointer";
     }
 
     const productImage = card.querySelector(".product-img");
@@ -217,7 +255,9 @@ function initRelatedProductsNavigation() {
 
     const buyNowBtn = card.querySelector(".buy-now-btn");
     if (buyNowBtn) {
-      buyNowBtn.addEventListener("click", function (e) {
+      const newBuyNowBtn = buyNowBtn.cloneNode(true);
+      buyNowBtn.replaceWith(newBuyNowBtn);
+      newBuyNowBtn.addEventListener("click", function (e) {
         e.preventDefault();
         e.stopPropagation();
         navigateToProductDetail(productId);
@@ -226,19 +266,24 @@ function initRelatedProductsNavigation() {
   });
 }
 
+// Make element clickable for product detail navigation
 function makeClickableForDetail(element, productId) {
   element.style.cursor = "pointer";
-  element.addEventListener("click", function (e) {
+  const newElement = element.cloneNode(true);
+  element.replaceWith(newElement);
+  newElement.addEventListener("click", function (e) {
     e.preventDefault();
     navigateToProductDetail(productId);
   });
 }
 
+// Navigate to product detail page
 function navigateToProductDetail(productId) {
   window.location.href =
     "index.php?page=product-detail&id=" + encodeURIComponent(productId);
 }
 
+// Initialize comment form
 function initCommentForm() {
   const commentForm = document.querySelector("#comment-form");
   if (!commentForm) {
@@ -246,17 +291,19 @@ function initCommentForm() {
     return;
   }
 
-  commentForm.addEventListener("submit", function (e) {
+  const newForm = commentForm.cloneNode(true);
+  commentForm.replaceWith(newForm);
+  newForm.addEventListener("submit", function (e) {
     e.preventDefault();
 
-    const commentText = commentForm.querySelector("textarea").value.trim();
+    const commentText = newForm.querySelector("textarea").value.trim();
     if (!commentText) {
       alert("Bình luận không được để trống");
       return;
     }
 
-    const formData = new FormData(commentForm);
-    fetch(commentForm.action, {
+    const formData = new FormData(newForm);
+    fetch(newForm.action, {
       method: "POST",
       body: formData,
     })
@@ -267,16 +314,16 @@ function initCommentForm() {
       })
       .then((data) => {
         if (data.success && data.comment && data.comment.comment_text) {
-          commentForm.querySelector("textarea").value = "";
-          loadComments(1, formData.get("product_id")); // Reload comments for page 1
+          newForm.querySelector("textarea").value = "";
+          loadComments(1, formData.get("product_id"));
 
           const notification = document.createElement("div");
           notification.className = "cart-notification";
           notification.textContent = data.message;
           notification.style.cssText = `
-                        position: fixed; top: 20px; right: 20px; background: #8B0000; color: white;
-                        padding: 10px 20px; border-radius: 5px; z-index: 1000;
-                    `;
+            position: fixed; top: 20px; right: 20px; background: #8B0000; color: white;
+            padding: 10px 20px; border-radius: 5px; z-index: 1000;
+          `;
           document.body.appendChild(notification);
           setTimeout(() => notification.remove(), 3000);
         } else {
@@ -295,18 +342,22 @@ function initCommentForm() {
   });
 }
 
+// Initialize pagination for comments
 function initPagination() {
   const paginationButtons = document.querySelectorAll(".pagination-btn");
   paginationButtons.forEach((button) => {
-    button.addEventListener("click", function (e) {
+    const newButton = button.cloneNode(true);
+    button.replaceWith(newButton);
+    newButton.addEventListener("click", function (e) {
       e.preventDefault();
-      const page = parseInt(this.getAttribute("data-page"));
-      const productId = this.getAttribute("data-product-id");
+      const page = parseInt(newButton.getAttribute("data-page"));
+      const productId = newButton.getAttribute("data-product-id");
       loadComments(page, productId);
     });
   });
 }
 
+// Load comments via API
 function loadComments(page, productId) {
   fetch(`processes/get_comments.php?page=${page}&product_id=${productId}`, {
     method: "GET",
@@ -323,7 +374,6 @@ function loadComments(page, productId) {
       const commentsList = document.querySelector(".comments-list");
       const paginationContainer = document.querySelector(".pagination");
 
-      // Update comments list
       commentsList.innerHTML = "";
       if (data.comments.length === 0) {
         commentsList.innerHTML =
@@ -337,28 +387,25 @@ function loadComments(page, productId) {
             commentItem.className = "comment-item";
             commentItem.setAttribute("data-comment-id", comment.id);
             commentItem.innerHTML = `
-                            <div class="comment-header">
-                                <span class="comment-user">${
-                                  comment.full_name
-                                }</span>
-                                <span class="comment-date">${new Date(
-                                  comment.created_at
-                                ).toLocaleString("vi-VN", {
-                                  day: "2-digit",
-                                  month: "2-digit",
-                                  year: "numeric",
-                                  hour: "2-digit",
-                                  minute: "2-digit",
-                                })}</span>
-                            </div>
-                            <p class="comment-text">${comment.comment_text}</p>
-                        `;
+              <div class="comment-header">
+                <span class="comment-user">${comment.full_name}</span>
+                <span class="comment-date">${new Date(
+                  comment.created_at
+                ).toLocaleString("vi-VN", {
+                  day: "2-digit",
+                  month: "2-digit",
+                  year: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}</span>
+              </div>
+              <p class="comment-text">${comment.comment_text}</p>
+            `;
             commentsList.appendChild(commentItem);
           }
         });
       }
 
-      // Update pagination
       if (paginationContainer) {
         const totalPages = data.total_pages;
         const currentPage = data.current_page;
@@ -399,7 +446,6 @@ function loadComments(page, productId) {
             paginationContainer.appendChild(nextBtn);
           }
 
-          // Re-attach event listeners to new pagination buttons
           initPagination();
         }
       }

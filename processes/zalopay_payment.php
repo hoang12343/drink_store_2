@@ -73,7 +73,7 @@ $order = [
     'app_trans_id' => date('ymd') . '_' . $order_id,
     'embed_data' => json_encode([
         'order_id' => $order_id,
-        'redirecturl' => 'https://458f-27-67-176-14.ngrok-free.app/index.php?page=orders&check_trans_id=' . urlencode(date('ymd') . '_' . $order_id)
+        'redirecturl' => 'https://73e1-2405-4802-1d49-1bc0-e5f9-b1dd-745f-13a9.ngrok-free.app/BTL-nhom-9-4/index.php?page=orders&check_trans_id=' . urlencode(date('ymd') . '_' . $order_id)
     ]),
     'item' => json_encode(array_map(function ($item) {
         return [
@@ -85,7 +85,7 @@ $order = [
     }, $items)),
     'description' => 'Thanh toán đơn hàng #' . $order_id,
     'bank_code' => '',
-    'callback_url' => 'https://458f-27-67-176-14.ngrok-free.app/processes/zalopay_callback.php'
+    'callback_url' => 'https://73e1-2405-4802-1d49-1bc0-e5f9-b1dd-745f-13a9.ngrok-free.app/BTL-nhom-9-4/processes/zalopay_callback.php'
 ];
 
 // Tạo chữ ký

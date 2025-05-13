@@ -7,8 +7,23 @@ if (!defined('APP_START')) exit('No direct access');
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Đồ uống có cồn - <?php echo ucfirst($current_page ?? 'home'); ?></title>
+    <title><?= $page_title ?? 'Wine Store' ?></title>
+
+    <!-- Định nghĩa BASE_URL cho JavaScript -->
+    <script>
+        // Định nghĩa BASE_URL cho toàn bộ ứng dụng
+        window.BASE_URL =
+            "<?= isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https://' : 'http://' ?><?= $_SERVER['HTTP_HOST'] ?><?= rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\') ?>/";
+
+        // Đảm bảo BASE_URL luôn có giá trị
+        if (!window.BASE_URL || window.BASE_URL === '/') {
+            window.BASE_URL = "https://eea5-2405-4802-1d49-1bc0-154c-5b56-92f1-d9f.ngrok-free.app/BTL-nhom-9-4/";
+        }
+
+        console.log("BASE_URL initialized:", window.BASE_URL);
+    </script>
+
+    <!-- Các thẻ CSS và JS khác -->
     <link rel="stylesheet" href="assets/css/style.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="assets/css/header.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="assets/css/usermenu.css?v=<?php echo time(); ?>">
@@ -28,6 +43,7 @@ if (!defined('APP_START')) exit('No direct access');
     <?php elseif ($current_page === 'orders'): ?>
         <link rel="stylesheet" href="assets/css/orders.css?v=<?php echo time(); ?>">
     <?php endif; ?>
+    <script src="assets/js/config.js?v=<?= time() ?>"></script>
     <script src="assets/js/script.js" defer></script>
     <script src="assets/js/usermenu.js" defer></script>
     <?php if ($current_page === 'products'): ?>
@@ -35,6 +51,35 @@ if (!defined('APP_START')) exit('No direct access');
     <?php elseif ($current_page === 'contact'): ?>
         <script src="assets/js/contact.js" defer></script>
     <?php endif; ?>
+    <script>
+        // Thêm header vào tất cả các yêu cầu fetch và XMLHttpRequest
+        (function() {
+            // Ghi đè phương thức fetch
+            const originalFetch = window.fetch;
+            window.fetch = function(url, options = {}) {
+                if (!options.headers) {
+                    options.headers = {};
+                }
+                options.headers['ngrok-skip-browser-warning'] = 'true';
+                return originalFetch(url, options);
+            };
+
+            // Ghi đè XMLHttpRequest
+            const originalOpen = XMLHttpRequest.prototype.open;
+            XMLHttpRequest.prototype.open = function() {
+                this.addEventListener('readystatechange', function() {
+                    if (this.readyState === 1) {
+                        this.setRequestHeader('ngrok-skip-browser-warning', 'true');
+                    }
+                });
+                originalOpen.apply(this, arguments);
+            };
+        })();
+    </script>
+    <script>
+        // Định nghĩa biến toàn cục cho BASE_URL
+        window.BASE_URL = "<?php echo rtrim(dirname($_SERVER['PHP_SELF']), '/') . '/'; ?>";
+    </script>
 </head>
 
 <body>

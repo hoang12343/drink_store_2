@@ -65,6 +65,7 @@ if (empty($selected_items) || $subtotal <= 0) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Thanh toán</title>
+    <link rel="stylesheet" href="assets/css/checkout.css?v=<?= time() ?>">
 </head>
 
 <body>
@@ -96,6 +97,7 @@ if (empty($selected_items) || $subtotal <= 0) {
                     <?php endforeach; ?>
                 </tbody>
             </table>
+
             <?php if ($discount > 0): ?>
                 <div class="total-row">
                     <span>Giảm giá (<?= htmlspecialchars($_SESSION['promo_code']['code']) ?>):</span>
@@ -111,19 +113,45 @@ if (empty($selected_items) || $subtotal <= 0) {
                 <span><?= number_format($total_amount, 0, ',', '.') ?> VNĐ</span>
             </div>
 
-            <form action="../processes/payment_handler.php" method="POST">
+            <form action="../processes/payment_handler.php" method="POST" id="checkout-form">
                 <input type="hidden" name="selected_items"
                     value='<?= htmlspecialchars(json_encode(array_column($selected_items, 'id'))) ?>'>
                 <input type="hidden" name="total_amount" value="<?= $total_amount ?>">
                 <input type="hidden" name="discount" value="<?= $discount ?>">
                 <input type="hidden" name="shipping" value="<?= $shipping ?>">
+                <input type="hidden" name="payment_method" id="payment_method" value="zalopay">
                 <?php if (isset($_SESSION['promo_code'])): ?>
                     <input type="hidden" name="promo_code" value="<?= htmlspecialchars($_SESSION['promo_code']['code']) ?>">
                 <?php endif; ?>
-                <button type="submit" class="btn btn-primary">Thanh toán qua ZaloPay</button>
+
+                <div class="payment-methods">
+                    <h3>Phương thức thanh toán</h3>
+                    <label class="payment-option">
+                        <input type="radio" name="payment_method" value="zalopay" checked
+                            onchange="document.getElementById('payment_method').value = this.value;">
+                        Thanh toán qua ZaloPay
+                    </label>
+                    <label class="payment-option">
+                        <input type="radio" name="payment_method" value="cod"
+                            onchange="document.getElementById('payment_method').value = this.value;">
+                        Thanh toán khi nhận hàng (COD)
+                    </label>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Xác nhận thanh toán</button>
             </form>
         </div>
     </div>
+
+    <script>
+        // Đảm bảo chỉ một phương thức thanh toán được chọn
+        document.querySelectorAll('input[name="payment_method"]').forEach((radio) => {
+            radio.addEventListener('change', () => {
+                document.getElementById('payment_method').value = radio.value;
+                console.log('Payment method selected:', radio.value);
+            });
+        });
+    </script>
 </body>
 
 </html>

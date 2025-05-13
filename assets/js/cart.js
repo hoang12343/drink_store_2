@@ -1,8 +1,7 @@
-// Base URL for API requests (adjust if project is in a subdirectory, e.g., '/project')
 const BASE_URL = "";
 
 document.addEventListener("DOMContentLoaded", () => {
-  console.log("cart.js loaded");
+  console.log("cart.js loaded at", new Date().toISOString());
   initCart();
 });
 
@@ -11,19 +10,21 @@ function initCart() {
   initQuantitySelectors();
   initRemoveButtons();
   initCheckoutButton();
-  initPromoCode(); // Thêm khởi tạo mã giảm giá
+  initPromoCode();
   initCheckboxes();
 }
 
-// Initialize quantity selectors (increase/decrease buttons and input)
+// Initialize quantity selectors
 function initQuantitySelectors() {
   const decreaseButtons = document.querySelectorAll(".quantity-btn.decrease");
   const increaseButtons = document.querySelectorAll(".quantity-btn.increase");
   const quantityInputs = document.querySelectorAll(".quantity-input");
 
   decreaseButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-      const cartItemId = button.getAttribute("data-cart-item-id");
+    const newButton = button.cloneNode(true);
+    button.replaceWith(newButton);
+    newButton.addEventListener("click", () => {
+      const cartItemId = newButton.getAttribute("data-cart-item-id");
       const input = document.querySelector(
         `.quantity-input[data-cart-item-id="${cartItemId}"]`
       );
@@ -35,15 +36,17 @@ function initQuantitySelectors() {
       const currentValue = parseInt(input.value, 10);
       if (currentValue > 1) {
         input.disabled = true;
-        button.disabled = true;
-        updateCartItem(cartItemId, currentValue - 1, input, button);
+        newButton.disabled = true;
+        updateCartItem(cartItemId, currentValue - 1, input, newButton);
       }
     });
   });
 
   increaseButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-      const cartItemId = button.getAttribute("data-cart-item-id");
+    const newButton = button.cloneNode(true);
+    button.replaceWith(newButton);
+    newButton.addEventListener("click", () => {
+      const cartItemId = newButton.getAttribute("data-cart-item-id");
       const input = document.querySelector(
         `.quantity-input[data-cart-item-id="${cartItemId}"]`
       );
@@ -56,35 +59,43 @@ function initQuantitySelectors() {
       const max = parseInt(input.max, 10) || 100;
       if (currentValue < max) {
         input.disabled = true;
-        button.disabled = true;
-        updateCartItem(cartItemId, currentValue + 1, input, button);
+        newButton.disabled = true;
+        updateCartItem(cartItemId, currentValue + 1, input, newButton);
       }
     });
   });
 
   quantityInputs.forEach((input) => {
-    input.addEventListener("change", () => {
-      const cartItemId = input.getAttribute("data-cart-item-id");
-      let value = parseInt(input.value, 10);
-      const max = parseInt(input.max, 10) || 100;
-      const min = parseInt(input.min, 10) || 1;
+    const newInput = input.cloneNode(true);
+    input.replaceWith(newInput);
+    newInput.addEventListener("change", () => {
+      const cartItemId = newInput.getAttribute("data-cart-item-id");
+      let value = parseInt(newInput.value, 10);
+      const max = parseInt(newInput.max, 10) || 100;
+      const min = parseInt(newInput.min, 10) || 1;
 
       if (isNaN(value) || value < min) {
         value = min;
-        input.value = min;
+        newInput.value = min;
       } else if (value > max) {
         value = max;
-        input.value = max;
+        newInput.value = max;
       }
 
-      input.disabled = true;
-      updateCartItem(cartItemId, value, input);
+      newInput.disabled = true;
+      updateCartItem(cartItemId, value, newInput);
     });
   });
 }
 
 // Update cart item quantity via API
 function updateCartItem(cartItemId, quantity, input, button = null) {
+  if (updateCartItem.isProcessing) {
+    console.warn("updateCartItem is already processing");
+    return;
+  }
+  updateCartItem.isProcessing = true;
+
   const card = document.querySelector(
     `.cart-card[data-cart-item-id="${cartItemId}"]`
   );
@@ -92,6 +103,7 @@ function updateCartItem(cartItemId, quantity, input, button = null) {
     console.warn(`Card not found for cartItemId=${cartItemId}`);
     input.disabled = false;
     if (button) button.disabled = false;
+    updateCartItem.isProcessing = false;
     return;
   }
 
@@ -112,14 +124,14 @@ function updateCartItem(cartItemId, quantity, input, button = null) {
     }),
   })
     .then((response) => {
-      if (!response.ok) {
+      if (!response.ok)
         throw new Error(`HTTP error! Status: ${response.status}`);
-      }
       return response.json();
     })
     .then((data) => {
       input.disabled = false;
       if (button) button.disabled = false;
+      updateCartItem.isProcessing = false;
 
       if (data.success) {
         input.value = data.quantity;
@@ -130,7 +142,6 @@ function updateCartItem(cartItemId, quantity, input, button = null) {
           data.subtotal.replace(/[^0-9]/g, "")
         );
 
-        // Visual feedback
         subtotalElement.classList.add("subtotal-updated");
         setTimeout(
           () => subtotalElement.classList.remove("subtotal-updated"),
@@ -147,6 +158,7 @@ function updateCartItem(cartItemId, quantity, input, button = null) {
       console.error("Lỗi khi cập nhật giỏ hàng:", error);
       input.disabled = false;
       if (button) button.disabled = false;
+      updateCartItem.isProcessing = false;
       alert("Lỗi hệ thống. Vui lòng thử lại.");
       input.value = originalValue;
     });
@@ -156,8 +168,10 @@ function updateCartItem(cartItemId, quantity, input, button = null) {
 function initRemoveButtons() {
   const removeButtons = document.querySelectorAll(".remove-btn");
   removeButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-      const cartItemId = button.getAttribute("data-cart-item-id");
+    const newButton = button.cloneNode(true);
+    button.replaceWith(newButton);
+    newButton.addEventListener("click", () => {
+      const cartItemId = newButton.getAttribute("data-cart-item-id");
       if (!cartItemId) {
         console.warn("Missing cartItemId");
         return;
@@ -182,9 +196,8 @@ function removeCartItem(cartItemId) {
     }),
   })
     .then((response) => {
-      if (!response.ok) {
+      if (!response.ok)
         throw new Error(`HTTP error! Status: ${response.status}`);
-      }
       return response.json();
     })
     .then((data) => {
@@ -226,7 +239,9 @@ function initCheckoutButton() {
   const selectedItemsInput = document.getElementById("selected-items");
 
   if (checkoutButton && checkoutForm && selectedItemsInput) {
-    checkoutButton.addEventListener("click", () => {
+    const newButton = checkoutButton.cloneNode(true);
+    checkoutButton.replaceWith(newButton);
+    newButton.addEventListener("click", () => {
       const selectedCheckboxes = document.querySelectorAll(
         ".cart-item-checkbox:checked"
       );
@@ -247,7 +262,9 @@ function initPromoCode() {
     return;
   }
 
-  applyButton.addEventListener("click", () => {
+  const newButton = applyButton.cloneNode(true);
+  applyButton.replaceWith(newButton);
+  newButton.addEventListener("click", () => {
     const promoCodeInput = document.getElementById("promo-code-input");
     if (!promoCodeInput) {
       console.warn("Promo code input not found");
@@ -260,7 +277,6 @@ function initPromoCode() {
       return;
     }
 
-    // Lấy danh sách các sản phẩm được chọn
     const selectedCheckboxes = document.querySelectorAll(
       ".cart-item-checkbox:checked"
     );
@@ -277,8 +293,14 @@ function initPromoCode() {
   });
 }
 
-// Giữ nguyên hàm applyPromoCode
+// Apply promo code via API
 function applyPromoCode(code, selectedItems) {
+  if (applyPromoCode.isProcessing) {
+    console.warn("applyPromoCode is already processing");
+    return;
+  }
+  applyPromoCode.isProcessing = true;
+
   fetch(`${BASE_URL}/processes/apply_promo.php`, {
     method: "POST",
     headers: {
@@ -290,33 +312,32 @@ function applyPromoCode(code, selectedItems) {
     }),
   })
     .then((response) => {
-      if (!response.ok) {
+      if (!response.ok)
         throw new Error(`HTTP error! Status: ${response.status}`);
-      }
       return response.json();
     })
     .then((data) => {
-      console.log("applyPromoCode response:", data); // Log dữ liệu nhận được
+      console.log("applyPromoCode response:", data);
+      applyPromoCode.isProcessing = false;
+
       if (data.success) {
         const subtotalElement = document.getElementById("subtotal");
         const totalElement = document.getElementById("total-amount");
         const shippingElement = document.getElementById("shipping-fee");
 
-        // Kiểm tra và cập nhật các phần tử
         if (subtotalElement) subtotalElement.textContent = data.subtotal;
         if (totalElement) totalElement.textContent = data.total;
         if (shippingElement) shippingElement.textContent = data.shipping;
 
-        // Xử lý hiển thị giảm giá
         const discountRow =
           document.querySelector(".discount-row") || createDiscountRow();
 
         if (discountRow && data.discount !== "0 VNĐ") {
           const discountAmount = document.getElementById("discount-amount");
           if (discountAmount) discountAmount.textContent = data.discount;
-          discountRow.style.display = "flex"; // Đảm bảo hiển thị
+          discountRow.style.display = "flex";
         } else if (discountRow && data.discount === "0 VNĐ") {
-          discountRow.style.display = "none"; // Ẩn thay vì xóa
+          discountRow.style.display = "none";
         }
 
         alert("Mã giảm giá đã được áp dụng thành công!");
@@ -326,11 +347,12 @@ function applyPromoCode(code, selectedItems) {
     })
     .catch((error) => {
       console.error("Error applying promo code:", error);
+      applyPromoCode.isProcessing = false;
       alert("Lỗi hệ thống. Vui lòng thử lại.");
     });
 }
 
-// Hàm tạo dòng hiển thị giảm giá nếu chưa có
+// Create discount row if it doesn't exist
 function createDiscountRow() {
   const summaryElement = document.querySelector(".cart-summary");
   const totalRow = document.querySelector(".summary-row.total");
@@ -354,17 +376,21 @@ function initCheckboxes() {
   const itemCheckboxes = document.querySelectorAll(".cart-item-checkbox");
 
   if (selectAllCheckbox) {
-    selectAllCheckbox.addEventListener("change", () => {
+    const newCheckbox = selectAllCheckbox.cloneNode(0);
+    selectAllCheckbox.replaceWith(newCheckbox);
+    newCheckbox.addEventListener("change", () => {
       itemCheckboxes.forEach((checkbox) => {
-        checkbox.checked = selectAllCheckbox.checked;
+        checkbox.checked = newCheckbox.checked;
       });
       updateCartSummary();
     });
   }
 
   itemCheckboxes.forEach((checkbox) => {
-    checkbox.addEventListener("change", () => {
-      if (!checkbox.checked && selectAllCheckbox.checked) {
+    const newCheckbox = checkbox.cloneNode(true);
+    checkbox.replaceWith(newCheckbox);
+    newCheckbox.addEventListener("change", () => {
+      if (!newCheckbox.checked && selectAllCheckbox.checked) {
         selectAllCheckbox.checked = false;
       }
       if (Array.from(itemCheckboxes).every((cb) => cb.checked)) {
@@ -377,7 +403,7 @@ function initCheckboxes() {
   updateCartSummary();
 }
 
-// Update cart summary (subtotal, total items, shipping, total)
+// Update cart summary
 function updateCartSummary() {
   const itemCheckboxes = document.querySelectorAll(
     ".cart-item-checkbox:checked"

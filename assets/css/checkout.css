@@ -39,7 +39,7 @@ h2 {
     text-align: center;
 }
 
-/* Tiêu đề danh sách sản phẩm */
+/* Tiêu đề danh sách sản phẩm và phương thức thanh toán */
 h3 {
     font-size: 1.6rem;
     color: var(--text-dark);
@@ -90,17 +90,50 @@ h3 {
 }
 
 /* Tổng tiền */
-.total-row.final {
+.total-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 15px 0;
+    font-size: 1.1rem;
+    color: var(--text-dark);
+}
+
+.total-row.final {
     font-size: 1.3rem;
     font-weight: 700;
     color: var(--wine-red);
     border-top: 2px solid var(--border-color);
-    text-align: center;
     margin-top: 20px;
+}
+
+/* Phương thức thanh toán */
+.payment-methods {
+    margin: 20px 0;
+    padding: 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background: var(--off-white);
+}
+
+.payment-option {
+    display: flex;
+    align-items: center;
+    margin: 10px 0;
+    font-size: 1rem;
+    color: var(--text-dark);
+    cursor: pointer;
+}
+
+.payment-option input[type="radio"] {
+    margin-right: 10px;
+    accent-color: var(--wine-red);
+    width: 18px;
+    height: 18px;
+}
+
+.payment-option:hover {
+    color: var(--wine-red);
 }
 
 /* Nút thanh toán */
@@ -128,7 +161,8 @@ h3 {
 form {
     width: 100%;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
 }
 
 /* Responsive design */
@@ -163,6 +197,15 @@ form {
         padding: 12px 20px;
         font-size: 1rem;
     }
+
+    .payment-option {
+        font-size: 0.95rem;
+    }
+
+    .payment-option input[type="radio"] {
+        width: 16px;
+        height: 16px;
+    }
 }
 
 @media (max-width: 576px) {
@@ -187,9 +230,17 @@ form {
         font-size: 0.95rem;
     }
 
-    .total-row.final {
+    .total-row, .total-row.final {
         flex-direction: column;
         gap: 10px;
         text-align: center;
+    }
+
+    .payment-methods {
+        padding: 10px;
+    }
+
+    .payment-option {
+        font-size: 0.9rem;
     }
 }

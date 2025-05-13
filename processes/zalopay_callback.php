@@ -1,7 +1,14 @@
 <?php
-if (!defined('APP_START')) exit('No direct access');
+define('APP_START', true);  // Thêm dòng này nếu chưa có
 require_once '../includes/db_connect.php';
 require_once '../includes/config.php';
+
+// Thêm header vào tất cả các yêu cầu HTTP
+header('ngrok-skip-browser-warning: true');
+
+// Log toàn bộ request để debug
+error_log('ZaloPay callback received: ' . file_get_contents('php://input'));
+error_log('ZaloPay callback headers: ' . json_encode(getallheaders()));
 
 // Lấy dữ liệu từ ZaloPay
 $data = json_decode(file_get_contents('php://input'), true);
