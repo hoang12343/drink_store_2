@@ -9,22 +9,16 @@ session_start();
 // Kiểm tra đăng nhập
 $user_id = $_SESSION['user_id'] ?? null;
 if (!$user_id) {
-    error_log('Unauthorized access attempt: user_id not set');
-    header('HTTP/1.1 401 Unauthorized');
-    echo json_encode(['success' => false, 'error' => 'Chưa đăng nhập']);
+    header('Location: ../index.php?page=login&error=' . urlencode('Chưa đăng nhập'));
     exit;
 }
-
-// Thiết lập header cho phản hồi JSON
-header('Content-Type: application/json; charset=utf-8');
 
 // Kết nối cơ sở dữ liệu
 try {
     require_once '../includes/db_connect.php';
 } catch (Exception $e) {
     error_log('Database connection failed: ' . $e->getMessage());
-    http_response_code(500);
-    echo json_encode(['success' => false, 'error' => 'Lỗi kết nối cơ sở dữ liệu']);
+    header('Location: ../index.php?page=checkout&error=' . urlencode('Lỗi kết nối cơ sở dữ liệu'));
     exit;
 }
 
@@ -52,7 +46,6 @@ function processCODOrder($pdo, $user_id, $shipping, $promo_code = null)
         $cart_items = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         if (empty($cart_items)) {
-            error_log("Empty cart for user_id: $user_id");
             throw new Exception('Giỏ hàng trống');
         }
 
@@ -64,23 +57,17 @@ function processCODOrder($pdo, $user_id, $shipping, $promo_code = null)
             $quantity = $item['quantity'];
 
             // Kiểm tra sản phẩm tồn tại
-            $stmt = $pdo->prepare("SELECT price FROM products WHERE id = ?");
+            $stmt = $pdo->prepare("SELECT price, stock FROM products WHERE id = ?");
             $stmt->execute([$product_id]);
             $product = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if (!$product) {
-                error_log("Product not found: product_id=$product_id for user_id=$user_id");
-                throw new Exception("Sản phẩm $product_id không tồn tại");
+                throw new Exception("Sản phẩm ID $product_id không tồn tại");
             }
 
             // Kiểm tra số lượng trong kho
-            $stmt = $pdo->prepare("SELECT stock FROM products WHERE id = ?");
-            $stmt->execute([$product_id]);
-            $product_stock = $stmt->fetch(PDO::FETCH_ASSOC);
-
-            if (!$product_stock || $product_stock['stock'] < $quantity) {
-                error_log("Insufficient stock for product_id=$product_id, requested=$quantity, available=" . ($product_stock['stock'] ?? 0));
-                throw new Exception("Không đủ hàng cho sản phẩm $product_id");
+            if ($product['stock'] < $quantity) {
+                throw new Exception("Không đủ hàng cho sản phẩm ID $product_id");
             }
 
             $total_price += $product['price'] * $quantity;
@@ -99,8 +86,6 @@ function processCODOrder($pdo, $user_id, $shipping, $promo_code = null)
 
             if ($promo) {
                 $discount = $total_price * ($promo['discount_percentage'] / 100);
-            } else {
-                error_log("Invalid or expired promo_code: $promo_code for user_id=$user_id");
             }
         }
 
@@ -150,53 +135,97 @@ function processCODOrder($pdo, $user_id, $shipping, $promo_code = null)
         // Cam kết giao dịch
         $pdo->commit();
 
-        error_log("Order created successfully: order_id=$order_id, user_id=$user_id, total_amount=$total_amount");
         return [
             'success' => true,
             'order_id' => $order_id,
-            'message' => 'Đặt hàng thành công! Cảm ơn bạn đã mua sắm.',
-            'redirect' => '../index.php?page=order_confirmation&order_id=' . $order_id
+            'message' => 'Đặt hàng thành công! Cảm ơn bạn đã mua sắm.'
         ];
     } catch (Exception $e) {
-        // Hoàn tác giao dịch nếu có lỗi
         $pdo->rollBack();
-        error_log('Order processing failed for user_id=' . $user_id . ': ' . $e->getMessage());
+        error_log('Order processing failed: ' . $e->getMessage());
         return ['success' => false, 'error' => $e->getMessage()];
     }
 }
 
 // Xử lý yêu cầu POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $data = json_decode(file_get_contents('php://input'), true) ?: $_POST;
+    $payment_method = $_POST['payment_method'] ?? null;
+    $shipping = isset($_POST['shipping']) ? (float)$_POST['shipping'] : 0;
+    $promo_code = $_POST['promo_code'] ?? null;
+    $selected_items = isset($_POST['selected_items']) ? json_decode($_POST['selected_items'], true) : null;
+    $total_amount = isset($_POST['total_amount']) ? (float)$_POST['total_amount'] : 0;
 
-    // Log received data for debugging
-    error_log('Received data: ' . json_encode($data));
+    // Log received data
+    error_log('Received data: ' . json_encode($_POST));
 
-    $payment_method = $data['payment_method'] ?? null;
-    $shipping = isset($data['shipping']) ? (float)$data['shipping'] : 0;
-    $promo_code = $data['promo_code'] ?? null;
-
-    if ($payment_method !== 'cod') {
-        error_log("Unsupported payment method: $payment_method for user_id=$user_id");
-        echo json_encode(['success' => false, 'error' => 'Phương thức thanh toán không hỗ trợ']);
+    // Kiểm tra dữ liệu đầu vào
+    if (!$payment_method) {
+        error_log("Invalid payment method: payment_method=$payment_method");
+        header('Location: ../index.php?page=checkout&error=' . urlencode('Phương thức thanh toán không hợp lệ'));
         exit;
     }
 
-    // Xử lý đơn hàng COD
-    $result = processCODOrder($pdo, $user_id, $shipping, $promo_code);
+    if ($payment_method === 'cod') {
+        // Xử lý đơn hàng COD
+        $result = processCODOrder($pdo, $user_id, $shipping, $promo_code);
 
-    if ($result['success']) {
-        // Trả về JSON cho AJAX
-        echo json_encode($result);
-        exit;
+        if ($result['success']) {
+            $_SESSION['flash_message'] = [
+                'type' => 'success',
+                'message' => $result['message']
+            ];
+            header('Location: ../index.php?page=order_confirmation&order_id=' . $result['order_id']);
+            exit;
+        } else {
+            header('Location: ../index.php?page=checkout&error=' . urlencode($result['error']));
+            exit;
+        }
+    } elseif ($payment_method === 'zalopay') {
+        // Kiểm tra dữ liệu ZaloPay
+        if (empty($selected_items) || $total_amount <= 0) {
+            error_log("Invalid ZaloPay input: selected_items=" . json_encode($selected_items) . ", total_amount=$total_amount");
+            header('Location: ../index.php?page=checkout&error=' . urlencode('Dữ liệu đầu vào không hợp lệ'));
+            exit;
+        }
+
+        // Gọi zalopay_payment.php trực tiếp
+        try {
+            $_POST['selected_items'] = json_encode($selected_items);
+            $_POST['total_amount'] = $total_amount;
+            $_POST['shipping'] = $shipping;
+            $_POST['promo_code'] = $promo_code;
+
+            ob_start();
+            include dirname(__FILE__) . '/zalopay_payment.php';
+            $response = ob_get_clean();
+
+            $result = json_decode($response, true);
+            if (!$result) {
+                error_log("Invalid JSON response from zalopay_payment: " . $response);
+                header('Location: ../index.php?page=checkout&error=' . urlencode('Lỗi xử lý thanh toán ZaloPay'));
+                exit;
+            }
+
+            if (isset($result['success']) && $result['success'] && isset($result['order_url'])) {
+                error_log("Redirecting to ZaloPay order_url: " . $result['order_url']);
+                header('Location: ' . $result['order_url']);
+                exit;
+            } else {
+                error_log("ZaloPay error: " . json_encode($result));
+                header('Location: ../index.php?page=checkout&error=' . urlencode($result['error'] ?? 'Không thể tạo thanh toán ZaloPay'));
+                exit;
+            }
+        } catch (Exception $e) {
+            error_log("Error including zalopay_payment.php: " . $e->getMessage());
+            header('Location: ../index.php?page=checkout&error=' . urlencode('Lỗi xử lý thanh toán ZaloPay: ' . $e->getMessage()));
+            exit;
+        }
     } else {
-        // Trả về JSON nếu có lỗi
-        http_response_code(400);
-        echo json_encode($result);
+        error_log("Unsupported payment method: $payment_method for user_id=$user_id");
+        header('Location: ../index.php?page=checkout&error=' . urlencode('Phương thức thanh toán không hỗ trợ'));
         exit;
     }
 }
 
 // Phương thức không được hỗ trợ
-http_response_code(405);
-echo json_encode(['success' => false, 'error' => 'Phương thức yêu cầu không được hỗ trợ']);
+header('Location: ../index.php?page=checkout&error=' . urlencode('Phương thức yêu cầu không được hỗ trợ'));

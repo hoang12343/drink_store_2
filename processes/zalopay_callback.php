@@ -1,16 +1,21 @@
 <?php
-define('APP_START', true);  // Thêm dòng này nếu chưa có
+if (!defined('APP_START')) define('APP_START', true);
 require_once '../includes/db_connect.php';
 require_once '../includes/config.php';
 
-// Thêm header vào tất cả các yêu cầu HTTP
+// Suppress output for production
+if (!DEVELOPMENT_MODE) {
+    error_reporting(0);
+    ini_set('display_errors', 0);
+}
+
+// Add ngrok header for testing
 header('ngrok-skip-browser-warning: true');
 
-// Log toàn bộ request để debug
+// Log request for debugging
 error_log('ZaloPay callback received: ' . file_get_contents('php://input'));
-error_log('ZaloPay callback headers: ' . json_encode(getallheaders()));
 
-// Lấy dữ liệu từ ZaloPay
+// Parse callback data
 $data = json_decode(file_get_contents('php://input'), true);
 if (!$data) {
     error_log('ZaloPay callback error: Invalid request data');
@@ -19,7 +24,7 @@ if (!$data) {
     exit;
 }
 
-// Kiểm tra chữ ký
+// Verify signature
 $mac = hash_hmac('sha256', $data['data'], ZALOPAY_CONFIG['key2']);
 if ($mac !== $data['mac']) {
     error_log('ZaloPay callback error: Invalid signature. Received: ' . $data['mac'] . ', Calculated: ' . $mac);
@@ -28,18 +33,18 @@ if ($mac !== $data['mac']) {
     exit;
 }
 
-// Xử lý callback
+// Process callback
 $result = json_decode($data['data'], true);
 $order_id = json_decode($result['embed_data'], true)['order_id'];
 $trans_id = $result['app_trans_id'];
 $status = $result['status'] == 1 ? 'completed' : 'failed';
 
-error_log("ZaloPay callback received: Order ID=$order_id, Trans ID=$trans_id, Status=$status");
+error_log("ZaloPay callback: Order ID=$order_id, Trans ID=$trans_id, Status=$status");
 
 try {
     $pdo->beginTransaction();
 
-    // Kiểm tra đơn hàng tồn tại
+    // Verify order exists
     $stmt = $pdo->prepare("SELECT id, status FROM orders WHERE id = ? AND zalopay_trans_id = ?");
     $stmt->execute([$order_id, $trans_id]);
     $order = $stmt->fetch();
@@ -51,13 +56,12 @@ try {
         exit;
     }
 
-    // Chỉ cập nhật nếu trạng thái chưa phải completed
+    // Update order status if not already completed
     if ($order['status'] !== 'completed') {
-        // Cập nhật trạng thái đơn hàng
         $stmt = $pdo->prepare("UPDATE orders SET status = ? WHERE id = ? AND zalopay_trans_id = ?");
         $stmt->execute([$status, $order_id, $trans_id]);
 
-        // Giảm số lượng tồn kho nếu thanh toán thành công
+        // Update stock if payment succeeded
         if ($status == 'completed') {
             $stmt = $pdo->prepare("
                 SELECT oi.product_id, oi.quantity
@@ -88,4 +92,5 @@ try {
     error_log('ZaloPay callback database error: ' . $e->getMessage());
     http_response_code(500);
     echo json_encode(['error' => 'Database error']);
+    exit;
 }
