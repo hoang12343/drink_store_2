@@ -9,6 +9,7 @@ session_start();
 // Kiểm tra đăng nhập
 $user_id = $_SESSION['user_id'] ?? null;
 if (!$user_id) {
+    error_log('Unauthorized access attempt: user_id not set');
     header('HTTP/1.1 401 Unauthorized');
     echo json_encode(['success' => false, 'error' => 'Chưa đăng nhập']);
     exit;
@@ -51,6 +52,7 @@ function processCODOrder($pdo, $user_id, $shipping, $promo_code = null)
         $cart_items = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         if (empty($cart_items)) {
+            error_log("Empty cart for user_id: $user_id");
             throw new Exception('Giỏ hàng trống');
         }
 
@@ -67,6 +69,7 @@ function processCODOrder($pdo, $user_id, $shipping, $promo_code = null)
             $product = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if (!$product) {
+                error_log("Product not found: product_id=$product_id for user_id=$user_id");
                 throw new Exception("Sản phẩm $product_id không tồn tại");
             }
 
@@ -76,6 +79,7 @@ function processCODOrder($pdo, $user_id, $shipping, $promo_code = null)
             $product_stock = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if (!$product_stock || $product_stock['stock'] < $quantity) {
+                error_log("Insufficient stock for product_id=$product_id, requested=$quantity, available=" . ($product_stock['stock'] ?? 0));
                 throw new Exception("Không đủ hàng cho sản phẩm $product_id");
             }
 
@@ -95,6 +99,8 @@ function processCODOrder($pdo, $user_id, $shipping, $promo_code = null)
 
             if ($promo) {
                 $discount = $total_price * ($promo['discount_percentage'] / 100);
+            } else {
+                error_log("Invalid or expired promo_code: $promo_code for user_id=$user_id");
             }
         }
 
@@ -144,11 +150,17 @@ function processCODOrder($pdo, $user_id, $shipping, $promo_code = null)
         // Cam kết giao dịch
         $pdo->commit();
 
-        return ['success' => true, 'order_id' => $order_id];
+        error_log("Order created successfully: order_id=$order_id, user_id=$user_id, total_amount=$total_amount");
+        return [
+            'success' => true,
+            'order_id' => $order_id,
+            'message' => 'Đặt hàng thành công! Cảm ơn bạn đã mua sắm.',
+            'redirect' => '../index.php?page=order_confirmation&order_id=' . $order_id
+        ];
     } catch (Exception $e) {
         // Hoàn tác giao dịch nếu có lỗi
         $pdo->rollBack();
-        error_log('Order processing failed: ' . $e->getMessage());
+        error_log('Order processing failed for user_id=' . $user_id . ': ' . $e->getMessage());
         return ['success' => false, 'error' => $e->getMessage()];
     }
 }
@@ -157,11 +169,15 @@ function processCODOrder($pdo, $user_id, $shipping, $promo_code = null)
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $data = json_decode(file_get_contents('php://input'), true) ?: $_POST;
 
+    // Log received data for debugging
+    error_log('Received data: ' . json_encode($data));
+
     $payment_method = $data['payment_method'] ?? null;
     $shipping = isset($data['shipping']) ? (float)$data['shipping'] : 0;
     $promo_code = $data['promo_code'] ?? null;
 
     if ($payment_method !== 'cod') {
+        error_log("Unsupported payment method: $payment_method for user_id=$user_id");
         echo json_encode(['success' => false, 'error' => 'Phương thức thanh toán không hỗ trợ']);
         exit;
     }
@@ -169,15 +185,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Xử lý đơn hàng COD
     $result = processCODOrder($pdo, $user_id, $shipping, $promo_code);
 
-    if (!$result['success']) {
+    if ($result['success']) {
+        // Trả về JSON cho AJAX
+        echo json_encode($result);
+        exit;
+    } else {
+        // Trả về JSON nếu có lỗi
         http_response_code(400);
         echo json_encode($result);
         exit;
     }
-
-    // Chuyển hướng đến trang xác nhận đơn hàng thay vì trả về JSON
-    header('Location: ../index.php?page=order_confirmation&order_id=' . $result['order_id'] . '&success=' . urlencode('Đặt hàng thành công! Cảm ơn bạn đã mua sắm.'));
-    exit;
 }
 
 // Phương thức không được hỗ trợ

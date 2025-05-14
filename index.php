@@ -195,6 +195,9 @@ if (!str_starts_with($current_page, 'admin/')) {
 $js_files = [];
 if ($page === 'cart') {
     $js_files[] = ROOT_PATH . '/assets/js/cart.js';
+} elseif ($page === 'checkout') {
+    $js_files[] = ROOT_PATH . '/assets/js/common.js';
+    $js_files[] = ROOT_PATH . '/assets/js/checkout.js';
 } elseif (str_starts_with($page, 'admin/')) {
     $js_files[] = ROOT_PATH . '/assets/js/admin.js';
     if ($page === 'admin/admin-reports') {

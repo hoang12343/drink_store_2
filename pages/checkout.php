@@ -73,7 +73,7 @@ if (empty($selected_items) || $subtotal <= 0) {
         <div class="container">
             <h2>Thanh toán đơn hàng</h2>
             <?php if (isset($_GET['error'])): ?>
-                <div class="form-message error"><?= htmlspecialchars($_GET['error']) ?></div>
+            <div class="form-message error"><?= htmlspecialchars($_GET['error']) ?></div>
             <?php endif; ?>
 
             <h3>Sản phẩm thanh toán</h3>
@@ -88,21 +88,21 @@ if (empty($selected_items) || $subtotal <= 0) {
                 </thead>
                 <tbody>
                     <?php foreach ($selected_items as $item): ?>
-                        <tr>
-                            <td><?= htmlspecialchars($item['name']) ?></td>
-                            <td><?= $item['quantity'] ?></td>
-                            <td><?= number_format($item['price'], 0, ',', '.') ?> VNĐ</td>
-                            <td><?= number_format($item['price'] * $item['quantity'], 0, ',', '.') ?> VNĐ</td>
-                        </tr>
+                    <tr>
+                        <td><?= htmlspecialchars($item['name']) ?></td>
+                        <td><?= $item['quantity'] ?></td>
+                        <td><?= number_format($item['price'], 0, ',', '.') ?> VNĐ</td>
+                        <td><?= number_format($item['price'] * $item['quantity'], 0, ',', '.') ?> VNĐ</td>
+                    </tr>
                     <?php endforeach; ?>
                 </tbody>
             </table>
 
             <?php if ($discount > 0): ?>
-                <div class="total-row">
-                    <span>Giảm giá (<?= htmlspecialchars($_SESSION['promo_code']['code']) ?>):</span>
-                    <span>-<?= number_format($discount, 0, ',', '.') ?> VNĐ</span>
-                </div>
+            <div class="total-row">
+                <span>Giảm giá (<?= htmlspecialchars($_SESSION['promo_code']['code']) ?>):</span>
+                <span>-<?= number_format($discount, 0, ',', '.') ?> VNĐ</span>
+            </div>
             <?php endif; ?>
             <div class="total-row">
                 <span>Phí vận chuyển:</span>
@@ -121,7 +121,7 @@ if (empty($selected_items) || $subtotal <= 0) {
                 <input type="hidden" name="shipping" value="<?= $shipping ?>">
                 <input type="hidden" name="payment_method" id="payment_method" value="zalopay">
                 <?php if (isset($_SESSION['promo_code'])): ?>
-                    <input type="hidden" name="promo_code" value="<?= htmlspecialchars($_SESSION['promo_code']['code']) ?>">
+                <input type="hidden" name="promo_code" value="<?= htmlspecialchars($_SESSION['promo_code']['code']) ?>">
                 <?php endif; ?>
 
                 <div class="payment-methods">
@@ -143,14 +143,16 @@ if (empty($selected_items) || $subtotal <= 0) {
         </div>
     </div>
 
+    <script src="assets/js/common.js?v=<?= time() ?>"></script>
+    <script src="assets/js/checkout.js?v=<?= time() ?>"></script>
     <script>
-        // Đảm bảo chỉ một phương thức thanh toán được chọn
-        document.querySelectorAll('input[name="payment_method"]').forEach((radio) => {
-            radio.addEventListener('change', () => {
-                document.getElementById('payment_method').value = radio.value;
-                console.log('Payment method selected:', radio.value);
-            });
+    // Đảm bảo chỉ một phương thức thanh toán được chọn
+    document.querySelectorAll('input[name="payment_method"]').forEach((radio) => {
+        radio.addEventListener('change', () => {
+            document.getElementById('payment_method').value = radio.value;
+            console.log('Payment method selected:', radio.value);
         });
+    });
     </script>
 </body>
 

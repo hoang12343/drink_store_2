@@ -7,6 +7,8 @@
     --off-white: #FFF8F0;
     --text-dark: #333333;
     --light-cream: #F8EDE3;
+    --success-green: #28a745;
+    --error-red: #dc3545;
 }
 
 /* Container chính cho trang checkout */
@@ -87,6 +89,42 @@ h3 {
     font-size: 0.95rem;
     text-align: center;
     width: 100%;
+}
+
+/* Thông báo thành công */
+.form-message.success {
+    background-color: #d4edda;
+    color: #155724;
+    padding: 12px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    font-size: 0.95rem;
+    text-align: center;
+    width: 100%;
+}
+
+/* Thông báo popup */
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 10px 15px; /* Giảm padding để nhỏ gọn */
+    border-radius: 5px;
+    color: #fff;
+    font-size: 14px; /* Giảm font-size */
+    z-index: 1000;
+    box-shadow: 0 2px 5px var(--shadow-color);
+    transition: opacity 0.5s ease;
+    max-width: 300px; /* Giới hạn chiều rộng */
+    line-height: 1.4; /* Cải thiện khoảng cách dòng */
+}
+
+.notification.success {
+    background-color: var(--success-green);
+}
+
+.notification.error {
+    background-color: var(--error-red);
 }
 
 /* Tổng tiền */
@@ -206,6 +244,14 @@ form {
         width: 16px;
         height: 16px;
     }
+
+    .notification {
+        top: 10px;
+        right: 10px;
+        font-size: 13px;
+        padding: 8px 12px;
+        max-width: 250px;
+    }
 }
 
 @media (max-width: 576px) {
@@ -242,5 +288,14 @@ form {
 
     .payment-option {
         font-size: 0.9rem;
+    }
+
+    .notification {
+        width: calc(100% - 20px);
+        left: 10px;
+        right: 10px;
+        font-size: 12px;
+        padding: 8px 10px;
+        max-width: none;
     }
 }

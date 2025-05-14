@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 14, 2025 at 04:26 PM
+-- Generation Time: May 14, 2025 at 05:14 PM
 -- Server version: 8.0.32
 -- PHP Version: 8.0.30
 
@@ -41,15 +41,7 @@ CREATE TABLE `cart_items` (
 --
 
 INSERT INTO `cart_items` (`id`, `user_id`, `product_id`, `quantity`, `created_at`, `updated_at`) VALUES
-(49, 9, 62, 1, '2025-05-11 03:26:22', '2025-05-11 03:26:22'),
-(78, 6, 80, 2, '2025-05-13 10:52:47', '2025-05-13 17:32:43'),
-(79, 6, 108, 1, '2025-05-13 15:38:37', '2025-05-13 15:38:37'),
-(80, 6, 104, 1, '2025-05-13 16:36:01', '2025-05-13 16:36:01'),
-(81, 6, 71, 1, '2025-05-13 16:56:06', '2025-05-13 16:56:06'),
-(82, 6, 109, 2, '2025-05-14 08:27:04', '2025-05-14 14:24:35'),
-(83, 6, 68, 2, '2025-05-14 09:19:11', '2025-05-14 09:31:37'),
-(84, 6, 62, 1, '2025-05-14 10:01:45', '2025-05-14 10:01:45'),
-(85, 6, 79, 2, '2025-05-14 14:15:45', '2025-05-14 14:25:07');
+(49, 9, 62, 1, '2025-05-11 03:26:22', '2025-05-11 03:26:22');
 
 -- --------------------------------------------------------
 
@@ -368,7 +360,19 @@ INSERT INTO `orders` (`id`, `user_id`, `total_amount`, `status`, `zalopay_trans_
 (64, 6, 1400000.00, 'completed', NULL, '2025-05-13 04:04:34', '2025-05-13 04:08:01', 'cod', 0.00, 0.00, NULL),
 (65, 6, 210000.00, 'completed', NULL, '2025-05-13 04:09:30', '2025-05-13 04:09:45', 'cod', 0.00, 30000.00, NULL),
 (67, 6, 1200000.00, 'confirmed', NULL, '2025-05-13 04:15:02', '2025-05-13 04:15:02', 'cod', 0.00, 0.00, NULL),
-(68, 6, 1300000.00, 'confirmed', NULL, '2025-05-13 04:15:35', '2025-05-13 04:15:35', 'cod', 0.00, 0.00, NULL);
+(68, 6, 1300000.00, 'confirmed', NULL, '2025-05-13 04:15:35', '2025-05-13 04:15:35', 'cod', 0.00, 0.00, NULL),
+(82, 6, 15900000.00, 'pending', NULL, '2025-05-14 14:52:35', '2025-05-14 14:52:35', 'cod', 0.00, 0.00, NULL),
+(83, 6, 1000000.00, 'pending', NULL, '2025-05-14 14:52:58', '2025-05-14 14:52:58', 'cod', 0.00, 0.00, NULL),
+(84, 6, 1500000.00, 'completed', NULL, '2025-05-14 14:55:41', '2025-05-14 14:55:47', 'cod', 0.00, 0.00, NULL),
+(85, 6, 930000.00, 'confirmed', NULL, '2025-05-14 14:57:07', '2025-05-14 14:57:07', 'cod', 0.00, 30000.00, NULL),
+(86, 6, 1000000.00, 'confirmed', NULL, '2025-05-14 14:58:17', '2025-05-14 14:58:17', 'cod', 0.00, 0.00, NULL),
+(87, 6, 930000.00, 'completed', NULL, '2025-05-14 14:59:05', '2025-05-14 14:59:10', 'cod', 0.00, 30000.00, NULL),
+(88, 6, 430000.00, 'confirmed', NULL, '2025-05-14 15:00:38', '2025-05-14 15:00:38', 'cod', 0.00, 30000.00, NULL),
+(89, 6, 430000.00, 'confirmed', NULL, '2025-05-14 15:02:33', '2025-05-14 15:02:33', 'cod', 0.00, 30000.00, NULL),
+(90, 6, 230000.00, 'confirmed', NULL, '2025-05-14 15:08:40', '2025-05-14 15:08:40', 'cod', 0.00, 30000.00, NULL),
+(91, 6, 2000000.00, 'confirmed', NULL, '2025-05-14 15:10:33', '2025-05-14 15:10:33', 'cod', 0.00, 0.00, NULL),
+(92, 6, 3200000.00, 'completed', NULL, '2025-05-14 15:11:42', '2025-05-14 15:12:06', 'cod', 0.00, 0.00, NULL),
+(93, 6, 1100000.00, 'confirmed', NULL, '2025-05-14 15:13:38', '2025-05-14 15:13:38', 'cod', 0.00, 0.00, NULL);
 
 -- --------------------------------------------------------
 
@@ -449,7 +453,26 @@ INSERT INTO `order_items` (`id`, `order_id`, `product_id`, `quantity`, `price`) 
 (59, 60, 73, 1, 1100000.00),
 (60, 61, 80, 2, 900000.00),
 (61, 62, 77, 1, 1400000.00),
-(62, 63, 80, 1, 900000.00);
+(62, 63, 80, 1, 900000.00),
+(0, 82, 80, 2, 900000.00),
+(0, 82, 108, 1, 950000.00),
+(0, 82, 104, 1, 1800000.00),
+(0, 82, 71, 1, 850000.00),
+(0, 82, 109, 2, 1200000.00),
+(0, 82, 68, 2, 950000.00),
+(0, 82, 62, 1, 3200000.00),
+(0, 82, 79, 3, 1000000.00),
+(0, 83, 79, 1, 1000000.00),
+(0, 84, 66, 1, 1500000.00),
+(0, 85, 80, 1, 900000.00),
+(0, 86, 79, 1, 1000000.00),
+(0, 87, 80, 1, 900000.00),
+(0, 88, 98, 1, 400000.00),
+(0, 89, 98, 1, 400000.00),
+(0, 90, 76, 1, 200000.00),
+(0, 91, 74, 1, 2000000.00),
+(0, 92, 62, 1, 3200000.00),
+(0, 93, 106, 1, 1100000.00);
 
 -- --------------------------------------------------------
 
@@ -496,25 +519,25 @@ INSERT INTO `products` (`id`, `code`, `name`, `category_id`, `price`, `old_price
 (9, 'CK001', 'Cocktail Mojito Pha Sẵn', 8, 120000.00, NULL, NULL, 15, '/api/placeholder/220/300', NULL, 'Cocktail', 'Bacardi', 'Cuba', '5%', '250ml', 'Cocktail Mojito pha sẵn, tiện lợi và sảng khoái.', 4.2, 10, '2025-04-17 02:43:25', '2025-04-17 02:43:25'),
 (10, 'GT001', 'Hộp quà rượu vang Ý', 9, 2500000.00, NULL, '', 8, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQhV6e9ne-3jhNzyNNk8k3G8W6Q4Yl7DfAYsw&s', '', 'Hộp quà', 'San Marzano', 'Vang Ý (Italy)', '', '750ml', 'Hộp quà sang trọng gồm 2 chai vang Ý và ly pha lê.', 4.7, 5, '2025-04-17 02:43:25', '2025-05-13 17:28:59'),
 (11, 'CG002', 'Ly pha lê Riedel Bordeaux', 4, 800000.00, NULL, NULL, 20, '/api/placeholder/220/300', NULL, 'Ly pha lê', 'Riedel', 'Áo', NULL, NULL, 'Ly pha lê cao cấp dành cho rượu vang đỏ.', 4.6, 8, '2025-04-17 02:43:25', '2025-04-17 02:43:25'),
-(62, 'RV002', 'Rượu vang đỏ Pháp Château Lafite', 1, 3200000.00, NULL, NULL, 50, '/images/rv002.jpg', 'Cabernet Sauvignon', 'Red Wine', 'Château Lafite', 'France', '13.5%', '750ml', 'Rượu vang đỏ cao cấp với hương vị đậm đà, cấu trúc mượt mà.', 4.8, 120, '2025-04-18 15:33:52', '2025-04-18 15:33:52'),
+(62, 'RV002', 'Rượu vang đỏ Pháp Château Lafite', 1, 3200000.00, NULL, NULL, 48, '/images/rv002.jpg', 'Cabernet Sauvignon', 'Red Wine', 'Château Lafite', 'France', '13.5%', '750ml', 'Rượu vang đỏ cao cấp với hương vị đậm đà, cấu trúc mượt mà.', 4.8, 120, '2025-04-18 15:33:52', '2025-05-14 15:11:42'),
 (63, 'WS003', 'Whisky Scotland Macallan 12 năm', 1, 2000000.00, NULL, '', 40, 'https://sanhruou.com/media/1449/catalog/ruou-macallan-12-nam-double-cask.jpg', '', 'Whisky', 'Macallan', 'Scotland', '40%', '700ml', 'Whisky single malt với hương vị tr&aacute;i c&acirc;y kh&ocirc; v&agrave; gia vị.', 4.7, 80, '2025-04-18 15:33:52', '2025-04-24 01:57:54'),
 (64, 'VD004', 'Vodka Premium Grey Goose', 1, 1200000.00, NULL, '', 60, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT1AnolHo_OM7ZY6CURv_hNt-CdC5j79UT7jg&s', '', 'Vodka', 'Grey Goose', 'France', '40%', '750ml', 'Vodka mượt m&agrave;, tinh khiết, l&yacute; tưởng cho cocktail.', 4.5, 90, '2025-04-18 15:33:52', '2025-04-24 02:08:11'),
 (65, 'GN005', 'Gin London Dry Beefeater', 1, 900000.00, NULL, '', 55, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS0owJLsKBNl-HOLP5BdgJDS7eEpkIkcpzEhw&s', '', 'Gin', 'Beefeater', 'England', '40%', '700ml', 'Gin cổ điển với hương thảo mộc v&agrave; cam qu&yacute;t.', 4.3, 60, '2025-04-18 15:33:52', '2025-04-24 01:56:59'),
-(66, 'SK006', 'Rượu Sake Nhật Bản Dassai 23', 1, 1500000.00, NULL, '', 30, 'https://cdn.ruoutuongvy.com/files/2024/05/18/080928-ruou-sake-nhat-ban-dassai-23-magnum-18l.webpMrPRdjp8YDcXq78NItuBs0TnhA8pj5Ej2bw&s', '', 'Sake', 'Dassai', 'Japan', '16%', '720ml', 'Sake cao cấp với hương vị tinh tế, thanh lịch.', 4.9, 100, '2025-04-18 15:33:52', '2025-04-24 02:07:09'),
+(66, 'SK006', 'Rượu Sake Nhật Bản Dassai 23', 1, 1500000.00, NULL, '', 29, 'https://cdn.ruoutuongvy.com/files/2024/05/18/080928-ruou-sake-nhat-ban-dassai-23-magnum-18l.webpMrPRdjp8YDcXq78NItuBs0TnhA8pj5Ej2bw&s', '', 'Sake', 'Dassai', 'Japan', '16%', '720ml', 'Sake cao cấp với hương vị tinh tế, thanh lịch.', 4.9, 100, '2025-04-18 15:33:52', '2025-05-14 14:55:41'),
 (67, 'BL007', 'Bia thủ c&ocirc;ng Lager Đức', 1, 180000.00, NULL, '', 80, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT5DSo_TsYiisRfC9-BXHf3oGWv83dUgw_vYQ&s', '', 'Beer', 'Warsteiner', 'Germany', '4.8%', '500ml', 'Bia lager tươi m&aacute;t, dễ uống.', 4.2, 50, '2025-04-18 15:33:52', '2025-04-24 01:56:34'),
-(68, 'RV008', 'Rượu vang trắng Ý Santa Margherita', 1, 950000.00, NULL, '', 45, 'https://sanhruou.com/media/6262/catalog/Santa-Margherita-Pinot-Grigio.jpg', 'Pinot Grigio', 'White Wine', 'Santa Margherita', 'Italy', '12.5%', '750ml', 'Rượu vang trắng với hương táo xanh và hoa trắng.', 4.6, 70, '2025-04-18 15:33:52', '2025-04-24 02:17:25'),
+(68, 'RV008', 'Rượu vang trắng Ý Santa Margherita', 1, 950000.00, NULL, '', 43, 'https://sanhruou.com/media/6262/catalog/Santa-Margherita-Pinot-Grigio.jpg', 'Pinot Grigio', 'White Wine', 'Santa Margherita', 'Italy', '12.5%', '750ml', 'Rượu vang trắng với hương táo xanh và hoa trắng.', 4.6, 70, '2025-04-18 15:33:52', '2025-05-14 14:52:35'),
 (69, 'CH009', 'Champagne Brut Veuve Clicquot', 1, 2800000.00, NULL, NULL, 25, '/images/ch009.jpg', NULL, 'Champagne', 'Veuve Clicquot', 'France', '12%', '750ml', 'Champagne với bọt mịn và hương vị trái cây tươi.', 4.8, 110, '2025-04-18 15:33:52', '2025-04-18 15:33:52'),
 (70, 'TQ010', 'Tequila Blanco Patrón', 1, 1300000.00, NULL, NULL, 35, '/images/tq010.jpg', NULL, 'Tequila', 'Patrón', 'Mexico', '40%', '750ml', 'Tequila tinh khiết với hương agave và cam quýt.', 4.4, 65, '2025-04-18 15:33:52', '2025-04-18 15:33:52'),
-(71, 'RM011', 'Rum Trắng Mount Gay', 1, 850000.00, NULL, NULL, 50, '/images/rm011.jpg', NULL, 'Rum', 'Mount Gay', 'Barbados', '40%', '700ml', 'Rum trắng mượt mà, lý tưởng cho cocktail.', 4.3, 55, '2025-04-18 15:33:52', '2025-04-18 15:33:52'),
+(71, 'RM011', 'Rum Trắng Mount Gay', 1, 850000.00, NULL, NULL, 49, '/images/rm011.jpg', NULL, 'Rum', 'Mount Gay', 'Barbados', '40%', '700ml', 'Rum trắng mượt mà, lý tưởng cho cocktail.', 4.3, 55, '2025-04-18 15:33:52', '2025-05-14 14:52:35'),
 (72, 'WJ012', 'Whisky Nhật Bản Hibiki 17 năm', 2, 3000000.00, NULL, NULL, 30, '/images/wj012.jpg', NULL, 'Whisky', 'Hibiki', 'Japan', '43%', '700ml', 'Whisky blend với hương hoa và gỗ sồi.', 4.8, 130, '2025-04-18 15:33:52', '2025-04-18 15:33:52'),
 (73, 'RV013', 'Rượu vang đỏ Chile Carmenère', 2, 1100000.00, NULL, NULL, 60, '/images/rv013.jpg', 'Carmenère', 'Red Wine', 'Concha y Toro', 'Chile', '13.5%', '750ml', 'Rượu vang đỏ đậm đà với hương ớt chuông và mâm xôi.', 4.5, 90, '2025-04-18 15:33:52', '2025-04-18 15:33:52'),
-(74, 'VD014', 'Vodka Beluga Gold Line', 2, 2000000.00, NULL, NULL, 25, '/images/vd014.jpg', NULL, 'Vodka', 'Beluga', 'Russia', '40%', '750ml', 'Vodka siêu cao cấp với thiết kế sang trọng.', 4.7, 100, '2025-04-18 15:33:52', '2025-04-18 15:33:52'),
+(74, 'VD014', 'Vodka Beluga Gold Line', 2, 2000000.00, NULL, NULL, 24, '/images/vd014.jpg', NULL, 'Vodka', 'Beluga', 'Russia', '40%', '750ml', 'Vodka siêu cao cấp với thiết kế sang trọng.', 4.7, 100, '2025-04-18 15:33:52', '2025-05-14 15:10:33'),
 (75, 'GN015', 'Gin Hendrick&rsquo;s', 2, 1100000.00, NULL, '', 50, 'https://sanhruou.com/media/13076/catalog/Hendricks-Gin-1-Lit.jpg', '', 'Gin', 'Hendrick&rsquo;s', 'Scotland', '41.4%', '700ml', 'Gin với hương dưa chuột v&agrave; hoa hồng.', 4.6, 80, '2025-04-18 15:33:52', '2025-04-24 02:08:42'),
-(76, 'BS016', 'Bia thủ công Stout Ireland', 2, 200000.00, NULL, NULL, 70, '/images/bs016.jpg', NULL, 'Beer', 'Guinness', 'Ireland', '4.2%', '500ml', 'Bia stout đậm đà với hương cà phê và sô-cô-la.', 4.4, 120, '2025-04-18 15:33:52', '2025-04-18 15:33:52'),
+(76, 'BS016', 'Bia thủ công Stout Ireland', 2, 200000.00, NULL, NULL, 69, '/images/bs016.jpg', NULL, 'Beer', 'Guinness', 'Ireland', '4.2%', '500ml', 'Bia stout đậm đà với hương cà phê và sô-cô-la.', 4.4, 120, '2025-04-18 15:33:52', '2025-05-14 15:08:40'),
 (77, 'RM017', 'Rum N&acirc;u Appleton Estate 12 năm', 2, 1400000.00, NULL, '', 40, 'https://ruoungoaiald.com/wp-content/uploads/rum-Appleton-Estate-12-nam.jpg', '', 'Rum', 'Appleton Estate', 'Jamaica', '43%', '700ml', 'Rum n&acirc;u với hương vani v&agrave; tr&aacute;i c&acirc;y nhiệt đới.', 4.5, 85, '2025-04-18 15:33:52', '2025-04-24 01:51:25'),
 (78, 'CH018', 'Champagne Moët &amp; Chandon Rosé', 2, 2500000.00, NULL, '', 30, 'https://topruou.com/Image/Picture/Hinh%20nen_Vang/Ruou_Champagne_Moet_Chandon_Rose_Imperial.jpg', '', 'Champagne', 'Moët & Chandon', 'France', '12%', '750ml', 'Champagne hồng phấn với hương dâu tây.', 4.8, 140, '2025-04-18 15:33:52', '2025-04-24 02:17:19'),
-(79, 'RV019', 'Rượu vang trắng New Zealand Sauvignon Blanc', 2, 1000000.00, NULL, '', 55, 'https://product.hstatic.net/1000358764/product/vidal_estate_sauvignon_blanc__new_zealand_87e6033ed38f4048b751e1f5f4377a05.png', 'Sauvignon Blanc', 'White Wine', 'Cloudy Bay', 'New Zealand', '13%', '750ml', 'Rượu vang trắng tươi m&aacute;t với hương chanh d&acirc;y.', 4.6, 95, '2025-04-18 15:33:52', '2025-04-24 02:06:23'),
-(80, 'WI020', 'Whisky Ireland Jameson', 2, 900000.00, NULL, '', 65, 'https://mcgrocer.com/cdn/shop/files/jameson-triple-distilled-blended-irish-whiskey-1l-41369596756206.jpg?v=1742217485', '', 'Whisky', 'Jameson', 'Ireland', '40%', '700ml', 'Whisky mượt m&agrave; với hương vani v&agrave; tr&aacute;i c&acirc;y.', 4.3, 75, '2025-04-18 15:33:52', '2025-04-24 01:49:18'),
+(79, 'RV019', 'Rượu vang trắng New Zealand Sauvignon Blanc', 2, 1000000.00, NULL, '', 50, 'https://product.hstatic.net/1000358764/product/vidal_estate_sauvignon_blanc__new_zealand_87e6033ed38f4048b751e1f5f4377a05.png', 'Sauvignon Blanc', 'White Wine', 'Cloudy Bay', 'New Zealand', '13%', '750ml', 'Rượu vang trắng tươi m&aacute;t với hương chanh d&acirc;y.', 4.6, 95, '2025-04-18 15:33:52', '2025-05-14 14:58:17'),
+(80, 'WI020', 'Whisky Ireland Jameson', 2, 900000.00, NULL, '', 61, 'https://mcgrocer.com/cdn/shop/files/jameson-triple-distilled-blended-irish-whiskey-1l-41369596756206.jpg?v=1742217485', '', 'Whisky', 'Jameson', 'Ireland', '40%', '700ml', 'Whisky mượt m&agrave; với hương vani v&agrave; tr&aacute;i c&acirc;y.', 4.3, 75, '2025-04-18 15:33:52', '2025-05-14 14:59:05'),
 (81, 'RV021', 'Rượu vang đỏ Tây Ban Nha Tempranillo', 3, 650000.00, 850000.00, '-24%', 80, 'https://product.hstatic.net/200000311137/product/n-nha-bayanegra-red-tempranillo-750ml_9a02e77ca82649f990ccf04000690d9f_e9a4ab099ded4d5985d7d1a6c0b151a7.jpg', 'Tempranillo', 'Red Wine', 'Bodegas Faustino', 'Spain', '13.5%', '750ml', 'Rượu vang đỏ với hương anh đào và gỗ sồi.', 4.2, 60, '2025-04-18 15:33:52', '2025-04-24 02:17:09'),
 (83, 'TQ023', 'Tequila Gold Jose Cuervo', 3, 750000.00, 950000.00, '-21%', 70, '/images/tq023.jpg', NULL, 'Tequila', 'Jose Cuervo', 'Mexico', '38%', '750ml', 'Tequila vàng với hương caramel và agave.', 4.1, 55, '2025-04-18 15:33:52', '2025-04-18 15:33:52'),
 (84, 'RM024', 'Rum Spiced Captain Morgan', 3, 500000.00, 650000.00, '-23%', 85, '/images/rm024.jpg', NULL, 'Rum', 'Captain Morgan', 'Jamaica', '35%', '700ml', 'Rum gia vị với hương vani và quế.', 4.0, 45, '2025-04-18 15:33:52', '2025-04-18 15:33:52'),
@@ -531,18 +554,18 @@ INSERT INTO `products` (`id`, `code`, `name`, `category_id`, `price`, `old_price
 (95, 'LY034', 'Ly champagne Riedel Flute', 4, 600000.00, NULL, '', 80, 'https://sanhvang.com/wp-content/uploads/2020/02/bo-6-ly-riedel-degustazione-champagne-flute-212ml.jpg.webp', '', 'Glass', 'Riedel', 'Austria', '', '250ml', 'Ly pha l&ecirc; cho champagne, giữ bọt l&acirc;u.', 4.7, 160, '2025-04-18 15:33:52', '2025-04-24 01:45:49'),
 (96, 'LY035', 'Ly cocktail Riedel Martini', 4, 450000.00, NULL, '', 100, 'https://www.garboglass.com/data/watermark/20210804/610a6851316c3.jpg', '', 'Glass', 'Riedel', 'Austria', '', '300ml', 'Ly pha l&ecirc; cho cocktail martini sang trọng.', 4.6, 130, '2025-04-18 15:33:52', '2025-04-24 01:45:25'),
 (97, 'LY036', 'Ly rượu vang đỏ Spiegelau', 4, 520000.00, NULL, '', 85, 'https://down-vn.img.susercontent.com/file/e5104b39a642991436636ddf3a577558', '', 'Glass', 'Spiegelau', 'Germany', '', '600ml', 'Ly pha l&ecirc; bền bỉ cho rượu vang đỏ.', 4.4, 110, '2025-04-18 15:33:52', '2025-04-24 01:44:43'),
-(98, 'LY037', 'Ly whisky Spiegelau', 4, 400000.00, NULL, '', 90, 'https://ahangduc.com/wp-content/smush-webp/2020/04/Bo-ly-pha-le-Spiegelau-Nachtmann-Whisky_3.jpg.webp', '', 'Glass', 'Spiegelau', 'Germany', '', '250ml', 'Ly whisky với thiết kế hiện đại.', 4.3, 100, '2025-04-18 15:33:52', '2025-04-24 01:44:14'),
+(98, 'LY037', 'Ly whisky Spiegelau', 4, 400000.00, NULL, '', 88, 'https://ahangduc.com/wp-content/smush-webp/2020/04/Bo-ly-pha-le-Spiegelau-Nachtmann-Whisky_3.jpg.webp', '', 'Glass', 'Spiegelau', 'Germany', '', '250ml', 'Ly whisky với thiết kế hiện đại.', 4.3, 100, '2025-04-18 15:33:52', '2025-05-14 15:02:33'),
 (99, 'LY038', 'Ly rượu vang trắng Spiegelau', 4, 470000.00, NULL, '', 95, 'https://down-vn.img.susercontent.com/file/13b9799d01b4ed19f44c27091216864c', '', 'Glass', 'Spiegelau', 'Germany', '', '400ml', 'Ly pha l&ecirc; cho rượu vang trắng, nhẹ nh&agrave;ng.', 4.5, 120, '2025-04-18 15:33:52', '2025-04-24 01:43:32'),
 (100, 'LY039', 'Ly champagne Spiegelau Flute', 4, 580000.00, NULL, '', 80, 'https://thegioigiadungduc.com/wp-content/uploads/2023/12/bo-12-ly-vang-cao-cap-spiegelau-4400192-authentis-glaser-set-12-tlg45.jpg?v=1702264932', '', 'Glass', 'Spiegelau', 'Germany', '', '250ml', 'Ly pha l&ecirc; cho champagne, tinh tế.', 4.6, 140, '2025-04-18 15:33:52', '2025-04-24 01:39:41'),
 (101, 'WS040', 'Whisky Scotland Glenlivet 18 năm', 5, 2200000.00, NULL, '', 40, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRV7-EBAU7otAXXXdj-AOBzqW19AYA7MNd4Yg&s', '', 'Whisky', 'Glenlivet', 'Scotland', '40%', '700ml', 'Whisky single malt với hương mật ong v&agrave; gỗ sồi.', 4.7, 90, '2025-04-18 15:33:52', '2025-04-24 01:37:53'),
 (102, 'VD041', 'Vodka Absolut Blue', 5, 600000.00, NULL, '', 80, 'https://mcgrocer.com/cdn/shop/files/absolut-blue-original-swedish-vodka-1l-41369456771310.jpg?v=1735641458', '', 'Vodka', 'Absolut', 'Sweden', '40%', '750ml', 'Vodka cổ điển, linh hoạt cho nhiều loại cocktail.', 4.2, 70, '2025-04-18 15:33:52', '2025-04-24 01:37:33'),
 (103, 'GN042', 'Gin Monkey 47', 5, 1300000.00, NULL, '', 50, 'https://sanhruou.com/media/1379/catalog/ruou-monkey-47.jpg', '', 'Gin', 'Monkey 47', 'Germany', '47%', '500ml', 'Gin cao cấp với 47 loại thảo mộc.', 4.8, 100, '2025-04-18 15:33:52', '2025-04-24 01:37:03'),
-(104, 'RM043', 'Rum Nâu Zacapa 23 năm', 5, 1800000.00, NULL, '', 35, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTXb1oYF111kQ9mWjwVz3SGSZ61gR_KZessmw&s', '', 'Rum', 'Zacapa', 'Guatemala', '40%', '750ml', 'Rum nâu với hương sô-cô-la và trái cây khô.', 4.7, 85, '2025-04-18 15:33:52', '2025-04-24 02:16:51'),
+(104, 'RM043', 'Rum Nâu Zacapa 23 năm', 5, 1800000.00, NULL, '', 34, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTXb1oYF111kQ9mWjwVz3SGSZ61gR_KZessmw&s', '', 'Rum', 'Zacapa', 'Guatemala', '40%', '750ml', 'Rum nâu với hương sô-cô-la và trái cây khô.', 4.7, 85, '2025-04-18 15:33:52', '2025-05-14 14:52:35'),
 (105, 'TQ044', 'Tequila Don Julio Añejo', 5, 1600000.00, NULL, '', 45, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTzma-4CWbcRl_ocrsddIImDveehJwPagJBxg&s', '', 'Tequila', 'Don Julio', 'Mexico', '40%', '750ml', 'Tequila ủ với hương vani và caramel.', 4.6, 80, '2025-04-18 15:33:52', '2025-04-24 02:16:41'),
-(106, 'SK045', 'Rượu Sake Nhật Bản Hakkaisan Junmai', 5, 1100000.00, NULL, '', 60, 'https://cdn.ruoutuongvy.com/files/2024/05/21/100221-ruou-sake-nhat-ban-hakkaisan-junmai-daiginjo.webp', '', 'Sake', 'Hakkaisan', 'Japan', '15.5%', '720ml', 'Sake tinh khiết với hương gạo v&agrave; hoa.', 4.5, 75, '2025-04-18 15:33:52', '2025-04-24 01:34:55'),
+(106, 'SK045', 'Rượu Sake Nhật Bản Hakkaisan Junmai', 5, 1100000.00, NULL, '', 59, 'https://cdn.ruoutuongvy.com/files/2024/05/21/100221-ruou-sake-nhat-ban-hakkaisan-junmai-daiginjo.webp', '', 'Sake', 'Hakkaisan', 'Japan', '15.5%', '720ml', 'Sake tinh khiết với hương gạo v&agrave; hoa.', 4.5, 75, '2025-04-18 15:33:52', '2025-05-14 15:13:38'),
 (107, 'WS046', 'Whisky Nhật Bản Nikka From The Barrel', 5, 1700000.00, NULL, '', 50, 'https://topruou.com/Image/Picture/Whisky-Nhat/Nikka/Ruou-Nikka-From-Barrel.jpg', '', 'Whisky', 'Nikka', 'Japan', '51.4%', '500ml', 'Whisky đậm đ&agrave; với hương gia vị v&agrave; tr&aacute;i c&acirc;y.', 4.8, 95, '2025-04-18 15:33:52', '2025-04-24 01:33:15'),
-(108, 'VD047', 'Vodka Ketel One', 5, 950000.00, NULL, '', 65, 'https://sanhruou.com/media/12303/catalog/Ketel-One.jpg', '', 'Vodka', 'Ketel One', 'Netherlands', '40%', '750ml', 'Vodka mượt m&agrave; với hương cam qu&yacute;t nhẹ.', 4.4, 60, '2025-04-18 15:33:52', '2025-04-24 01:32:03'),
-(109, 'GN048', 'Gin The Botanist', 5, 1200000.00, NULL, '', 80, 'https://sanhruou.com/media/5028/catalog/The-Botanist-Gin.jpg', '', 'Gin', 'The Botanist', 'Scotland', '46%', '700ml', 'Gin với 22 loại thảo mộc từ đảo Islay.', 4.7, 90, '2025-04-18 15:33:52', '2025-04-24 01:30:36');
+(108, 'VD047', 'Vodka Ketel One', 5, 950000.00, NULL, '', 64, 'https://sanhruou.com/media/12303/catalog/Ketel-One.jpg', '', 'Vodka', 'Ketel One', 'Netherlands', '40%', '750ml', 'Vodka mượt m&agrave; với hương cam qu&yacute;t nhẹ.', 4.4, 60, '2025-04-18 15:33:52', '2025-05-14 14:52:35'),
+(109, 'GN048', 'Gin The Botanist', 5, 1200000.00, NULL, '', 78, 'https://sanhruou.com/media/5028/catalog/The-Botanist-Gin.jpg', '', 'Gin', 'The Botanist', 'Scotland', '46%', '700ml', 'Gin với 22 loại thảo mộc từ đảo Islay.', 4.7, 90, '2025-04-18 15:33:52', '2025-05-14 14:52:35');
 
 -- --------------------------------------------------------
 
@@ -747,7 +770,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `cart_items`
 --
 ALTER TABLE `cart_items`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=86;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=97;
 
 --
 -- AUTO_INCREMENT for table `contacts`
@@ -765,7 +788,7 @@ ALTER TABLE `inventory`
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=78;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=94;
 
 --
 -- AUTO_INCREMENT for table `users`
