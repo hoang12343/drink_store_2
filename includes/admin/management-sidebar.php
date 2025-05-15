@@ -39,6 +39,9 @@ if (!defined('APP_START')) {
                 <li><a href="?page=admin&subpage=admin-settings"
                         class="<?php echo $admin_subpage === 'admin-settings' ? 'active' : ''; ?>"><i
                             class="fas fa-cog"></i> Cài đặt</a></li>
+                <li><a href="?page=admin&subpage=admin-promo-codes"
+                        class="<?php echo $admin_subpage === 'admin-promo-codes' ? 'active' : ''; ?>"><i
+                            class="fas fa-ticket-alt"></i> Mã giảm giá</a></li>
             </ul>
         </div>
     </div>

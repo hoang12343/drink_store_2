@@ -66,7 +66,8 @@ function route_request($default = 'home'): string
             'admin-contacts',
             'admin-reports',
             'admin-settings',
-            'reply_contact'
+            'reply_contact',
+            'admin-promo-codes'
         ];
 
         // Xử lý request AJAX cho reply_contact
