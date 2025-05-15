@@ -97,42 +97,16 @@ try {
         $result = $stmt->execute([$contact_id, $subject, $message]);
         if (!$result) {
             error_log("SQL Error (INSERT): " . print_r($stmt->errorInfo(), true));
-            throw new Exception('Không thể lưu lịch sử trả lời. Vui lòng thử lại!');
+            // Không throw exception, chỉ ghi log
+        } else {
+            error_log("Lưu lịch sử trả lời thành công cho contact_id=$contact_id");
         }
-        error_log("Lưu lịch sử trả lời thành công cho contact_id=$contact_id");
     } catch (PDOException $e) {
         error_log("PDO Error (INSERT): " . $e->getMessage());
-        throw new Exception('Lỗi cơ sở dữ liệu khi lưu lịch sử trả lời: ' . $e->getMessage());
+        // Không throw exception, chỉ ghi log
     }
 
-    // Xóa cache
-    try {
-        if (function_exists('glob')) {
-            $cache_path = ROOT_PATH . '/cache';
-            if (!is_dir($cache_path) || !is_writable($cache_path)) {
-                error_log("Thư mục cache không tồn tại hoặc không có quyền ghi: $cache_path");
-                throw new Exception('Thư mục cache không hợp lệ.');
-            }
-            $cache_files = glob($cache_path . '/contacts_*.cache');
-            if ($cache_files === false) {
-                error_log("Lỗi khi tìm file cache trong $cache_path");
-                throw new Exception('Lỗi khi tìm file cache.');
-            }
-            foreach ($cache_files as $file) {
-                if (is_writable($file)) {
-                    unlink($file);
-                    error_log("Đã xóa file cache: $file");
-                } else {
-                    error_log("Không có quyền xóa file cache: $file");
-                    throw new Exception('Không có quyền xóa file cache.');
-                }
-            }
-        }
-    } catch (Exception $e) {
-        error_log("Cache error: " . $e->getMessage());
-        throw new Exception('Lỗi khi xóa cache: ' . $e->getMessage());
-    }
-
+    // Email đã được gửi thành công, tiếp tục xử lý
     $response['success'] = true;
     $response['message'] = 'Đã gửi trả lời thành công!';
 } catch (Exception $e) {
