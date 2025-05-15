@@ -12,7 +12,6 @@ function initCart() {
   initCheckoutButton();
   initPromoCode();
   initCheckboxes();
-  initPromoDetailPopup(); // Thêm hàm khởi tạo popup chi tiết
 }
 
 // Initialize quantity selectors
@@ -261,6 +260,7 @@ function initPromoCode() {
   const promoPopup = document.getElementById("promo-popup");
   const closePopupButton = document.querySelector(".close-promo-popup");
   const applyButton = document.getElementById("apply-promo-btn");
+  const promoCodeInput = document.getElementById("promo-code-input");
 
   if (!openPopupButton || !promoPopup || !closePopupButton || !applyButton) {
     console.warn("Promo popup elements not found");
@@ -285,6 +285,7 @@ function initPromoCode() {
       return;
     }
     promoPopup.style.display = "flex";
+    if (promoCodeInput) promoCodeInput.value = ""; // Xóa ô nhập khi mở popup
   });
 
   // Close popup
@@ -301,15 +302,19 @@ function initPromoCode() {
 
   // Apply promo code
   newApplyButton.addEventListener("click", () => {
+    let promoCode;
     const selectedPromo = document.querySelector(
       'input[name="promo_code"]:checked'
     );
-    if (!selectedPromo) {
-      alert("Vui lòng chọn một mã giảm giá.");
+    if (promoCodeInput && promoCodeInput.value.trim()) {
+      promoCode = promoCodeInput.value.trim();
+    } else if (selectedPromo) {
+      promoCode = selectedPromo.value;
+    } else {
+      alert("Vui lòng nhập hoặc chọn một mã giảm giá.");
       return;
     }
 
-    const promoCode = selectedPromo.value;
     const selectedCheckboxes = document.querySelectorAll(
       ".cart-item-checkbox:checked"
     );
@@ -319,49 +324,6 @@ function initPromoCode() {
 
     applyPromoCode(promoCode, selectedIds);
     promoPopup.style.display = "none"; // Close popup after applying
-  });
-}
-
-// Initialize promo detail popup
-function initPromoDetailPopup() {
-  const promoRadios = document.querySelectorAll(".promo-radio");
-  const detailPopup = document.getElementById("promo-detail-popup");
-  const closeDetailButton = document.querySelector(".close-detail-popup");
-
-  if (!detailPopup || !closeDetailButton) {
-    console.warn("Promo detail popup elements not found");
-    return;
-  }
-
-  promoRadios.forEach((radio) => {
-    radio.addEventListener("click", () => {
-      const radioElement = radio;
-      document.getElementById("popup-code").textContent =
-        radioElement.dataset.code;
-      document.getElementById("popup-discount").textContent =
-        radioElement.dataset.discount;
-      document.getElementById("popup-max-discount").textContent =
-        radioElement.dataset.maxDiscount;
-      document.getElementById("popup-start-date").textContent =
-        radioElement.dataset.startDate;
-      document.getElementById("popup-end-date").textContent =
-        radioElement.dataset.endDate;
-      document.getElementById("popup-min-order").textContent =
-        radioElement.dataset.minOrder;
-      document.getElementById("popup-status").textContent =
-        radioElement.dataset.status;
-      detailPopup.style.display = "flex";
-    });
-  });
-
-  closeDetailButton.addEventListener("click", () => {
-    detailPopup.style.display = "none";
-  });
-
-  window.addEventListener("click", (event) => {
-    if (event.target === detailPopup) {
-      detailPopup.style.display = "none";
-    }
   });
 }
 

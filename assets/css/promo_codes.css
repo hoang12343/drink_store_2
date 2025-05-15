@@ -90,8 +90,7 @@ th {
     position: relative;
 }
 
-.close-promo-popup,
-.close-detail-popup {
+.close-promo-popup {
     position: absolute;
     top: 10px;
     right: 15px;
@@ -100,8 +99,7 @@ th {
     color: #333;
 }
 
-.close-promo-popup:hover,
-.close-detail-popup:hover {
+.close-promo-popup:hover {
     color: #000;
 }
 
@@ -111,27 +109,41 @@ th {
 }
 
 .modal-content p {
-    margin: 10px 0;
+    margin: 3px 0;
 }
 
 .promo-list {
-    max-height: 200px;
+    max-height: 300px;
     overflow-y: auto;
     margin-bottom: 10px;
 }
 
 .promo-item {
     display: flex;
-    align-items: center;
-    padding: 5px 0;
+    align-items: flex-start;
+    padding: 8px;
+    border-bottom: 1px solid #ddd;
 }
 
 .promo-item input {
-    margin-right: 10px;
+    margin-right: 8px;
+    margin-top: 4px;
 }
 
-.promo-item label {
+.promo-details {
+    flex: 1;
+}
+
+.promo-details label {
+    font-weight: bold;
     cursor: pointer;
+    font-size: 0.95em;
+}
+
+.promo-details p {
+    font-size: 0.85em;
+    color: #555;
+    line-height: 1.2;
 }
 
 .apply-promo-btn {
