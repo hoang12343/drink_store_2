@@ -41,6 +41,7 @@ try {
     $response['success'] = true;
     $response['message'] = 'Bình luận đã được gửi thành công';
     $response['comment'] = [
+        'id' => $pdo->lastInsertId(), // Added for JavaScript tracking
         'full_name' => $_SESSION['full_name'],
         'comment_text' => $comment_text,
         'created_at' => date('Y-m-d H:i:s')

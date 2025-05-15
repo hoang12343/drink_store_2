@@ -151,13 +151,14 @@ $total_pages = ceil($total_comments / $comments_per_page);
         <!-- Comments List -->
         <div class="comments-list">
             <?php if (empty($comments)): ?>
-                <p>Chưa có bình luận nào cho sản phẩm này.</p>
+                <p>Chưa có bình luận nào-cho sản phẩm này.</p>
             <?php else: ?>
                 <?php
                 $displayed_comments = []; // Prevent duplicate comments
                 foreach ($comments as $comment):
                     if (!empty(trim($comment['comment_text'])) && !in_array($comment['id'], $displayed_comments)):
                         $displayed_comments[] = $comment['id'];
+                        $is_owner = (isset($_SESSION['user_id']) && $comment['user_id'] == $_SESSION['user_id']);
                 ?>
                         <div class="comment-item" data-comment-id="<?= htmlspecialchars($comment['id']) ?>">
                             <div class="comment-header">
@@ -165,6 +166,14 @@ $total_pages = ceil($total_comments / $comments_per_page);
                                 <span class="comment-date"><?= date('d/m/Y H:i', strtotime($comment['created_at'])) ?></span>
                             </div>
                             <p class="comment-text"><?= htmlspecialchars($comment['comment_text']) ?></p>
+                            <?php if ($is_owner): ?>
+                                <div class="comment-actions">
+                                    <button class="edit-comment-btn"
+                                        data-comment-id="<?= htmlspecialchars($comment['id']) ?>">Sửa</button>
+                                    <button class="delete-comment-btn"
+                                        data-comment-id="<?= htmlspecialchars($comment['id']) ?>">Xóa</button>
+                                </div>
+                            <?php endif; ?>
                         </div>
                     <?php endif; ?>
                 <?php endforeach; ?>

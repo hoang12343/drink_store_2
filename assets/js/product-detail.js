@@ -6,6 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initRelatedProductsNavigation();
   initCommentForm();
   initPagination();
+  initCommentActions();
 });
 
 // Initialize thumbnail gallery for product images
@@ -357,9 +358,159 @@ function initPagination() {
   });
 }
 
+// Initialize comment actions (edit and delete)
+function initCommentActions() {
+  const editButtons = document.querySelectorAll(".edit-comment-btn");
+  const deleteButtons = document.querySelectorAll(".delete-comment-btn");
+
+  editButtons.forEach((button) => {
+    // Xóa sự kiện cũ nếu có
+    const newButton = button.cloneNode(true);
+    button.replaceWith(newButton);
+
+    newButton.addEventListener("click", function () {
+      const commentId = newButton.getAttribute("data-comment-id");
+      const commentItem = document.querySelector(
+        `.comment-item[data-comment-id="${commentId}"]`
+      );
+      const commentText =
+        commentItem.querySelector(".comment-text").textContent;
+
+      // Replace comment text with edit form
+      commentItem.innerHTML = `
+        <form class="edit-comment-form" data-comment-id="${commentId}">
+          <textarea name="comment_text" required>${commentText}</textarea>
+          <div class="edit-comment-actions">
+            <button type="submit" class="submit-edit-comment-btn">Lưu</button>
+            <button type="button" class="cancel-edit-comment-btn">Hủy</button>
+          </div>
+        </form>
+      `;
+
+      const editForm = commentItem.querySelector(".edit-comment-form");
+      editForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+        const newCommentText = editForm.querySelector("textarea").value.trim();
+        if (!newCommentText) {
+          alert("Bình luận không được để trống");
+          return;
+        }
+
+        fetch("processes/edit_comment.php", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          body: new URLSearchParams({
+            comment_id: commentId,
+            comment_text: newCommentText,
+          }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            // Luôn hiển thị thông báo nếu có
+            showNotification(data.message || "Đã cập nhật bình luận");
+
+            if (data.success) {
+              const productId = document
+                .querySelector(".pagination-btn")
+                ?.getAttribute("data-product-id");
+              if (productId) {
+                loadComments(1, productId);
+              }
+            } else {
+              if (data.message === "Vui lòng đăng nhập để sửa bình luận") {
+                window.location.href =
+                  "index.php?page=login&redirect=" +
+                  encodeURIComponent(window.location.href);
+              }
+            }
+          })
+          .catch((error) => {
+            console.error("Error editing comment:", error);
+            showNotification("Lỗi hệ thống. Vui lòng thử lại sau.", "error");
+          });
+      });
+
+      const cancelButton = commentItem.querySelector(
+        ".cancel-edit-comment-btn"
+      );
+      cancelButton.addEventListener("click", function () {
+        const productId = document
+          .querySelector(".pagination-btn")
+          ?.getAttribute("data-product-id");
+        if (productId) {
+          loadComments(1, productId);
+        }
+      });
+    });
+  });
+
+  deleteButtons.forEach((button) => {
+    // Xóa sự kiện cũ nếu có
+    const newButton = button.cloneNode(true);
+    button.replaceWith(newButton);
+
+    newButton.addEventListener("click", function () {
+      if (!confirm("Bạn có chắc muốn xóa bình luận này?")) {
+        return;
+      }
+
+      const commentId = newButton.getAttribute("data-comment-id");
+      fetch("processes/delete_comment.php", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams({
+          comment_id: commentId,
+        }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          // Luôn hiển thị thông báo
+          showNotification(data.message || "Đã xóa bình luận");
+
+          if (data.success) {
+            const productId = document
+              .querySelector(".pagination-btn")
+              ?.getAttribute("data-product-id");
+            if (productId) {
+              loadComments(1, productId);
+            }
+          } else {
+            if (data.message === "Vui lòng đăng nhập để xóa bình luận") {
+              window.location.href =
+                "index.php?page=login&redirect=" +
+                encodeURIComponent(window.location.href);
+            }
+          }
+        })
+        .catch((error) => {
+          console.error("Error deleting comment:", error);
+          showNotification("Lỗi hệ thống. Vui lòng thử lại sau.", "error");
+        });
+    });
+  });
+}
+
+// Show notification
+function showNotification(message) {
+  const notification = document.createElement("div");
+  notification.className = "cart-notification";
+  notification.textContent = message;
+  notification.style.cssText = `
+    position: fixed; top: 20px; right: 20px; background: #8B0000; color: white;
+    padding: 10px 20px; border-radius: 5px; z-index: 1000;
+  `;
+  document.body.appendChild(notification);
+  setTimeout(() => notification.remove(), 3000);
+}
+
 // Load comments via API
 function loadComments(page, productId) {
-  fetch(`processes/get_comments.php?page=${page}&product_id=${productId}`, {
+  const fetchUrl = `/processes/get_comments.php?page=${page}&product_id=${productId}`;
+  fetch(fetchUrl, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -367,7 +518,9 @@ function loadComments(page, productId) {
   })
     .then((response) => {
       if (!response.ok)
-        throw new Error(`HTTP error! Status: ${response.status}`);
+        throw new Error(
+          `Lỗi tải bình luận: ${response.status} - ${response.statusText}`
+        );
       return response.json();
     })
     .then((data) => {
@@ -441,7 +594,7 @@ function loadComments(page, productId) {
             nextBtn.href = "#";
             nextBtn.className = "pagination-btn";
             nextBtn.setAttribute("data-page", currentPage + 1);
-            nextBtn.setAttribute("data-product-id", productId);
+            nextBtn.setAttribute("data-product-id", productId); // Sửa lỗi ở đây
             nextBtn.textContent = "Sau";
             paginationContainer.appendChild(nextBtn);
           }
@@ -449,9 +602,13 @@ function loadComments(page, productId) {
           initPagination();
         }
       }
+
+      // Re-initialize comment actions after loading comments
+      initCommentActions();
     })
     .catch((error) => {
       console.error("Error loading comments:", error);
-      alert("Lỗi khi tải bình luận. Vui lòng thử lại sau.");
+      const commentsList = document.querySelector(".comments-list");
+      commentsList.innerHTML = `<p>Lỗi tải bình luận: ${error.message}. Vui lòng kiểm tra đường dẫn hoặc thử lại.</p>`;
     });
 }

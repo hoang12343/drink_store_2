@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Generation Time: May 14, 2025 at 05:14 PM
--- Server version: 8.0.32
--- PHP Version: 8.0.30
+-- Máy chủ: 127.0.0.1
+-- Thời gian đã tạo: Th5 15, 2025 lúc 02:08 AM
+-- Phiên bản máy phục vụ: 8.0.32
+-- Phiên bản PHP: 8.0.30
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,13 +18,13 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `drink_store`
+-- Cơ sở dữ liệu: `drink_store`
 --
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `cart_items`
+-- Cấu trúc bảng cho bảng `cart_items`
 --
 
 CREATE TABLE `cart_items` (
@@ -37,7 +37,7 @@ CREATE TABLE `cart_items` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `cart_items`
+-- Đang đổ dữ liệu cho bảng `cart_items`
 --
 
 INSERT INTO `cart_items` (`id`, `user_id`, `product_id`, `quantity`, `created_at`, `updated_at`) VALUES
@@ -46,7 +46,7 @@ INSERT INTO `cart_items` (`id`, `user_id`, `product_id`, `quantity`, `created_at
 -- --------------------------------------------------------
 
 --
--- Table structure for table `categories`
+-- Cấu trúc bảng cho bảng `categories`
 --
 
 CREATE TABLE `categories` (
@@ -58,7 +58,7 @@ CREATE TABLE `categories` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `categories`
+-- Đang đổ dữ liệu cho bảng `categories`
 --
 
 INSERT INTO `categories` (`id`, `name`, `display_name`, `description`, `created_at`) VALUES
@@ -75,7 +75,7 @@ INSERT INTO `categories` (`id`, `name`, `display_name`, `description`, `created_
 -- --------------------------------------------------------
 
 --
--- Table structure for table `contacts`
+-- Cấu trúc bảng cho bảng `contacts`
 --
 
 CREATE TABLE `contacts` (
@@ -91,7 +91,7 @@ CREATE TABLE `contacts` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `contacts`
+-- Đang đổ dữ liệu cho bảng `contacts`
 --
 
 INSERT INTO `contacts` (`id`, `name`, `email`, `phone`, `subject`, `message`, `created_at`, `is_read`, `is_important`) VALUES
@@ -118,7 +118,7 @@ INSERT INTO `contacts` (`id`, `name`, `email`, `phone`, `subject`, `message`, `c
 -- --------------------------------------------------------
 
 --
--- Table structure for table `contact_replies`
+-- Cấu trúc bảng cho bảng `contact_replies`
 --
 
 CREATE TABLE `contact_replies` (
@@ -130,7 +130,7 @@ CREATE TABLE `contact_replies` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `contact_replies`
+-- Đang đổ dữ liệu cho bảng `contact_replies`
 --
 
 INSERT INTO `contact_replies` (`id`, `contact_id`, `subject`, `message`, `created_at`) VALUES
@@ -196,7 +196,7 @@ INSERT INTO `contact_replies` (`id`, `contact_id`, `subject`, `message`, `create
 -- --------------------------------------------------------
 
 --
--- Table structure for table `inventory`
+-- Cấu trúc bảng cho bảng `inventory`
 --
 
 CREATE TABLE `inventory` (
@@ -208,7 +208,7 @@ CREATE TABLE `inventory` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `inventory`
+-- Đang đổ dữ liệu cho bảng `inventory`
 --
 
 INSERT INTO `inventory` (`id`, `product_id`, `quantity`, `location`, `last_updated`) VALUES
@@ -274,7 +274,7 @@ INSERT INTO `inventory` (`id`, `product_id`, `quantity`, `location`, `last_updat
 -- --------------------------------------------------------
 
 --
--- Table structure for table `orders`
+-- Cấu trúc bảng cho bảng `orders`
 --
 
 CREATE TABLE `orders` (
@@ -292,7 +292,7 @@ CREATE TABLE `orders` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `orders`
+-- Đang đổ dữ liệu cho bảng `orders`
 --
 
 INSERT INTO `orders` (`id`, `user_id`, `total_amount`, `status`, `zalopay_trans_id`, `created_at`, `updated_at`, `payment_method`, `discount`, `shipping`, `promo_code`) VALUES
@@ -372,12 +372,38 @@ INSERT INTO `orders` (`id`, `user_id`, `total_amount`, `status`, `zalopay_trans_
 (90, 6, 230000.00, 'confirmed', NULL, '2025-05-14 15:08:40', '2025-05-14 15:08:40', 'cod', 0.00, 30000.00, NULL),
 (91, 6, 2000000.00, 'confirmed', NULL, '2025-05-14 15:10:33', '2025-05-14 15:10:33', 'cod', 0.00, 0.00, NULL),
 (92, 6, 3200000.00, 'completed', NULL, '2025-05-14 15:11:42', '2025-05-14 15:12:06', 'cod', 0.00, 0.00, NULL),
-(93, 6, 1100000.00, 'confirmed', NULL, '2025-05-14 15:13:38', '2025-05-14 15:13:38', 'cod', 0.00, 0.00, NULL);
+(93, 6, 1100000.00, 'confirmed', NULL, '2025-05-14 15:13:38', '2025-05-14 15:13:38', 'cod', 0.00, 0.00, NULL),
+(94, 6, 210000.00, 'confirmed', NULL, '2025-05-14 15:16:14', '2025-05-14 15:16:14', 'cod', 0.00, 30000.00, NULL),
+(95, 6, 930000.00, 'confirmed', NULL, '2025-05-14 15:17:20', '2025-05-14 15:17:20', 'cod', 0.00, 30000.00, NULL),
+(96, 6, 480000.00, 'confirmed', NULL, '2025-05-14 15:17:48', '2025-05-14 15:17:48', 'cod', 0.00, 30000.00, NULL),
+(97, 6, 1000000.00, 'confirmed', NULL, '2025-05-14 15:23:36', '2025-05-14 15:23:36', 'cod', 0.00, 0.00, NULL),
+(98, 6, 1000000.00, 'confirmed', NULL, '2025-05-14 15:24:08', '2025-05-14 15:24:08', 'cod', 0.00, 0.00, NULL),
+(99, 6, 480000.00, 'confirmed', NULL, '2025-05-14 15:24:26', '2025-05-14 15:24:26', 'cod', 0.00, 30000.00, NULL),
+(100, 6, 670000.00, 'confirmed', NULL, '2025-05-14 15:25:12', '2025-05-14 15:25:12', 'cod', 0.00, 30000.00, NULL),
+(101, 6, 480000.00, 'confirmed', NULL, '2025-05-14 15:29:16', '2025-05-14 15:29:16', 'cod', 0.00, 30000.00, NULL),
+(102, 6, 930000.00, 'confirmed', NULL, '2025-05-14 15:29:36', '2025-05-14 15:29:36', 'cod', 0.00, 30000.00, NULL),
+(103, 6, 150000.00, 'confirmed', NULL, '2025-05-14 15:30:39', '2025-05-14 15:30:39', 'cod', 0.00, 30000.00, NULL),
+(104, 6, 1100000.00, 'confirmed', NULL, '2025-05-14 15:32:27', '2025-05-14 15:32:27', 'cod', 0.00, 0.00, NULL),
+(105, 6, 2010000.00, 'confirmed', NULL, '2025-05-14 15:43:38', '2025-05-14 15:43:38', 'cod', 0.00, 30000.00, NULL),
+(106, 6, 1700000.00, 'confirmed', NULL, '2025-05-14 15:44:32', '2025-05-14 15:44:32', 'cod', 0.00, 0.00, NULL),
+(107, 6, 980000.00, 'confirmed', NULL, '2025-05-14 15:45:14', '2025-05-14 15:45:14', 'cod', 0.00, 30000.00, NULL),
+(108, 6, 2900000.00, 'completed', NULL, '2025-05-14 15:59:06', '2025-05-14 16:01:50', 'cod', 0.00, 0.00, NULL),
+(109, 6, 1870000.00, 'confirmed', NULL, '2025-05-14 16:02:03', '2025-05-14 16:02:03', 'cod', 0.00, 0.00, NULL),
+(110, 6, 1000000.00, 'confirmed', NULL, '2025-05-14 16:06:48', '2025-05-14 16:06:48', 'cod', 0.00, 0.00, NULL),
+(111, 6, 480000.00, 'confirmed', NULL, '2025-05-14 16:06:59', '2025-05-14 16:06:59', 'cod', 0.00, 30000.00, NULL),
+(112, 6, 2130000.00, 'confirmed', NULL, '2025-05-14 16:08:27', '2025-05-14 16:08:27', 'cod', 0.00, 30000.00, NULL),
+(113, 6, 1700000.00, 'confirmed', NULL, '2025-05-14 16:16:28', '2025-05-14 16:16:28', 'cod', 0.00, 0.00, NULL),
+(114, 6, 930000.00, 'confirmed', NULL, '2025-05-14 16:16:49', '2025-05-14 16:16:49', 'cod', 0.00, 30000.00, NULL),
+(115, 6, 2100000.00, 'confirmed', NULL, '2025-05-14 16:19:03', '2025-05-14 16:19:03', 'cod', 0.00, 0.00, NULL),
+(118, 6, 930000.00, 'pending', '250514_118', '2025-05-14 16:26:01', '2025-05-14 16:26:03', 'zalopay', 0.00, 0.00, NULL),
+(119, 6, 930000.00, 'pending', '250514_119', '2025-05-14 16:32:38', '2025-05-14 16:32:38', 'zalopay', 0.00, 0.00, NULL),
+(120, 6, 1800000.00, 'confirmed', NULL, '2025-05-14 16:33:10', '2025-05-14 16:33:10', 'cod', 0.00, 0.00, NULL),
+(121, 6, 2500000.00, 'completed', NULL, '2025-05-15 00:05:29', '2025-05-15 00:05:46', 'cod', 0.00, 0.00, NULL);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `order_items`
+-- Cấu trúc bảng cho bảng `order_items`
 --
 
 CREATE TABLE `order_items` (
@@ -389,7 +415,7 @@ CREATE TABLE `order_items` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `order_items`
+-- Đang đổ dữ liệu cho bảng `order_items`
 --
 
 INSERT INTO `order_items` (`id`, `order_id`, `product_id`, `quantity`, `price`) VALUES
@@ -454,30 +480,60 @@ INSERT INTO `order_items` (`id`, `order_id`, `product_id`, `quantity`, `price`) 
 (60, 61, 80, 2, 900000.00),
 (61, 62, 77, 1, 1400000.00),
 (62, 63, 80, 1, 900000.00),
-(0, 82, 80, 2, 900000.00),
-(0, 82, 108, 1, 950000.00),
-(0, 82, 104, 1, 1800000.00),
-(0, 82, 71, 1, 850000.00),
-(0, 82, 109, 2, 1200000.00),
-(0, 82, 68, 2, 950000.00),
-(0, 82, 62, 1, 3200000.00),
-(0, 82, 79, 3, 1000000.00),
-(0, 83, 79, 1, 1000000.00),
-(0, 84, 66, 1, 1500000.00),
-(0, 85, 80, 1, 900000.00),
-(0, 86, 79, 1, 1000000.00),
-(0, 87, 80, 1, 900000.00),
-(0, 88, 98, 1, 400000.00),
-(0, 89, 98, 1, 400000.00),
-(0, 90, 76, 1, 200000.00),
-(0, 91, 74, 1, 2000000.00),
-(0, 92, 62, 1, 3200000.00),
-(0, 93, 106, 1, 1100000.00);
+(63, 82, 80, 2, 900000.00),
+(64, 82, 108, 1, 950000.00),
+(65, 82, 104, 1, 1800000.00),
+(66, 82, 71, 1, 850000.00),
+(67, 82, 109, 2, 1200000.00),
+(68, 82, 68, 2, 950000.00),
+(69, 82, 62, 1, 3200000.00),
+(70, 82, 79, 3, 1000000.00),
+(71, 83, 79, 1, 1000000.00),
+(72, 84, 66, 1, 1500000.00),
+(73, 85, 80, 1, 900000.00),
+(74, 86, 79, 1, 1000000.00),
+(75, 87, 80, 1, 900000.00),
+(76, 88, 98, 1, 400000.00),
+(77, 89, 98, 1, 400000.00),
+(78, 90, 76, 1, 200000.00),
+(79, 91, 74, 1, 2000000.00),
+(80, 92, 62, 1, 3200000.00),
+(81, 93, 106, 1, 1100000.00),
+(82, 94, 67, 1, 180000.00),
+(83, 95, 80, 1, 900000.00),
+(84, 96, 7, 1, 450000.00),
+(85, 97, 79, 1, 1000000.00),
+(86, 98, 79, 1, 1000000.00),
+(87, 99, 7, 1, 450000.00),
+(88, 100, 5, 1, 640000.00),
+(89, 101, 7, 1, 450000.00),
+(90, 102, 80, 1, 900000.00),
+(91, 103, 87, 1, 120000.00),
+(92, 104, 106, 1, 1100000.00),
+(93, 105, 109, 1, 1200000.00),
+(94, 105, 100, 1, 580000.00),
+(95, 105, 76, 1, 200000.00),
+(96, 106, 107, 1, 1700000.00),
+(97, 107, 108, 1, 950000.00),
+(98, 108, 80, 2, 900000.00),
+(99, 108, 75, 1, 1100000.00),
+(100, 109, 1, 1, 1870000.00),
+(101, 110, 79, 1, 1000000.00),
+(102, 111, 7, 1, 450000.00),
+(103, 112, 66, 1, 1500000.00),
+(104, 112, 89, 1, 600000.00),
+(105, 113, 71, 2, 850000.00),
+(106, 114, 65, 1, 900000.00),
+(107, 115, 4, 1, 2100000.00),
+(169, 118, 90, 1, 900000.00),
+(170, 119, 90, 1, 900000.00),
+(171, 120, 90, 2, 900000.00),
+(172, 121, 78, 1, 2500000.00);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `products`
+-- Cấu trúc bảng cho bảng `products`
 --
 
 CREATE TABLE `products` (
@@ -504,17 +560,17 @@ CREATE TABLE `products` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `products`
+-- Đang đổ dữ liệu cho bảng `products`
 --
 
 INSERT INTO `products` (`id`, `code`, `name`, `category_id`, `price`, `old_price`, `discount`, `stock`, `image`, `grape`, `type`, `brand`, `country`, `abv`, `volume`, `description`, `rating`, `reviews`, `created_at`, `updated_at`) VALUES
-(1, 'RV001', 'Rượu vang Ý 60 Sessantanni Limited Edition (24 Karat Gold)', 2, 1870000.00, NULL, '', 25, 'https://winecellar.vn/wp-content/uploads/2023/11/60-sessantanni-limited-edition-24-karat-gold.jpg', 'Primitivo', 'Rượu vang đỏ', 'San Marzano', 'Vang Ý (Italy)', '13%', '750ml', 'Mẫu chai nho 60 năm từ thương hiệu Primitivo. Manduria D.O.P được làm phiên bản vang Ý đặc biệt.', 4.5, 10, '2025-04-17 02:43:25', '2025-04-24 02:22:10'),
+(1, 'RV001', 'Rượu vang Ý 60 Sessantanni Limited Edition (24 Karat Gold)', 2, 1870000.00, NULL, '', 24, 'https://winecellar.vn/wp-content/uploads/2023/11/60-sessantanni-limited-edition-24-karat-gold.jpg', 'Primitivo', 'Rượu vang đỏ', 'San Marzano', 'Vang Ý (Italy)', '13%', '750ml', 'Mẫu chai nho 60 năm từ thương hiệu Primitivo. Manduria D.O.P được làm phiên bản vang Ý đặc biệt.', 4.5, 10, '2025-04-17 02:43:25', '2025-05-14 16:02:03'),
 (2, 'CG001', 'Cognac Pháp', 3, 2300000.00, NULL, NULL, 12, '/api/placeholder/220/300', NULL, 'Cognac', 'San Marzano', 'Pháp', '40%', '700ml', 'Rượu Cognac cao cấp từ Pháp, hương vị đậm đà.', 4.0, 5, '2025-04-17 02:43:25', '2025-04-17 02:43:25'),
 (3, 'RV045', 'Rượu vang trắng &Yacute;', 2, 950000.00, NULL, '', 15, 'https://winevn.com/wp-content/uploads/2021/06/Ruou-Vang-Tavernello-Vino-Bianco-Ditalia-1.jpg', 'Chardonnay', 'Rượu vang trắng', 'San Marzano', 'Vang &Yacute; (Italy)', '12%', '750ml', 'Rượu vang trắng &Yacute;, nhẹ nh&agrave;ng v&agrave; thanh lịch.', 4.2, 8, '2025-04-17 02:43:25', '2025-04-24 02:07:40'),
-(4, 'CH001', 'Champagne Pháp', 2, 2100000.00, NULL, NULL, 10, '/api/placeholder/220/300', 'Pinot Noir', 'Rượu vang sủi', 'San Marzano', 'Pháp', '12.5%', '750ml', 'Champagne Pháp cao cấp, lý tưởng cho các dịp lễ.', 4.8, 12, '2025-04-17 02:43:25', '2025-04-17 02:43:25'),
-(5, 'RV023', 'Rượu vang Chile', 2, 640000.00, 800000.00, '-20%', 28, 'https://winecellar.vn/wp-content/uploads/2016/05/vistana-cabernet-sauvignon-1.jpg', 'Syrah', 'Rượu vang đỏ', 'San Marzano', 'Chile', '13.5%', '750ml', 'Rượu vang Chile đậm đ&agrave;, gi&aacute; trị tốt.', 4.3, 15, '2025-04-17 02:43:25', '2025-04-24 01:58:26'),
+(4, 'CH001', 'Champagne Pháp', 2, 2100000.00, NULL, NULL, 9, '/api/placeholder/220/300', 'Pinot Noir', 'Rượu vang sủi', 'San Marzano', 'Pháp', '12.5%', '750ml', 'Champagne Pháp cao cấp, lý tưởng cho các dịp lễ.', 4.8, 12, '2025-04-17 02:43:25', '2025-05-14 16:19:03'),
+(5, 'RV023', 'Rượu vang Chile', 2, 640000.00, 800000.00, '-20%', 27, 'https://winecellar.vn/wp-content/uploads/2016/05/vistana-cabernet-sauvignon-1.jpg', 'Syrah', 'Rượu vang đỏ', 'San Marzano', 'Chile', '13.5%', '750ml', 'Rượu vang Chile đậm đ&agrave;, gi&aacute; trị tốt.', 4.3, 15, '2025-04-17 02:43:25', '2025-05-14 15:25:12'),
 (6, 'RV056', 'Rượu vang Úc', 2, 550000.00, 690000.00, '-20%', 20, '/api/placeholder/220/300', 'Sauvignon Blanc', 'Rượu vang trắng', 'San Marzano', 'Úc', '12%', '750ml', 'Rượu vang Úc tươi mát, dễ uống.', 4.1, 7, '2025-04-17 02:43:25', '2025-04-17 02:43:25'),
-(7, 'VK001', 'Vodka Nga Absolut', 6, 450000.00, NULL, '', 30, 'https://sanhruou.com/media/12111/catalog/Vodka-Absolut.jpg', '', 'Vodka', 'Absolut', 'Nga', '40%', '700ml', 'Vodka tinh khiết từ Nga, l&yacute; tưởng cho cocktail.', 4.0, 6, '2025-04-17 02:43:25', '2025-04-24 01:59:03'),
+(7, 'VK001', 'Vodka Nga Absolut', 6, 450000.00, NULL, '', 26, 'https://sanhruou.com/media/12111/catalog/Vodka-Absolut.jpg', '', 'Vodka', 'Absolut', 'Nga', '40%', '700ml', 'Vodka tinh khiết từ Nga, l&yacute; tưởng cho cocktail.', 4.0, 6, '2025-04-17 02:43:25', '2025-05-14 16:06:59'),
 (8, 'BR001', 'Bia Bỉ Hoegaarden', 7, 60000.00, NULL, '', 50, 'https://douongnhapkhau.com/wp-content/uploads/2020/01/5cc189ada3015a5f0310.jpg', '', 'Bia trắng', 'Hoegaarden', 'Bỉ', '4.9%', '330ml', 'Bia trắng Bỉ, tươi m&aacute;t với hương cam qu&yacute;t.', 4.5, 20, '2025-04-17 02:43:25', '2025-04-24 01:52:13'),
 (9, 'CK001', 'Cocktail Mojito Pha Sẵn', 8, 120000.00, NULL, NULL, 15, '/api/placeholder/220/300', NULL, 'Cocktail', 'Bacardi', 'Cuba', '5%', '250ml', 'Cocktail Mojito pha sẵn, tiện lợi và sảng khoái.', 4.2, 10, '2025-04-17 02:43:25', '2025-04-17 02:43:25'),
 (10, 'GT001', 'Hộp quà rượu vang Ý', 9, 2500000.00, NULL, '', 8, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQhV6e9ne-3jhNzyNNk8k3G8W6Q4Yl7DfAYsw&s', '', 'Hộp quà', 'San Marzano', 'Vang Ý (Italy)', '', '750ml', 'Hộp quà sang trọng gồm 2 chai vang Ý và ly pha lê.', 4.7, 5, '2025-04-17 02:43:25', '2025-05-13 17:28:59'),
@@ -522,31 +578,31 @@ INSERT INTO `products` (`id`, `code`, `name`, `category_id`, `price`, `old_price
 (62, 'RV002', 'Rượu vang đỏ Pháp Château Lafite', 1, 3200000.00, NULL, NULL, 48, '/images/rv002.jpg', 'Cabernet Sauvignon', 'Red Wine', 'Château Lafite', 'France', '13.5%', '750ml', 'Rượu vang đỏ cao cấp với hương vị đậm đà, cấu trúc mượt mà.', 4.8, 120, '2025-04-18 15:33:52', '2025-05-14 15:11:42'),
 (63, 'WS003', 'Whisky Scotland Macallan 12 năm', 1, 2000000.00, NULL, '', 40, 'https://sanhruou.com/media/1449/catalog/ruou-macallan-12-nam-double-cask.jpg', '', 'Whisky', 'Macallan', 'Scotland', '40%', '700ml', 'Whisky single malt với hương vị tr&aacute;i c&acirc;y kh&ocirc; v&agrave; gia vị.', 4.7, 80, '2025-04-18 15:33:52', '2025-04-24 01:57:54'),
 (64, 'VD004', 'Vodka Premium Grey Goose', 1, 1200000.00, NULL, '', 60, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT1AnolHo_OM7ZY6CURv_hNt-CdC5j79UT7jg&s', '', 'Vodka', 'Grey Goose', 'France', '40%', '750ml', 'Vodka mượt m&agrave;, tinh khiết, l&yacute; tưởng cho cocktail.', 4.5, 90, '2025-04-18 15:33:52', '2025-04-24 02:08:11'),
-(65, 'GN005', 'Gin London Dry Beefeater', 1, 900000.00, NULL, '', 55, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS0owJLsKBNl-HOLP5BdgJDS7eEpkIkcpzEhw&s', '', 'Gin', 'Beefeater', 'England', '40%', '700ml', 'Gin cổ điển với hương thảo mộc v&agrave; cam qu&yacute;t.', 4.3, 60, '2025-04-18 15:33:52', '2025-04-24 01:56:59'),
-(66, 'SK006', 'Rượu Sake Nhật Bản Dassai 23', 1, 1500000.00, NULL, '', 29, 'https://cdn.ruoutuongvy.com/files/2024/05/18/080928-ruou-sake-nhat-ban-dassai-23-magnum-18l.webpMrPRdjp8YDcXq78NItuBs0TnhA8pj5Ej2bw&s', '', 'Sake', 'Dassai', 'Japan', '16%', '720ml', 'Sake cao cấp với hương vị tinh tế, thanh lịch.', 4.9, 100, '2025-04-18 15:33:52', '2025-05-14 14:55:41'),
-(67, 'BL007', 'Bia thủ c&ocirc;ng Lager Đức', 1, 180000.00, NULL, '', 80, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT5DSo_TsYiisRfC9-BXHf3oGWv83dUgw_vYQ&s', '', 'Beer', 'Warsteiner', 'Germany', '4.8%', '500ml', 'Bia lager tươi m&aacute;t, dễ uống.', 4.2, 50, '2025-04-18 15:33:52', '2025-04-24 01:56:34'),
+(65, 'GN005', 'Gin London Dry Beefeater', 1, 900000.00, NULL, '', 54, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS0owJLsKBNl-HOLP5BdgJDS7eEpkIkcpzEhw&s', '', 'Gin', 'Beefeater', 'England', '40%', '700ml', 'Gin cổ điển với hương thảo mộc v&agrave; cam qu&yacute;t.', 4.3, 60, '2025-04-18 15:33:52', '2025-05-14 16:16:49'),
+(66, 'SK006', 'Rượu Sake Nhật Bản Dassai 23', 1, 1500000.00, NULL, '', 28, 'https://cdn.ruoutuongvy.com/files/2024/05/18/080928-ruou-sake-nhat-ban-dassai-23-magnum-18l.webpMrPRdjp8YDcXq78NItuBs0TnhA8pj5Ej2bw&s', '', 'Sake', 'Dassai', 'Japan', '16%', '720ml', 'Sake cao cấp với hương vị tinh tế, thanh lịch.', 4.9, 100, '2025-04-18 15:33:52', '2025-05-14 16:08:27'),
+(67, 'BL007', 'Bia thủ c&ocirc;ng Lager Đức', 1, 180000.00, NULL, '', 79, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT5DSo_TsYiisRfC9-BXHf3oGWv83dUgw_vYQ&s', '', 'Beer', 'Warsteiner', 'Germany', '4.8%', '500ml', 'Bia lager tươi m&aacute;t, dễ uống.', 4.2, 50, '2025-04-18 15:33:52', '2025-05-14 15:16:14'),
 (68, 'RV008', 'Rượu vang trắng Ý Santa Margherita', 1, 950000.00, NULL, '', 43, 'https://sanhruou.com/media/6262/catalog/Santa-Margherita-Pinot-Grigio.jpg', 'Pinot Grigio', 'White Wine', 'Santa Margherita', 'Italy', '12.5%', '750ml', 'Rượu vang trắng với hương táo xanh và hoa trắng.', 4.6, 70, '2025-04-18 15:33:52', '2025-05-14 14:52:35'),
 (69, 'CH009', 'Champagne Brut Veuve Clicquot', 1, 2800000.00, NULL, NULL, 25, '/images/ch009.jpg', NULL, 'Champagne', 'Veuve Clicquot', 'France', '12%', '750ml', 'Champagne với bọt mịn và hương vị trái cây tươi.', 4.8, 110, '2025-04-18 15:33:52', '2025-04-18 15:33:52'),
 (70, 'TQ010', 'Tequila Blanco Patrón', 1, 1300000.00, NULL, NULL, 35, '/images/tq010.jpg', NULL, 'Tequila', 'Patrón', 'Mexico', '40%', '750ml', 'Tequila tinh khiết với hương agave và cam quýt.', 4.4, 65, '2025-04-18 15:33:52', '2025-04-18 15:33:52'),
-(71, 'RM011', 'Rum Trắng Mount Gay', 1, 850000.00, NULL, NULL, 49, '/images/rm011.jpg', NULL, 'Rum', 'Mount Gay', 'Barbados', '40%', '700ml', 'Rum trắng mượt mà, lý tưởng cho cocktail.', 4.3, 55, '2025-04-18 15:33:52', '2025-05-14 14:52:35'),
+(71, 'RM011', 'Rum Trắng Mount Gay', 1, 850000.00, NULL, NULL, 47, '/images/rm011.jpg', NULL, 'Rum', 'Mount Gay', 'Barbados', '40%', '700ml', 'Rum trắng mượt mà, lý tưởng cho cocktail.', 4.3, 55, '2025-04-18 15:33:52', '2025-05-14 16:16:28'),
 (72, 'WJ012', 'Whisky Nhật Bản Hibiki 17 năm', 2, 3000000.00, NULL, NULL, 30, '/images/wj012.jpg', NULL, 'Whisky', 'Hibiki', 'Japan', '43%', '700ml', 'Whisky blend với hương hoa và gỗ sồi.', 4.8, 130, '2025-04-18 15:33:52', '2025-04-18 15:33:52'),
 (73, 'RV013', 'Rượu vang đỏ Chile Carmenère', 2, 1100000.00, NULL, NULL, 60, '/images/rv013.jpg', 'Carmenère', 'Red Wine', 'Concha y Toro', 'Chile', '13.5%', '750ml', 'Rượu vang đỏ đậm đà với hương ớt chuông và mâm xôi.', 4.5, 90, '2025-04-18 15:33:52', '2025-04-18 15:33:52'),
 (74, 'VD014', 'Vodka Beluga Gold Line', 2, 2000000.00, NULL, NULL, 24, '/images/vd014.jpg', NULL, 'Vodka', 'Beluga', 'Russia', '40%', '750ml', 'Vodka siêu cao cấp với thiết kế sang trọng.', 4.7, 100, '2025-04-18 15:33:52', '2025-05-14 15:10:33'),
-(75, 'GN015', 'Gin Hendrick&rsquo;s', 2, 1100000.00, NULL, '', 50, 'https://sanhruou.com/media/13076/catalog/Hendricks-Gin-1-Lit.jpg', '', 'Gin', 'Hendrick&rsquo;s', 'Scotland', '41.4%', '700ml', 'Gin với hương dưa chuột v&agrave; hoa hồng.', 4.6, 80, '2025-04-18 15:33:52', '2025-04-24 02:08:42'),
-(76, 'BS016', 'Bia thủ công Stout Ireland', 2, 200000.00, NULL, NULL, 69, '/images/bs016.jpg', NULL, 'Beer', 'Guinness', 'Ireland', '4.2%', '500ml', 'Bia stout đậm đà với hương cà phê và sô-cô-la.', 4.4, 120, '2025-04-18 15:33:52', '2025-05-14 15:08:40'),
+(75, 'GN015', 'Gin Hendrick&rsquo;s', 2, 1100000.00, NULL, '', 49, 'https://sanhruou.com/media/13076/catalog/Hendricks-Gin-1-Lit.jpg', '', 'Gin', 'Hendrick&rsquo;s', 'Scotland', '41.4%', '700ml', 'Gin với hương dưa chuột v&agrave; hoa hồng.', 4.6, 80, '2025-04-18 15:33:52', '2025-05-14 15:59:06'),
+(76, 'BS016', 'Bia thủ công Stout Ireland', 2, 200000.00, NULL, NULL, 68, '/images/bs016.jpg', NULL, 'Beer', 'Guinness', 'Ireland', '4.2%', '500ml', 'Bia stout đậm đà với hương cà phê và sô-cô-la.', 4.4, 120, '2025-04-18 15:33:52', '2025-05-14 15:43:38'),
 (77, 'RM017', 'Rum N&acirc;u Appleton Estate 12 năm', 2, 1400000.00, NULL, '', 40, 'https://ruoungoaiald.com/wp-content/uploads/rum-Appleton-Estate-12-nam.jpg', '', 'Rum', 'Appleton Estate', 'Jamaica', '43%', '700ml', 'Rum n&acirc;u với hương vani v&agrave; tr&aacute;i c&acirc;y nhiệt đới.', 4.5, 85, '2025-04-18 15:33:52', '2025-04-24 01:51:25'),
-(78, 'CH018', 'Champagne Moët &amp; Chandon Rosé', 2, 2500000.00, NULL, '', 30, 'https://topruou.com/Image/Picture/Hinh%20nen_Vang/Ruou_Champagne_Moet_Chandon_Rose_Imperial.jpg', '', 'Champagne', 'Moët & Chandon', 'France', '12%', '750ml', 'Champagne hồng phấn với hương dâu tây.', 4.8, 140, '2025-04-18 15:33:52', '2025-04-24 02:17:19'),
-(79, 'RV019', 'Rượu vang trắng New Zealand Sauvignon Blanc', 2, 1000000.00, NULL, '', 50, 'https://product.hstatic.net/1000358764/product/vidal_estate_sauvignon_blanc__new_zealand_87e6033ed38f4048b751e1f5f4377a05.png', 'Sauvignon Blanc', 'White Wine', 'Cloudy Bay', 'New Zealand', '13%', '750ml', 'Rượu vang trắng tươi m&aacute;t với hương chanh d&acirc;y.', 4.6, 95, '2025-04-18 15:33:52', '2025-05-14 14:58:17'),
-(80, 'WI020', 'Whisky Ireland Jameson', 2, 900000.00, NULL, '', 61, 'https://mcgrocer.com/cdn/shop/files/jameson-triple-distilled-blended-irish-whiskey-1l-41369596756206.jpg?v=1742217485', '', 'Whisky', 'Jameson', 'Ireland', '40%', '700ml', 'Whisky mượt m&agrave; với hương vani v&agrave; tr&aacute;i c&acirc;y.', 4.3, 75, '2025-04-18 15:33:52', '2025-05-14 14:59:05'),
+(78, 'CH018', 'Champagne Moët &amp; Chandon Rosé', 2, 2500000.00, NULL, '', 29, 'https://topruou.com/Image/Picture/Hinh%20nen_Vang/Ruou_Champagne_Moet_Chandon_Rose_Imperial.jpg', '', 'Champagne', 'Moët & Chandon', 'France', '12%', '750ml', 'Champagne hồng phấn với hương dâu tây.', 4.8, 140, '2025-04-18 15:33:52', '2025-05-15 00:05:29'),
+(79, 'RV019', 'Rượu vang trắng New Zealand Sauvignon Blanc', 2, 1000000.00, NULL, '', 47, 'https://product.hstatic.net/1000358764/product/vidal_estate_sauvignon_blanc__new_zealand_87e6033ed38f4048b751e1f5f4377a05.png', 'Sauvignon Blanc', 'White Wine', 'Cloudy Bay', 'New Zealand', '13%', '750ml', 'Rượu vang trắng tươi m&aacute;t với hương chanh d&acirc;y.', 4.6, 95, '2025-04-18 15:33:52', '2025-05-14 16:06:48'),
+(80, 'WI020', 'Whisky Ireland Jameson', 2, 900000.00, NULL, '', 57, 'https://mcgrocer.com/cdn/shop/files/jameson-triple-distilled-blended-irish-whiskey-1l-41369596756206.jpg?v=1742217485', '', 'Whisky', 'Jameson', 'Ireland', '40%', '700ml', 'Whisky mượt m&agrave; với hương vani v&agrave; tr&aacute;i c&acirc;y.', 4.3, 75, '2025-04-18 15:33:52', '2025-05-14 15:59:06'),
 (81, 'RV021', 'Rượu vang đỏ Tây Ban Nha Tempranillo', 3, 650000.00, 850000.00, '-24%', 80, 'https://product.hstatic.net/200000311137/product/n-nha-bayanegra-red-tempranillo-750ml_9a02e77ca82649f990ccf04000690d9f_e9a4ab099ded4d5985d7d1a6c0b151a7.jpg', 'Tempranillo', 'Red Wine', 'Bodegas Faustino', 'Spain', '13.5%', '750ml', 'Rượu vang đỏ với hương anh đào và gỗ sồi.', 4.2, 60, '2025-04-18 15:33:52', '2025-04-24 02:17:09'),
 (83, 'TQ023', 'Tequila Gold Jose Cuervo', 3, 750000.00, 950000.00, '-21%', 70, '/images/tq023.jpg', NULL, 'Tequila', 'Jose Cuervo', 'Mexico', '38%', '750ml', 'Tequila vàng với hương caramel và agave.', 4.1, 55, '2025-04-18 15:33:52', '2025-04-18 15:33:52'),
 (84, 'RM024', 'Rum Spiced Captain Morgan', 3, 500000.00, 650000.00, '-23%', 85, '/images/rm024.jpg', NULL, 'Rum', 'Captain Morgan', 'Jamaica', '35%', '700ml', 'Rum gia vị với hương vani và quế.', 4.0, 45, '2025-04-18 15:33:52', '2025-04-18 15:33:52'),
 (85, 'RV025', 'Rượu vang trắng Chile Chardonnay', 3, 550000.00, 700000.00, '-21%', 75, 'https://winecellar.vn/wp-content/uploads/2016/08/vistana-chardonnay-2020.jpg', 'Chardonnay', 'White Wine', 'Santa Rita', 'Chile', '13%', '750ml', 'Rượu vang trắng với hương t&aacute;o v&agrave; bơ.', 4.2, 65, '2025-04-18 15:33:52', '2025-04-24 01:50:37'),
 (86, 'WS026', 'Whisky Blended Chivas Regal 18 năm', 3, 1400000.00, 1800000.00, '-22%', 50, 'https://maltco.asia/wp-content/uploads/2019/02/CHIVAS-18-750ML-maltco..jpg', '', 'Whisky', 'Chivas Regal', 'Scotland', '40%', '700ml', 'Whisky blend cao cấp với hương s&ocirc;-c&ocirc;-la v&agrave; tr&aacute;i c&acirc;y.', 4.5, 80, '2025-04-18 15:33:52', '2025-04-24 01:50:15'),
-(87, 'BH027', 'Bia Hefeweizen Hoegaarden', 3, 120000.00, 160000.00, '-25%', 100, 'https://douongnhapkhau.com/wp-content/uploads/2020/01/7dcea1a38b0f72512b1e.jpg', '', 'Beer', 'Hoegaarden', 'Belgium', '4.9%', '500ml', 'Bia l&uacute;a m&igrave; với hương cam v&agrave; ng&ograve;.', 4.3, 70, '2025-04-18 15:33:52', '2025-04-24 01:49:47'),
+(87, 'BH027', 'Bia Hefeweizen Hoegaarden', 3, 120000.00, 160000.00, '-25%', 99, 'https://douongnhapkhau.com/wp-content/uploads/2020/01/7dcea1a38b0f72512b1e.jpg', '', 'Beer', 'Hoegaarden', 'Belgium', '4.9%', '500ml', 'Bia l&uacute;a m&igrave; với hương cam v&agrave; ng&ograve;.', 4.3, 70, '2025-04-18 15:33:52', '2025-05-14 15:30:39'),
 (88, 'GN028', 'Gin Tonic Roku', 3, 850000.00, 1100000.00, '-23%', 60, '/images/gn028.jpg', NULL, 'Gin', 'Roku', 'Japan', '43%', '700ml', 'Gin Nhật Bản với hương yuzu và trà xanh.', 4.4, 75, '2025-04-18 15:33:52', '2025-04-18 15:33:52'),
-(89, 'RV029', 'Rượu vang hồng Ý Rosato', 3, 600000.00, 800000.00, '-25%', 65, 'https://winecellar.vn/wp-content/uploads/2022/12/tavernello-sangiovese-rosato-2021.jpg', 'Sangiovese', 'Rosé Wine', 'Antinori', 'Italy', '12.5%', '750ml', 'Rượu vang hồng tươi mát với hương dâu tây.', 4.1, 50, '2025-04-18 15:33:52', '2025-04-24 02:17:00'),
-(90, 'SK030', 'Rượu Sake Nhật Bản Kubota', 3, 900000.00, 1200000.00, '-25%', 55, 'https://cdn.ruoutuongvy.com/files/2024/09/05/091158-ruou-sake-nhat-ban-kubota-manjyu-jishakobo-jikomi.webp', '', 'Sake', 'Kubota', 'Japan', '15%', '720ml', 'Sake với hương tr&aacute;i c&acirc;y nhẹ nh&agrave;ng.', 4.3, 60, '2025-04-18 15:33:52', '2025-04-24 01:47:14'),
+(89, 'RV029', 'Rượu vang hồng Ý Rosato', 3, 600000.00, 800000.00, '-25%', 64, 'https://winecellar.vn/wp-content/uploads/2022/12/tavernello-sangiovese-rosato-2021.jpg', 'Sangiovese', 'Rosé Wine', 'Antinori', 'Italy', '12.5%', '750ml', 'Rượu vang hồng tươi mát với hương dâu tây.', 4.1, 50, '2025-04-18 15:33:52', '2025-05-14 16:08:27'),
+(90, 'SK030', 'Rượu Sake Nhật Bản Kubota', 3, 900000.00, 1200000.00, '-25%', 53, 'https://cdn.ruoutuongvy.com/files/2024/09/05/091158-ruou-sake-nhat-ban-kubota-manjyu-jishakobo-jikomi.webp', '', 'Sake', 'Kubota', 'Japan', '15%', '720ml', 'Sake với hương tr&aacute;i c&acirc;y nhẹ nh&agrave;ng.', 4.3, 60, '2025-04-18 15:33:52', '2025-05-14 16:33:10'),
 (91, 'LY001', 'Ly pha l&ecirc; Riedel Bordeaux', 4, 500000.00, NULL, '', 100, 'https://winecellar.vn/wp-content/uploads/2024/09/ly-ruou-vang-do-riedel-superleggero-bordeaux-grand-cru-red-1.jpg', '', 'Glass', 'Riedel', 'Austria', '', '600ml', 'Ly pha l&ecirc; cao cấp d&agrave;nh cho rượu vang đỏ Bordeaux.', 4.8, 200, '2025-04-18 15:33:52', '2025-04-24 01:47:42'),
 (92, 'LY031', 'Ly pha lê Riedel Cabernet Sauvignon', 4, 550000.00, NULL, NULL, 90, '/images/ly031.jpg', NULL, 'Glass', 'Riedel', 'Austria', NULL, '650ml', 'Ly pha lê tối ưu cho rượu vang Cabernet.', 4.7, 180, '2025-04-18 15:33:52', '2025-04-18 15:33:52'),
 (93, 'LY032', 'Ly rượu vang trắng Riedel', 4, 480000.00, NULL, '', 95, 'https://winecellar.vn/wp-content/uploads/2021/06/ly-pha-le-degustazione-white-wine.png', '', 'Glass', 'Riedel', 'Austria', '', '400ml', 'Ly pha l&ecirc; cho rượu vang trắng, tăng hương vị.', 4.6, 150, '2025-04-18 15:33:52', '2025-04-24 01:46:36'),
@@ -556,21 +612,21 @@ INSERT INTO `products` (`id`, `code`, `name`, `category_id`, `price`, `old_price
 (97, 'LY036', 'Ly rượu vang đỏ Spiegelau', 4, 520000.00, NULL, '', 85, 'https://down-vn.img.susercontent.com/file/e5104b39a642991436636ddf3a577558', '', 'Glass', 'Spiegelau', 'Germany', '', '600ml', 'Ly pha l&ecirc; bền bỉ cho rượu vang đỏ.', 4.4, 110, '2025-04-18 15:33:52', '2025-04-24 01:44:43'),
 (98, 'LY037', 'Ly whisky Spiegelau', 4, 400000.00, NULL, '', 88, 'https://ahangduc.com/wp-content/smush-webp/2020/04/Bo-ly-pha-le-Spiegelau-Nachtmann-Whisky_3.jpg.webp', '', 'Glass', 'Spiegelau', 'Germany', '', '250ml', 'Ly whisky với thiết kế hiện đại.', 4.3, 100, '2025-04-18 15:33:52', '2025-05-14 15:02:33'),
 (99, 'LY038', 'Ly rượu vang trắng Spiegelau', 4, 470000.00, NULL, '', 95, 'https://down-vn.img.susercontent.com/file/13b9799d01b4ed19f44c27091216864c', '', 'Glass', 'Spiegelau', 'Germany', '', '400ml', 'Ly pha l&ecirc; cho rượu vang trắng, nhẹ nh&agrave;ng.', 4.5, 120, '2025-04-18 15:33:52', '2025-04-24 01:43:32'),
-(100, 'LY039', 'Ly champagne Spiegelau Flute', 4, 580000.00, NULL, '', 80, 'https://thegioigiadungduc.com/wp-content/uploads/2023/12/bo-12-ly-vang-cao-cap-spiegelau-4400192-authentis-glaser-set-12-tlg45.jpg?v=1702264932', '', 'Glass', 'Spiegelau', 'Germany', '', '250ml', 'Ly pha l&ecirc; cho champagne, tinh tế.', 4.6, 140, '2025-04-18 15:33:52', '2025-04-24 01:39:41'),
+(100, 'LY039', 'Ly champagne Spiegelau Flute', 4, 580000.00, NULL, '', 79, 'https://thegioigiadungduc.com/wp-content/uploads/2023/12/bo-12-ly-vang-cao-cap-spiegelau-4400192-authentis-glaser-set-12-tlg45.jpg?v=1702264932', '', 'Glass', 'Spiegelau', 'Germany', '', '250ml', 'Ly pha l&ecirc; cho champagne, tinh tế.', 4.6, 140, '2025-04-18 15:33:52', '2025-05-14 15:43:38'),
 (101, 'WS040', 'Whisky Scotland Glenlivet 18 năm', 5, 2200000.00, NULL, '', 40, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRV7-EBAU7otAXXXdj-AOBzqW19AYA7MNd4Yg&s', '', 'Whisky', 'Glenlivet', 'Scotland', '40%', '700ml', 'Whisky single malt với hương mật ong v&agrave; gỗ sồi.', 4.7, 90, '2025-04-18 15:33:52', '2025-04-24 01:37:53'),
 (102, 'VD041', 'Vodka Absolut Blue', 5, 600000.00, NULL, '', 80, 'https://mcgrocer.com/cdn/shop/files/absolut-blue-original-swedish-vodka-1l-41369456771310.jpg?v=1735641458', '', 'Vodka', 'Absolut', 'Sweden', '40%', '750ml', 'Vodka cổ điển, linh hoạt cho nhiều loại cocktail.', 4.2, 70, '2025-04-18 15:33:52', '2025-04-24 01:37:33'),
 (103, 'GN042', 'Gin Monkey 47', 5, 1300000.00, NULL, '', 50, 'https://sanhruou.com/media/1379/catalog/ruou-monkey-47.jpg', '', 'Gin', 'Monkey 47', 'Germany', '47%', '500ml', 'Gin cao cấp với 47 loại thảo mộc.', 4.8, 100, '2025-04-18 15:33:52', '2025-04-24 01:37:03'),
 (104, 'RM043', 'Rum Nâu Zacapa 23 năm', 5, 1800000.00, NULL, '', 34, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTXb1oYF111kQ9mWjwVz3SGSZ61gR_KZessmw&s', '', 'Rum', 'Zacapa', 'Guatemala', '40%', '750ml', 'Rum nâu với hương sô-cô-la và trái cây khô.', 4.7, 85, '2025-04-18 15:33:52', '2025-05-14 14:52:35'),
 (105, 'TQ044', 'Tequila Don Julio Añejo', 5, 1600000.00, NULL, '', 45, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTzma-4CWbcRl_ocrsddIImDveehJwPagJBxg&s', '', 'Tequila', 'Don Julio', 'Mexico', '40%', '750ml', 'Tequila ủ với hương vani và caramel.', 4.6, 80, '2025-04-18 15:33:52', '2025-04-24 02:16:41'),
-(106, 'SK045', 'Rượu Sake Nhật Bản Hakkaisan Junmai', 5, 1100000.00, NULL, '', 59, 'https://cdn.ruoutuongvy.com/files/2024/05/21/100221-ruou-sake-nhat-ban-hakkaisan-junmai-daiginjo.webp', '', 'Sake', 'Hakkaisan', 'Japan', '15.5%', '720ml', 'Sake tinh khiết với hương gạo v&agrave; hoa.', 4.5, 75, '2025-04-18 15:33:52', '2025-05-14 15:13:38'),
-(107, 'WS046', 'Whisky Nhật Bản Nikka From The Barrel', 5, 1700000.00, NULL, '', 50, 'https://topruou.com/Image/Picture/Whisky-Nhat/Nikka/Ruou-Nikka-From-Barrel.jpg', '', 'Whisky', 'Nikka', 'Japan', '51.4%', '500ml', 'Whisky đậm đ&agrave; với hương gia vị v&agrave; tr&aacute;i c&acirc;y.', 4.8, 95, '2025-04-18 15:33:52', '2025-04-24 01:33:15'),
-(108, 'VD047', 'Vodka Ketel One', 5, 950000.00, NULL, '', 64, 'https://sanhruou.com/media/12303/catalog/Ketel-One.jpg', '', 'Vodka', 'Ketel One', 'Netherlands', '40%', '750ml', 'Vodka mượt m&agrave; với hương cam qu&yacute;t nhẹ.', 4.4, 60, '2025-04-18 15:33:52', '2025-05-14 14:52:35'),
-(109, 'GN048', 'Gin The Botanist', 5, 1200000.00, NULL, '', 78, 'https://sanhruou.com/media/5028/catalog/The-Botanist-Gin.jpg', '', 'Gin', 'The Botanist', 'Scotland', '46%', '700ml', 'Gin với 22 loại thảo mộc từ đảo Islay.', 4.7, 90, '2025-04-18 15:33:52', '2025-05-14 14:52:35');
+(106, 'SK045', 'Rượu Sake Nhật Bản Hakkaisan Junmai', 5, 1100000.00, NULL, '', 58, 'https://cdn.ruoutuongvy.com/files/2024/05/21/100221-ruou-sake-nhat-ban-hakkaisan-junmai-daiginjo.webp', '', 'Sake', 'Hakkaisan', 'Japan', '15.5%', '720ml', 'Sake tinh khiết với hương gạo v&agrave; hoa.', 4.5, 75, '2025-04-18 15:33:52', '2025-05-14 15:32:27'),
+(107, 'WS046', 'Whisky Nhật Bản Nikka From The Barrel', 5, 1700000.00, NULL, '', 49, 'https://topruou.com/Image/Picture/Whisky-Nhat/Nikka/Ruou-Nikka-From-Barrel.jpg', '', 'Whisky', 'Nikka', 'Japan', '51.4%', '500ml', 'Whisky đậm đ&agrave; với hương gia vị v&agrave; tr&aacute;i c&acirc;y.', 4.8, 95, '2025-04-18 15:33:52', '2025-05-14 15:44:32'),
+(108, 'VD047', 'Vodka Ketel One', 5, 950000.00, NULL, '', 63, 'https://sanhruou.com/media/12303/catalog/Ketel-One.jpg', '', 'Vodka', 'Ketel One', 'Netherlands', '40%', '750ml', 'Vodka mượt m&agrave; với hương cam qu&yacute;t nhẹ.', 4.4, 60, '2025-04-18 15:33:52', '2025-05-14 15:45:14'),
+(109, 'GN048', 'Gin The Botanist', 5, 1200000.00, NULL, '', 77, 'https://sanhruou.com/media/5028/catalog/The-Botanist-Gin.jpg', '', 'Gin', 'The Botanist', 'Scotland', '46%', '700ml', 'Gin với 22 loại thảo mộc từ đảo Islay.', 4.7, 90, '2025-04-18 15:33:52', '2025-05-14 15:43:38');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `product_comments`
+-- Cấu trúc bảng cho bảng `product_comments`
 --
 
 CREATE TABLE `product_comments` (
@@ -582,7 +638,7 @@ CREATE TABLE `product_comments` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `product_comments`
+-- Đang đổ dữ liệu cho bảng `product_comments`
 --
 
 INSERT INTO `product_comments` (`id`, `product_id`, `user_id`, `comment_text`, `created_at`) VALUES
@@ -622,7 +678,7 @@ INSERT INTO `product_comments` (`id`, `product_id`, `user_id`, `comment_text`, `
 -- --------------------------------------------------------
 
 --
--- Table structure for table `promotions`
+-- Cấu trúc bảng cho bảng `promotions`
 --
 
 CREATE TABLE `promotions` (
@@ -635,7 +691,7 @@ CREATE TABLE `promotions` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `promotions`
+-- Đang đổ dữ liệu cho bảng `promotions`
 --
 
 INSERT INTO `promotions` (`id`, `product_id`, `discount_percentage`, `start_date`, `end_date`, `created_at`) VALUES
@@ -645,7 +701,7 @@ INSERT INTO `promotions` (`id`, `product_id`, `discount_percentage`, `start_date
 -- --------------------------------------------------------
 
 --
--- Table structure for table `promo_codes`
+-- Cấu trúc bảng cho bảng `promo_codes`
 --
 
 CREATE TABLE `promo_codes` (
@@ -663,7 +719,7 @@ CREATE TABLE `promo_codes` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `users`
+-- Cấu trúc bảng cho bảng `users`
 --
 
 CREATE TABLE `users` (
@@ -680,7 +736,7 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `users`
+-- Đang đổ dữ liệu cho bảng `users`
 --
 
 INSERT INTO `users` (`id`, `full_name`, `username`, `email`, `phone`, `address`, `password`, `is_admin`, `created_at`, `updated_at`) VALUES
@@ -699,11 +755,11 @@ INSERT INTO `users` (`id`, `full_name`, `username`, `email`, `phone`, `address`,
 (17, 'Nguyễn Văn C', 'nguyenvanc', 'nvc@gmail.com', '0923123123', 'Bắc Nịnh', '$2y$10$QAoLiLuHhiwGgKW/RKRwR.Kfp2INS50drIP.6UJSWaYYBBNDwyG0e', 0, '2025-05-08 08:41:36', '2025-05-08 01:41:36');
 
 --
--- Indexes for dumped tables
+-- Chỉ mục cho các bảng đã đổ
 --
 
 --
--- Indexes for table `cart_items`
+-- Chỉ mục cho bảng `cart_items`
 --
 ALTER TABLE `cart_items`
   ADD PRIMARY KEY (`id`),
@@ -711,41 +767,48 @@ ALTER TABLE `cart_items`
   ADD KEY `product_id` (`product_id`);
 
 --
--- Indexes for table `categories`
+-- Chỉ mục cho bảng `categories`
 --
 ALTER TABLE `categories`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `name` (`name`);
 
 --
--- Indexes for table `contacts`
+-- Chỉ mục cho bảng `contacts`
 --
 ALTER TABLE `contacts`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `inventory`
+-- Chỉ mục cho bảng `contact_replies`
+--
+ALTER TABLE `contact_replies`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Chỉ mục cho bảng `inventory`
 --
 ALTER TABLE `inventory`
   ADD PRIMARY KEY (`id`),
   ADD KEY `idx_inventory_product_id` (`product_id`);
 
 --
--- Indexes for table `orders`
+-- Chỉ mục cho bảng `orders`
 --
 ALTER TABLE `orders`
   ADD PRIMARY KEY (`id`),
   ADD KEY `fk_orders_user_id` (`user_id`);
 
 --
--- Indexes for table `order_items`
+-- Chỉ mục cho bảng `order_items`
 --
 ALTER TABLE `order_items`
+  ADD PRIMARY KEY (`id`),
   ADD KEY `fk_order_items_order_id` (`order_id`),
   ADD KEY `fk_order_items_product_id` (`product_id`);
 
 --
--- Indexes for table `products`
+-- Chỉ mục cho bảng `products`
 --
 ALTER TABLE `products`
   ADD PRIMARY KEY (`id`),
@@ -755,7 +818,25 @@ ALTER TABLE `products`
   ADD KEY `idx_products_price` (`price`);
 
 --
--- Indexes for table `users`
+-- Chỉ mục cho bảng `product_comments`
+--
+ALTER TABLE `product_comments`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Chỉ mục cho bảng `promotions`
+--
+ALTER TABLE `promotions`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Chỉ mục cho bảng `promo_codes`
+--
+ALTER TABLE `promo_codes`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Chỉ mục cho bảng `users`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`),
@@ -763,65 +844,95 @@ ALTER TABLE `users`
   ADD UNIQUE KEY `email` (`email`);
 
 --
--- AUTO_INCREMENT for dumped tables
+-- AUTO_INCREMENT cho các bảng đã đổ
 --
 
 --
--- AUTO_INCREMENT for table `cart_items`
+-- AUTO_INCREMENT cho bảng `cart_items`
 --
 ALTER TABLE `cart_items`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=97;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=127;
 
 --
--- AUTO_INCREMENT for table `contacts`
+-- AUTO_INCREMENT cho bảng `contacts`
 --
 ALTER TABLE `contacts`
   MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
--- AUTO_INCREMENT for table `inventory`
+-- AUTO_INCREMENT cho bảng `contact_replies`
+--
+ALTER TABLE `contact_replies`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT cho bảng `inventory`
 --
 ALTER TABLE `inventory`
   MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=59;
 
 --
--- AUTO_INCREMENT for table `orders`
+-- AUTO_INCREMENT cho bảng `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=94;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=122;
 
 --
--- AUTO_INCREMENT for table `users`
+-- AUTO_INCREMENT cho bảng `order_items`
+--
+ALTER TABLE `order_items`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=173;
+
+--
+-- AUTO_INCREMENT cho bảng `product_comments`
+--
+ALTER TABLE `product_comments`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT cho bảng `promotions`
+--
+ALTER TABLE `promotions`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT cho bảng `promo_codes`
+--
+ALTER TABLE `promo_codes`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT cho bảng `users`
 --
 ALTER TABLE `users`
   MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
--- Constraints for dumped tables
+-- Các ràng buộc cho các bảng đã đổ
 --
 
 --
--- Constraints for table `cart_items`
+-- Các ràng buộc cho bảng `cart_items`
 --
 ALTER TABLE `cart_items`
   ADD CONSTRAINT `cart_items_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `cart_items_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE;
 
 --
--- Constraints for table `orders`
+-- Các ràng buộc cho bảng `orders`
 --
 ALTER TABLE `orders`
   ADD CONSTRAINT `fk_orders_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE RESTRICT;
 
 --
--- Constraints for table `order_items`
+-- Các ràng buộc cho bảng `order_items`
 --
 ALTER TABLE `order_items`
   ADD CONSTRAINT `fk_order_items_order_id` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `fk_order_items_product_id` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE RESTRICT;
 
 --
--- Constraints for table `products`
+-- Các ràng buộc cho bảng `products`
 --
 ALTER TABLE `products`
   ADD CONSTRAINT `products_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE RESTRICT;
