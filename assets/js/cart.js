@@ -12,6 +12,7 @@ function initCart() {
   initCheckoutButton();
   initPromoCode();
   initCheckboxes();
+  initPromoDetailPopup(); // Thêm hàm khởi tạo popup chi tiết
 }
 
 // Initialize quantity selectors
@@ -254,29 +255,61 @@ function initCheckoutButton() {
   }
 }
 
-// Initialize promo code input
+// Initialize promo code popup
 function initPromoCode() {
+  const openPopupButton = document.getElementById("open-promo-popup");
+  const promoPopup = document.getElementById("promo-popup");
+  const closePopupButton = document.querySelector(".close-promo-popup");
   const applyButton = document.getElementById("apply-promo-btn");
-  if (!applyButton) {
-    console.warn("Apply promo button not found");
+
+  if (!openPopupButton || !promoPopup || !closePopupButton || !applyButton) {
+    console.warn("Promo popup elements not found");
     return;
   }
 
-  const newButton = applyButton.cloneNode(true);
-  applyButton.replaceWith(newButton);
-  newButton.addEventListener("click", () => {
-    const promoCodeInput = document.getElementById("promo-code-input");
-    if (!promoCodeInput) {
-      console.warn("Promo code input not found");
+  // Clone buttons to prevent duplicate event listeners
+  const newOpenButton = openPopupButton.cloneNode(true);
+  openPopupButton.replaceWith(newOpenButton);
+  const newCloseButton = closePopupButton.cloneNode(true);
+  closePopupButton.replaceWith(newCloseButton);
+  const newApplyButton = applyButton.cloneNode(true);
+  applyButton.replaceWith(newApplyButton);
+
+  // Open popup
+  newOpenButton.addEventListener("click", () => {
+    const selectedCheckboxes = document.querySelectorAll(
+      ".cart-item-checkbox:checked"
+    );
+    if (selectedCheckboxes.length === 0) {
+      alert("Vui lòng chọn ít nhất một sản phẩm để áp dụng mã giảm giá");
+      return;
+    }
+    promoPopup.style.display = "flex";
+  });
+
+  // Close popup
+  newCloseButton.addEventListener("click", () => {
+    promoPopup.style.display = "none";
+  });
+
+  // Close popup when clicking outside
+  window.addEventListener("click", (event) => {
+    if (event.target === promoPopup) {
+      promoPopup.style.display = "none";
+    }
+  });
+
+  // Apply promo code
+  newApplyButton.addEventListener("click", () => {
+    const selectedPromo = document.querySelector(
+      'input[name="promo_code"]:checked'
+    );
+    if (!selectedPromo) {
+      alert("Vui lòng chọn một mã giảm giá.");
       return;
     }
 
-    const promoCode = promoCodeInput.value.trim();
-    if (!promoCode) {
-      alert("Vui lòng nhập mã giảm giá");
-      return;
-    }
-
+    const promoCode = selectedPromo.value;
     const selectedCheckboxes = document.querySelectorAll(
       ".cart-item-checkbox:checked"
     );
@@ -284,12 +317,51 @@ function initPromoCode() {
       cb.getAttribute("data-cart-item-id")
     );
 
-    if (selectedIds.length === 0) {
-      alert("Vui lòng chọn ít nhất một sản phẩm để áp dụng mã giảm giá");
-      return;
-    }
-
     applyPromoCode(promoCode, selectedIds);
+    promoPopup.style.display = "none"; // Close popup after applying
+  });
+}
+
+// Initialize promo detail popup
+function initPromoDetailPopup() {
+  const promoRadios = document.querySelectorAll(".promo-radio");
+  const detailPopup = document.getElementById("promo-detail-popup");
+  const closeDetailButton = document.querySelector(".close-detail-popup");
+
+  if (!detailPopup || !closeDetailButton) {
+    console.warn("Promo detail popup elements not found");
+    return;
+  }
+
+  promoRadios.forEach((radio) => {
+    radio.addEventListener("click", () => {
+      const radioElement = radio;
+      document.getElementById("popup-code").textContent =
+        radioElement.dataset.code;
+      document.getElementById("popup-discount").textContent =
+        radioElement.dataset.discount;
+      document.getElementById("popup-max-discount").textContent =
+        radioElement.dataset.maxDiscount;
+      document.getElementById("popup-start-date").textContent =
+        radioElement.dataset.startDate;
+      document.getElementById("popup-end-date").textContent =
+        radioElement.dataset.endDate;
+      document.getElementById("popup-min-order").textContent =
+        radioElement.dataset.minOrder;
+      document.getElementById("popup-status").textContent =
+        radioElement.dataset.status;
+      detailPopup.style.display = "flex";
+    });
+  });
+
+  closeDetailButton.addEventListener("click", () => {
+    detailPopup.style.display = "none";
+  });
+
+  window.addEventListener("click", (event) => {
+    if (event.target === detailPopup) {
+      detailPopup.style.display = "none";
+    }
   });
 }
 
@@ -362,9 +434,9 @@ function createDiscountRow() {
   const discountRow = document.createElement("div");
   discountRow.className = "summary-row discount-row";
   discountRow.innerHTML = `
-    <div class="summary-label">Giảm giá:</div>
-    <div class="summary-value" id="discount-amount">0 VNĐ</div>
-  `;
+        <div class="summary-label">Giảm giá:</div>
+        <div class="summary-value" id="discount-amount">0 VNĐ</div>
+    `;
 
   summaryElement.insertBefore(discountRow, totalRow);
   return discountRow;
@@ -376,7 +448,7 @@ function initCheckboxes() {
   const itemCheckboxes = document.querySelectorAll(".cart-item-checkbox");
 
   if (selectAllCheckbox) {
-    const newCheckbox = selectAllCheckbox.cloneNode(0);
+    const newCheckbox = selectAllCheckbox.cloneNode(true);
     selectAllCheckbox.replaceWith(newCheckbox);
     newCheckbox.addEventListener("change", () => {
       itemCheckboxes.forEach((checkbox) => {

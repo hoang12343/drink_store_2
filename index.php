@@ -47,7 +47,8 @@ function route_request($default = 'home'): string
         'orders',
         'admin',
         'update_profile',
-        'checkout'
+        'checkout',
+        'promo_codes'
     ];
 
     // Lấy tham số page

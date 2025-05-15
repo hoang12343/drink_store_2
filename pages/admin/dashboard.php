@@ -63,6 +63,9 @@ try {
     $stmt = $pdo->query("SELECT COUNT(*) as total_orders FROM orders");
     $total_orders = $stmt->fetchColumn();
 
+    $stmt = $pdo->query("SELECT COUNT(*) as total_contacts FROM contacts");
+    $total_contacts = $stmt->fetchColumn();
+
     // Tổng doanh thu từ lúc bắt đầu đến hiện tại
     $stmt = $pdo->prepare("
         SELECT SUM(total_amount) as total_revenue, COUNT(id) as order_count
@@ -187,6 +190,12 @@ try {
                     Gần hết: <?= $low_stock ?? 0 ?>
                 </p>
                 <a href="?page=admin&subpage=admin-inventory" class="btn">Quản lý kho</a>
+            </div>
+            <div class="dashboard-card">
+                <i class="fas fa-envelope"></i>
+                <h3>Tổng liên hệ</h3>
+                <p><?= $total_contacts ?? 'N/A' ?></p>
+                <a href="?page=admin&subpage=admin-contacts" class="btn">Xem chi tiết</a>
             </div>
         </div>
 

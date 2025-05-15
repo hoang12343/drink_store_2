@@ -1,0 +1,159 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+th {
+    background-color: #f2f2f2;
+}
+
+.form-container {
+    margin-bottom: 20px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.form-container label {
+    display: inline-block;
+    width: 150px;
+}
+
+.form-container input,
+.form-container select {
+    margin-bottom: 10px;
+    padding: 5px;
+}
+
+.success {
+    color: green;
+    margin-bottom: 10px;
+}
+
+.error {
+    color: red;
+    margin-bottom: 10px;
+}
+
+.apply-button {
+    margin-top: 10px;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.apply-button:hover {
+    background-color: #0056b3;
+}
+
+#result {
+    margin-top: 10px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+/* Modal styles (used in cart.php and promo_codes.php) */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: white;
+    margin: 10% auto;
+    padding: 20px;
+    border-radius: 5px;
+    width: 80%;
+    max-width: 500px;
+    position: relative;
+}
+
+.close-promo-popup,
+.close-detail-popup {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 20px;
+    cursor: pointer;
+    color: #333;
+}
+
+.close-promo-popup:hover,
+.close-detail-popup:hover {
+    color: #000;
+}
+
+.modal-content h2,
+.modal-content h3 {
+    margin-top: 0;
+}
+
+.modal-content p {
+    margin: 10px 0;
+}
+
+.promo-list {
+    max-height: 200px;
+    overflow-y: auto;
+    margin-bottom: 10px;
+}
+
+.promo-item {
+    display: flex;
+    align-items: center;
+    padding: 5px 0;
+}
+
+.promo-item input {
+    margin-right: 10px;
+}
+
+.promo-item label {
+    cursor: pointer;
+}
+
+.apply-promo-btn {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.apply-promo-btn:hover {
+    background-color: #0056b3;
+}
+
+.promo-input {
+    margin-bottom: 15px;
+}
+
+.promo-input input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}

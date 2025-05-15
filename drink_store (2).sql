@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th5 15, 2025 lúc 02:08 AM
+-- Thời gian đã tạo: Th5 15, 2025 lúc 03:50 AM
 -- Phiên bản máy phục vụ: 8.0.32
 -- Phiên bản PHP: 8.0.30
 
@@ -41,7 +41,10 @@ CREATE TABLE `cart_items` (
 --
 
 INSERT INTO `cart_items` (`id`, `user_id`, `product_id`, `quantity`, `created_at`, `updated_at`) VALUES
-(49, 9, 62, 1, '2025-05-11 03:26:22', '2025-05-11 03:26:22');
+(49, 9, 62, 1, '2025-05-11 03:26:22', '2025-05-11 03:26:22'),
+(128, 6, 71, 1, '2025-05-15 00:52:25', '2025-05-15 00:52:25'),
+(129, 6, 75, 1, '2025-05-15 01:28:05', '2025-05-15 01:28:05'),
+(130, 6, 79, 1, '2025-05-15 01:40:31', '2025-05-15 01:40:31');
 
 -- --------------------------------------------------------
 
@@ -398,7 +401,8 @@ INSERT INTO `orders` (`id`, `user_id`, `total_amount`, `status`, `zalopay_trans_
 (118, 6, 930000.00, 'pending', '250514_118', '2025-05-14 16:26:01', '2025-05-14 16:26:03', 'zalopay', 0.00, 0.00, NULL),
 (119, 6, 930000.00, 'pending', '250514_119', '2025-05-14 16:32:38', '2025-05-14 16:32:38', 'zalopay', 0.00, 0.00, NULL),
 (120, 6, 1800000.00, 'confirmed', NULL, '2025-05-14 16:33:10', '2025-05-14 16:33:10', 'cod', 0.00, 0.00, NULL),
-(121, 6, 2500000.00, 'completed', NULL, '2025-05-15 00:05:29', '2025-05-15 00:05:46', 'cod', 0.00, 0.00, NULL);
+(121, 6, 2500000.00, 'completed', NULL, '2025-05-15 00:05:29', '2025-05-15 00:05:46', 'cod', 0.00, 0.00, NULL),
+(122, 6, 930000.00, 'completed', NULL, '2025-05-15 00:52:01', '2025-05-15 01:17:07', 'cod', 0.00, 30000.00, NULL);
 
 -- --------------------------------------------------------
 
@@ -528,7 +532,8 @@ INSERT INTO `order_items` (`id`, `order_id`, `product_id`, `quantity`, `price`) 
 (169, 118, 90, 1, 900000.00),
 (170, 119, 90, 1, 900000.00),
 (171, 120, 90, 2, 900000.00),
-(172, 121, 78, 1, 2500000.00);
+(172, 121, 78, 1, 2500000.00),
+(173, 122, 80, 1, 900000.00);
 
 -- --------------------------------------------------------
 
@@ -593,7 +598,7 @@ INSERT INTO `products` (`id`, `code`, `name`, `category_id`, `price`, `old_price
 (77, 'RM017', 'Rum N&acirc;u Appleton Estate 12 năm', 2, 1400000.00, NULL, '', 40, 'https://ruoungoaiald.com/wp-content/uploads/rum-Appleton-Estate-12-nam.jpg', '', 'Rum', 'Appleton Estate', 'Jamaica', '43%', '700ml', 'Rum n&acirc;u với hương vani v&agrave; tr&aacute;i c&acirc;y nhiệt đới.', 4.5, 85, '2025-04-18 15:33:52', '2025-04-24 01:51:25'),
 (78, 'CH018', 'Champagne Moët &amp; Chandon Rosé', 2, 2500000.00, NULL, '', 29, 'https://topruou.com/Image/Picture/Hinh%20nen_Vang/Ruou_Champagne_Moet_Chandon_Rose_Imperial.jpg', '', 'Champagne', 'Moët & Chandon', 'France', '12%', '750ml', 'Champagne hồng phấn với hương dâu tây.', 4.8, 140, '2025-04-18 15:33:52', '2025-05-15 00:05:29'),
 (79, 'RV019', 'Rượu vang trắng New Zealand Sauvignon Blanc', 2, 1000000.00, NULL, '', 47, 'https://product.hstatic.net/1000358764/product/vidal_estate_sauvignon_blanc__new_zealand_87e6033ed38f4048b751e1f5f4377a05.png', 'Sauvignon Blanc', 'White Wine', 'Cloudy Bay', 'New Zealand', '13%', '750ml', 'Rượu vang trắng tươi m&aacute;t với hương chanh d&acirc;y.', 4.6, 95, '2025-04-18 15:33:52', '2025-05-14 16:06:48'),
-(80, 'WI020', 'Whisky Ireland Jameson', 2, 900000.00, NULL, '', 57, 'https://mcgrocer.com/cdn/shop/files/jameson-triple-distilled-blended-irish-whiskey-1l-41369596756206.jpg?v=1742217485', '', 'Whisky', 'Jameson', 'Ireland', '40%', '700ml', 'Whisky mượt m&agrave; với hương vani v&agrave; tr&aacute;i c&acirc;y.', 4.3, 75, '2025-04-18 15:33:52', '2025-05-14 15:59:06'),
+(80, 'WI020', 'Whisky Ireland Jameson', 2, 900000.00, NULL, '', 56, 'https://mcgrocer.com/cdn/shop/files/jameson-triple-distilled-blended-irish-whiskey-1l-41369596756206.jpg?v=1742217485', '', 'Whisky', 'Jameson', 'Ireland', '40%', '700ml', 'Whisky mượt m&agrave; với hương vani v&agrave; tr&aacute;i c&acirc;y.', 4.3, 75, '2025-04-18 15:33:52', '2025-05-15 00:52:01'),
 (81, 'RV021', 'Rượu vang đỏ Tây Ban Nha Tempranillo', 3, 650000.00, 850000.00, '-24%', 80, 'https://product.hstatic.net/200000311137/product/n-nha-bayanegra-red-tempranillo-750ml_9a02e77ca82649f990ccf04000690d9f_e9a4ab099ded4d5985d7d1a6c0b151a7.jpg', 'Tempranillo', 'Red Wine', 'Bodegas Faustino', 'Spain', '13.5%', '750ml', 'Rượu vang đỏ với hương anh đào và gỗ sồi.', 4.2, 60, '2025-04-18 15:33:52', '2025-04-24 02:17:09'),
 (83, 'TQ023', 'Tequila Gold Jose Cuervo', 3, 750000.00, 950000.00, '-21%', 70, '/images/tq023.jpg', NULL, 'Tequila', 'Jose Cuervo', 'Mexico', '38%', '750ml', 'Tequila vàng với hương caramel và agave.', 4.1, 55, '2025-04-18 15:33:52', '2025-04-18 15:33:52'),
 (84, 'RM024', 'Rum Spiced Captain Morgan', 3, 500000.00, 650000.00, '-23%', 85, '/images/rm024.jpg', NULL, 'Rum', 'Captain Morgan', 'Jamaica', '35%', '700ml', 'Rum gia vị với hương vani và quế.', 4.0, 45, '2025-04-18 15:33:52', '2025-04-18 15:33:52'),
@@ -672,8 +677,13 @@ INSERT INTO `product_comments` (`id`, `product_id`, `user_id`, `comment_text`, `
 (28, 71, 6, 'sdfsd', '2025-05-11 04:51:39'),
 (29, 71, 6, 'rwgwr', '2025-05-11 04:51:40'),
 (30, 71, 6, 'rwgwr', '2025-05-11 04:51:40'),
-(31, 71, 6, 'vwvw', '2025-05-11 04:51:42'),
-(32, 71, 6, 'vwvw', '2025-05-11 04:51:42');
+(33, 79, 6, 'absscxz', '2025-05-15 00:14:13'),
+(34, 79, 6, 'dsava', '2025-05-15 00:14:22'),
+(36, 79, 6, 'fvfz', '2025-05-15 00:24:24'),
+(43, 80, 6, 'abc', '2025-05-15 00:45:48'),
+(44, 78, 6, 'hello', '2025-05-15 00:46:26'),
+(45, 79, 6, 'abdfb', '2025-05-15 00:51:45'),
+(46, 71, 6, 'vdfs', '2025-05-15 01:04:15');
 
 -- --------------------------------------------------------
 
@@ -851,7 +861,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT cho bảng `cart_items`
 --
 ALTER TABLE `cart_items`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=127;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=131;
 
 --
 -- AUTO_INCREMENT cho bảng `contacts`
@@ -863,7 +873,7 @@ ALTER TABLE `contacts`
 -- AUTO_INCREMENT cho bảng `contact_replies`
 --
 ALTER TABLE `contact_replies`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT cho bảng `inventory`
@@ -875,19 +885,19 @@ ALTER TABLE `inventory`
 -- AUTO_INCREMENT cho bảng `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=122;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=123;
 
 --
 -- AUTO_INCREMENT cho bảng `order_items`
 --
 ALTER TABLE `order_items`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=173;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=174;
 
 --
 -- AUTO_INCREMENT cho bảng `product_comments`
 --
 ALTER TABLE `product_comments`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=47;
 
 --
 -- AUTO_INCREMENT cho bảng `promotions`
