@@ -200,6 +200,8 @@ if ($page === 'cart') {
 } elseif ($page === 'checkout') {
     $js_files[] = ROOT_PATH . '/assets/js/common.js';
     $js_files[] = ROOT_PATH . '/assets/js/checkout.js';
+} elseif ($page === 'orders') {
+    $js_files[] = ROOT_PATH . '/assets/js/orders.js';
 } elseif (str_starts_with($page, 'admin/')) {
     $js_files[] = ROOT_PATH . '/assets/js/admin.js';
     if ($page === 'admin/admin-reports') {

@@ -2,7 +2,124 @@
 if (!defined('APP_START')) exit('No direct access');
 require_once ROOT_PATH . '/includes/db_connect.php';
 
-// Xử lý các hành động (thêm, sửa, xóa)
+// Initialize output buffering
+ob_start();
+
+// Verify Composer autoloader
+$autoload_path = ROOT_PATH . '/vendor/autoload.php';
+if (!file_exists($autoload_path)) {
+    ob_end_clean();
+    exit('Composer autoloader not found at ' . htmlspecialchars($autoload_path) . '. Run "composer install".');
+}
+require_once $autoload_path;
+
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Mpdf\Mpdf;
+
+// Check Mpdf class availability
+if (!class_exists('Mpdf\Mpdf')) {
+    ob_end_clean();
+    exit('Mpdf class not found. Run "composer require mpdf/mpdf" or check vendor/mpdf/mpdf directory.');
+}
+
+// Handle export requests
+if (isset($_GET['export'])) {
+    $start_date = filter_input(INPUT_GET, 'start_date', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?: date('Y-m-01');
+    $end_date = filter_input(INPUT_GET, 'end_date', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?: date('Y-m-t');
+
+    // Validate dates
+    if (!DateTime::createFromFormat('Y-m-d', $start_date) || !DateTime::createFromFormat('Y-m-d', $end_date)) {
+        ob_end_clean();
+        exit('Invalid date format.');
+    }
+    if (strtotime($end_date) < strtotime($start_date)) {
+        ob_end_clean();
+        exit('End date must be after start date.');
+    }
+
+    try {
+        // Fetch promo codes
+        $stmt = $pdo->prepare("
+            SELECT code, discount_percentage, max_discount_value, start_date, end_date, min_order_value, is_active 
+            FROM promo_codes 
+            WHERE created_at BETWEEN :start_date AND :end_date 
+            ORDER BY created_at DESC
+        ");
+        $stmt->execute(['start_date' => $start_date, 'end_date' => $end_date . ' 23:59:59']);
+        $promo_codes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Clear output buffers for export
+        while (ob_get_level() > 0) {
+            ob_end_clean();
+        }
+
+        if ($_GET['export'] === 'xlsx') {
+            // Excel export
+            $spreadsheet = new Spreadsheet();
+            $sheet = $spreadsheet->getActiveSheet();
+            $headers = ['Mã', 'Phần trăm giảm', 'Giảm tối đa', 'Ngày bắt đầu', 'Ngày kết thúc', 'Giá trị đơn tối thiểu', 'Trạng thái'];
+            $col = 'A';
+            foreach ($headers as $header) {
+                $sheet->setCellValue($col . '1', $header);
+                $sheet->getColumnDimension($col)->setWidth($col === 'D' || $col === 'E' ? 20 : 15);
+                $col++;
+            }
+            $sheet->getStyle('D2:E' . (count($promo_codes) + 1))->getNumberFormat()->setFormatCode('dd/mm/yyyy hh:mm:ss');
+
+            $row = 2;
+            foreach ($promo_codes as $promo) {
+                $sheet->setCellValue('A' . $row, $promo['code']);
+                $sheet->setCellValue('B' . $row, number_format($promo['discount_percentage'], 2));
+                $sheet->setCellValue('C' . $row, $promo['max_discount_value'] ? number_format($promo['max_discount_value'], 0) : 'Không giới hạn');
+                $start_date = DateTime::createFromFormat('Y-m-d H:i:s', $promo['start_date']);
+                $sheet->setCellValue('D' . $row, $start_date ? \PhpOffice\PhpSpreadsheet\Shared\Date::PHPToExcel($start_date) : 'N/A');
+                $end_date = DateTime::createFromFormat('Y-m-d H:i:s', $promo['end_date']);
+                $sheet->setCellValue('E' . $row, $end_date ? \PhpOffice\PhpSpreadsheet\Shared\Date::PHPToExcel($end_date) : 'N/A');
+                $sheet->setCellValue('F' . $row, number_format($promo['min_order_value'], 0));
+                $sheet->setCellValue('G' . $row, $promo['is_active'] ? 'Hoạt động' : 'Không hoạt động');
+                $row++;
+            }
+
+            header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+            header('Content-Disposition: attachment; filename="promo_codes_report_' . $start_date . '_to_' . $end_date . '.xlsx"');
+            header('Cache-Control: max-age=0');
+            $writer = new Xlsx($spreadsheet);
+            $writer->save('php://output');
+            exit;
+        } elseif ($_GET['export'] === 'pdf') {
+            // PDF export
+            $mpdf = new Mpdf(['mode' => 'utf-8', 'format' => 'A4-L']);
+            $html = '<!DOCTYPE html><html><head><meta charset="UTF-8">';
+            $html .= '<style>body { font-family: DejaVu Sans, sans-serif; font-size: 10pt; } table { width: 100%; border-collapse: collapse; } th, td { border: 1px solid black; padding: 5px; text-align: center; } th { font-weight: bold; }</style>';
+            $html .= '</head><body>';
+            $html .= '<h1 style="text-align:center;">Báo cáo Mã giảm giá (' . htmlspecialchars($start_date) . ' đến ' . htmlspecialchars($end_date) . ')</h1>';
+            $html .= '<table>';
+            $html .= '<tr><th>Mã</th><th>Phần trăm giảm</th><th>Giảm tối đa</th><th>Ngày bắt đầu</th><th>Ngày kết thúc</th><th>Giá trị đơn tối thiểu</th><th>Trạng thái</th></tr>';
+            foreach ($promo_codes as $promo) {
+                $html .= '<tr>';
+                $html .= '<td>' . htmlspecialchars($promo['code']) . '</td>';
+                $html .= '<td>' . number_format($promo['discount_percentage'], 2) . '%</td>';
+                $html .= '<td>' . ($promo['max_discount_value'] ? number_format($promo['max_discount_value'], 0, ',', '.') . ' VNĐ' : 'Không giới hạn') . '</td>';
+                $html .= '<td>' . htmlspecialchars($promo['start_date']) . '</td>';
+                $html .= '<td>' . htmlspecialchars($promo['end_date']) . '</td>';
+                $html .= '<td>' . number_format($promo['min_order_value'], 0, ',', '.') . ' VNĐ</td>';
+                $html .= '<td>' . ($promo['is_active'] ? 'Hoạt động' : 'Không hoạt động') . '</td>';
+                $html .= '</tr>';
+            }
+            $html .= '</table></body></html>';
+            $mpdf->WriteHTML($html);
+            $mpdf->Output('promo_codes_report_' . $start_date . '_to_' . $end_date . '.pdf', 'D');
+            exit;
+        }
+    } catch (Exception $e) {
+        ob_end_clean();
+        error_log('Export error: ' . $e->getMessage());
+        exit('Error exporting data: ' . htmlspecialchars($e->getMessage()));
+    }
+}
+
+// Handle actions (add, edit, delete)
 $action = filter_input(INPUT_POST, 'action', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 $success_message = '';
 $error_message = '';
@@ -11,7 +128,7 @@ if ($action) {
     if ($action === 'add' || $action === 'edit') {
         $promo_data = [
             'code' => trim($_POST['code'] ?? ''),
-            'discount_percentage' => filter_input(INPUT_POST, 'discount_percentage', FILTER_VALIDATE_FLOAT),
+            'discount_percentage' => filter_input(INPUT_POST, 'discount_percentage', FILTER_VALIDATE_FLOAT) ?: null,
             'start_date' => $_POST['start_date'] ?? '',
             'end_date' => $_POST['end_date'] ?? '',
             'min_order_value' => filter_input(INPUT_POST, 'min_order_value', FILTER_VALIDATE_FLOAT) ?: 0,
@@ -19,50 +136,52 @@ if ($action) {
             'is_active' => isset($_POST['is_active']) ? 1 : 0
         ];
 
-        // Validate dates
-        $start = DateTime::createFromFormat('Y-m-d\TH:i', $promo_data['start_date']);
-        $end = DateTime::createFromFormat('Y-m-d\TH:i', $promo_data['end_date']);
-        if (!$start || !$end) {
-            $error_message = 'Định dạng ngày không hợp lệ.';
-        } elseif ($end <= $start) {
-            $error_message = 'Ngày kết thúc phải sau ngày bắt đầu.';
+        // Validate inputs
+        if (!$promo_data['code'] || $promo_data['discount_percentage'] === null || !$promo_data['start_date'] || !$promo_data['end_date']) {
+            $error_message = 'Vui lòng điền đầy đủ các trường bắt buộc.';
         } else {
-            if ($action === 'add') {
+            // Validate dates
+            $start = DateTime::createFromFormat('Y-m-d\TH:i', $promo_data['start_date']);
+            $end = DateTime::createFromFormat('Y-m-d\TH:i', $promo_data['end_date']);
+            if (!$start || !$end) {
+                $error_message = 'Định dạng ngày không hợp lệ.';
+            } elseif ($end <= $start) {
+                $error_message = 'Ngày kết thúc phải sau ngày bắt đầu.';
+            } else {
                 try {
-                    $stmt = $pdo->prepare("SELECT COUNT(*) FROM promo_codes WHERE code = ?");
-                    $stmt->execute([$promo_data['code']]);
-                    if ($stmt->fetchColumn() > 0) {
-                        $error_message = "Mã giảm giá '{$promo_data['code']}' đã tồn tại.";
-                    } else {
-                        $stmt = $pdo->prepare("
-                            INSERT INTO promo_codes (code, discount_percentage, start_date, end_date, min_order_value, max_discount_value, is_active)
-                            VALUES (:code, :discount_percentage, :start_date, :end_date, :min_order_value, :max_discount_value, :is_active)
-                        ");
-                        $stmt->execute($promo_data);
-                        $success_message = 'Thêm mã giảm giá thành công!';
+                    if ($action === 'add') {
+                        $stmt = $pdo->prepare("SELECT COUNT(*) FROM promo_codes WHERE code = ?");
+                        $stmt->execute([$promo_data['code']]);
+                        if ($stmt->fetchColumn() > 0) {
+                            $error_message = "Mã giảm giá '{$promo_data['code']}' đã tồn tại.";
+                        } else {
+                            $stmt = $pdo->prepare("
+                                INSERT INTO promo_codes (code, discount_percentage, start_date, end_date, min_order_value, max_discount_value, is_active)
+                                VALUES (:code, :discount_percentage, :start_date, :end_date, :min_order_value, :max_discount_value, :is_active)
+                            ");
+                            $stmt->execute($promo_data);
+                            $success_message = 'Thêm mã giảm giá thành công!';
+                        }
+                    } elseif ($action === 'edit') {
+                        $promo_id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
+                        if ($promo_id) {
+                            $promo_data['id'] = $promo_id;
+                            $stmt = $pdo->prepare("
+                                UPDATE promo_codes 
+                                SET code = :code, discount_percentage = :discount_percentage, start_date = :start_date, 
+                                    end_date = :end_date, min_order_value = :min_order_value, max_discount_value = :max_discount_value, 
+                                    is_active = :is_active
+                                WHERE id = :id
+                            ");
+                            $stmt->execute($promo_data);
+                            $success_message = 'Cập nhật mã giảm giá thành công!';
+                        } else {
+                            $error_message = 'ID mã giảm giá không hợp lệ.';
+                        }
                     }
                 } catch (PDOException $e) {
-                    $error_message = 'Lỗi khi thêm mã giảm giá: ' . $e->getMessage();
-                    error_log("Error adding promo code: " . $e->getMessage());
-                }
-            } elseif ($action === 'edit') {
-                $promo_id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
-                if ($promo_id) {
-                    try {
-                        $promo_data['id'] = $promo_id;
-                        $stmt = $pdo->prepare("
-                            UPDATE promo_codes 
-                            SET code = :code, discount_percentage = :discount_percentage, start_date = :start_date, 
-                                end_date = :end_date, min_order_value = :min_order_value, max_discount_value = :max_discount_value, 
-                                is_active = :is_active
-                            WHERE id = :id
-                        ");
-                        $stmt->execute($promo_data);
-                        $success_message = 'Cập nhật mã giảm giá thành công!';
-                    } catch (PDOException $e) {
-                        $error_message = 'Lỗi khi cập nhật mã giảm giá: ' . $e->getMessage();
-                        error_log("Error updating promo code: " . $e->getMessage());
-                    }
+                    $error_message = 'Lỗi khi ' . ($action === 'add' ? 'thêm' : 'cập nhật') . ' mã giảm giá: ' . $e->getMessage();
+                    error_log("Error " . ($action === 'add' ? 'adding' : 'updating') . " promo code: " . $e->getMessage());
                 }
             }
         }
@@ -77,11 +196,13 @@ if ($action) {
                 $error_message = 'Lỗi khi xóa mã giảm giá: ' . $e->getMessage();
                 error_log("Error deleting promo code: " . $e->getMessage());
             }
+        } else {
+            $error_message = 'ID mã giảm giá không hợp lệ.';
         }
     }
 }
 
-// Lấy danh sách mã giảm giá với phân trang
+// Fetch promo codes with pagination
 $page = filter_input(INPUT_GET, 'p', FILTER_SANITIZE_NUMBER_INT) ?? 1;
 $page = max(1, (int)$page);
 $promos_per_page = 10;
@@ -106,19 +227,39 @@ try {
     error_log("Error fetching promo codes: " . $e->getMessage());
 }
 
-// Lấy dữ liệu mã giảm giá để sửa (nếu có)
+// Fetch promo code for editing
 $edit_promo = null;
 if (isset($_GET['edit'])) {
     $edit_id = filter_input(INPUT_GET, 'edit', FILTER_VALIDATE_INT);
-    try {
-        $stmt = $pdo->prepare("SELECT * FROM promo_codes WHERE id = ?");
-        $stmt->execute([$edit_id]);
-        $edit_promo = $stmt->fetch(PDO::FETCH_ASSOC);
-    } catch (PDOException $e) {
-        $error_message = 'Lỗi khi lấy thông tin mã giảm giá: ' . $e->getMessage();
-        error_log("Error fetching promo code for edit: " . $e->getMessage());
+    if ($edit_id) {
+        try {
+            $stmt = $pdo->prepare("SELECT * FROM promo_codes WHERE id = ?");
+            $stmt->execute([$edit_id]);
+            $edit_promo = $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            $error_message = 'Lỗi khi lấy thông tin mã giảm giá: ' . $e->getMessage();
+            error_log("Error fetching promo code for edit: " . $e->getMessage());
+        }
     }
 }
+
+// Initialize filter dates
+$start_date = filter_input(INPUT_GET, 'start_date', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?: date('Y-m-01');
+$end_date = filter_input(INPUT_GET, 'end_date', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?: date('Y-m-t');
+
+// Validate dates
+if (!DateTime::createFromFormat('Y-m-d', $start_date) || !DateTime::createFromFormat('Y-m-d', $end_date)) {
+    $error_message = 'Invalid date format.';
+    $start_date = date('Y-m-01');
+    $end_date = date('Y-m-t');
+} elseif (strtotime($end_date) < strtotime($start_date)) {
+    $error_message = 'End date must be after start date.';
+    $start_date = date('Y-m-01');
+    $end_date = date('Y-m-t');
+}
+
+// Clear output buffer before HTML
+ob_end_clean();
 ?>
 
 <!DOCTYPE html>
@@ -143,15 +284,39 @@ if (isset($_GET['edit'])) {
         <h1>Quản lý Mã giảm giá</h1>
 
         <?php if ($success_message): ?>
-            <div class="form-message success"><?= htmlspecialchars($success_message) ?></div>
+            <div class="form-message success"><?php echo htmlspecialchars($success_message); ?></div>
         <?php elseif ($error_message): ?>
-            <div class="form-message error"><?= htmlspecialchars($error_message) ?></div>
+            <div class="form-message error"><?php echo htmlspecialchars($error_message); ?></div>
         <?php endif; ?>
 
-        <!-- Form thêm/sửa mã giảm giá -->
+        <!-- Filter and Export Form -->
+        <div class="admin-products">
+            <h2>Lọc Báo cáo</h2>
+            <form action="?page=admin&subpage=admin-promo-codes" method="get" class="report-filter-form">
+                <input type="hidden" name="page" value="admin">
+                <input type="hidden" name="subpage" value="admin-promo-codes">
+                <div class="form-group">
+                    <label for="start_date">Từ ngày</label>
+                    <input type="date" id="start_date" name="start_date"
+                        value="<?php echo htmlspecialchars($start_date); ?>" required>
+                </div>
+                <div class="form-group">
+                    <label for="end_date">Đến ngày</label>
+                    <input type="date" id="end_date" name="end_date" value="<?php echo htmlspecialchars($end_date); ?>"
+                        required>
+                </div>
+                <button type="submit" class="btn"><i class="fas fa-filter"></i> Lọc</button>
+                <a href="?page=admin&subpage=admin-promo-codes&start_date=<?php echo htmlspecialchars($start_date); ?>&end_date=<?php echo htmlspecialchars($end_date); ?>&export=xlsx"
+                    class="btn btn-export"><i class="fas fa-file-excel"></i> Xuất Excel</a>
+                <a href="?page=admin&subpage=admin-promo-codes&start_date=<?php echo htmlspecialchars($start_date); ?>&end_date=<?php echo htmlspecialchars($end_date); ?>&export=pdf"
+                    class="btn btn-export"><i class="fas fa-file-pdf"></i> Xuất PDF</a>
+            </form>
+        </div>
+
+        <!-- Add/Edit Promo Code Form -->
         <div class="admin-products">
             <div class="form-header">
-                <h2><?= $edit_promo ? 'Sửa mã giảm giá' : 'Thêm mã giảm giá mới' ?></h2>
+                <h2><?php echo $edit_promo ? 'Sửa mã giảm giá' : 'Thêm mã giảm giá mới'; ?></h2>
                 <?php if ($edit_promo): ?>
                     <a href="?page=admin&subpage=admin-promo-codes" class="btn btn-add-product">
                         <i class="fas fa-plus"></i> Thêm mã giảm giá
@@ -159,51 +324,52 @@ if (isset($_GET['edit'])) {
                 <?php endif; ?>
             </div>
             <form action="?page=admin&subpage=admin-promo-codes" method="post" class="product-form">
-                <input type="hidden" name="action" value="<?= $edit_promo ? 'edit' : 'add' ?>">
+                <input type="hidden" name="action" value="<?php echo $edit_promo ? 'edit' : 'add'; ?>">
                 <?php if ($edit_promo): ?>
-                    <input type="hidden" name="id" value="<?= $edit_promo['id'] ?>">
+                    <input type="hidden" name="id" value="<?php echo $edit_promo['id']; ?>">
                 <?php endif; ?>
-
                 <div class="form-group">
                     <label for="code">Mã giảm giá</label>
-                    <input type="text" id="code" name="code" value="<?= $edit_promo['code'] ?? '' ?>" required
+                    <input type="text" id="code" name="code" value="<?php echo $edit_promo['code'] ?? ''; ?>" required
                         maxlength="20">
                 </div>
                 <div class="form-group">
                     <label for="discount_percentage">Phần trăm giảm (%)</label>
                     <input type="number" id="discount_percentage" name="discount_percentage" step="0.01" min="0"
-                        max="100" value="<?= $edit_promo['discount_percentage'] ?? '' ?>" required>
+                        max="100" value="<?php echo $edit_promo['discount_percentage'] ?? ''; ?>" required>
                 </div>
                 <div class="form-group">
                     <label for="start_date">Ngày bắt đầu</label>
                     <input type="datetime-local" id="start_date" name="start_date"
-                        value="<?= $edit_promo ? str_replace(' ', 'T', $edit_promo['start_date']) : '' ?>" required>
+                        value="<?php echo $edit_promo ? str_replace(' ', 'T', $edit_promo['start_date']) : ''; ?>"
+                        required>
                 </div>
                 <div class="form-group">
                     <label for="end_date">Ngày kết thúc</label>
                     <input type="datetime-local" id="end_date" name="end_date"
-                        value="<?= $edit_promo ? str_replace(' ', 'T', $edit_promo['end_date']) : '' ?>" required>
+                        value="<?php echo $edit_promo ? str_replace(' ', 'T', $edit_promo['end_date']) : ''; ?>"
+                        required>
                 </div>
                 <div class="form-group">
                     <label for="min_order_value">Giá trị đơn tối thiểu</label>
                     <input type="number" id="min_order_value" name="min_order_value" step="0.01" min="0"
-                        value="<?= $edit_promo['min_order_value'] ?? 0 ?>">
+                        value="<?php echo $edit_promo['min_order_value'] ?? 0; ?>">
                 </div>
                 <div class="form-group">
                     <label for="max_discount_value">Giảm tối đa</label>
                     <input type="number" id="max_discount_value" name="max_discount_value" step="0.01" min="0"
-                        value="<?= $edit_promo['max_discount_value'] ?? '' ?>">
+                        value="<?php echo $edit_promo['max_discount_value'] ?? ''; ?>">
                 </div>
                 <div class="form-group">
                     <label for="is_active">Trạng thái hoạt động</label>
                     <input type="checkbox" id="is_active" name="is_active"
-                        <?= ($edit_promo && $edit_promo['is_active']) || !$edit_promo ? 'checked' : '' ?>>
+                        <?php echo ($edit_promo && $edit_promo['is_active']) || !$edit_promo ? 'checked' : ''; ?>>
                 </div>
-                <button type="submit" class="btn"><?= $edit_promo ? 'Cập nhật' : 'Thêm mã giảm giá' ?></button>
+                <button type="submit" class="btn"><?php echo $edit_promo ? 'Cập nhật' : 'Thêm mã giảm giá'; ?></button>
             </form>
         </div>
 
-        <!-- Tìm kiếm mã giảm giá -->
+        <!-- Search and List Promo Codes -->
         <div class="admin-products">
             <h2>Danh sách mã giảm giá</h2>
             <div class="search-container">
@@ -228,27 +394,27 @@ if (isset($_GET['edit'])) {
                     <tbody>
                         <?php foreach ($promo_codes as $promo): ?>
                             <tr>
-                                <td><?= htmlspecialchars($promo['code']) ?></td>
-                                <td><?= number_format($promo['discount_percentage'], 2) ?>%</td>
-                                <td><?= $promo['max_discount_value'] ? number_format($promo['max_discount_value'], 0, ',', '.') . ' VNĐ' : 'Không giới hạn' ?>
+                                <td><?php echo htmlspecialchars($promo['code']); ?></td>
+                                <td><?php echo number_format($promo['discount_percentage'], 2); ?>%</td>
+                                <td><?php echo $promo['max_discount_value'] ? number_format($promo['max_discount_value'], 0, ',', '.') . ' VNĐ' : 'Không giới hạn'; ?>
                                 </td>
-                                <td><?= date('d/m/Y H:i', strtotime($promo['start_date'])) ?></td>
-                                <td><?= date('d/m/Y H:i', strtotime($promo['end_date'])) ?></td>
-                                <td><?= number_format($promo['min_order_value'], 0, ',', '.') . ' VNĐ' ?></td>
-                                <td><?= $promo['is_active'] ? 'Hoạt động' : 'Không hoạt động' ?></td>
+                                <td><?php echo date('d/m/Y H:i', strtotime($promo['start_date'])); ?></td>
+                                <td><?php echo date('d/m/Y H:i', strtotime($promo['end_date'])); ?></td>
+                                <td><?php echo number_format($promo['min_order_value'], 0, ',', '.') . ' VNĐ'; ?></td>
+                                <td><?php echo $promo['is_active'] ? 'Hoạt động' : 'Không hoạt động'; ?></td>
                                 <td>
-                                    <a href="?page=admin&subpage=admin-promo-codes&edit=<?= $promo['id'] ?>"
+                                    <a href="?page=admin&subpage=admin-promo-codes&edit=<?php echo $promo['id']; ?>"
                                         class="btn small">Sửa</a>
                                     <button type="button" class="btn small danger delete-promo-btn"
-                                        data-id="<?= $promo['id'] ?>"
-                                        data-code="<?= htmlspecialchars($promo['code']) ?>">Xóa</button>
+                                        data-id="<?php echo $promo['id']; ?>"
+                                        data-code="<?php echo htmlspecialchars($promo['code']); ?>">Xóa</button>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
                 </table>
 
-                <!-- Phân trang -->
+                <!-- Pagination -->
                 <?php if ($total_pages > 1): ?>
                     <div class="pagination">
                         <?php
@@ -257,21 +423,21 @@ if (isset($_GET['edit'])) {
                         $base_url = 'index.php?' . http_build_query($query_params);
                         ?>
                         <?php if ($page > 1): ?>
-                            <a href="<?= $base_url ?>&p=<?= $page - 1 ?>" class="pagination-btn prev">Trước</a>
+                            <a href="<?php echo $base_url; ?>&p=<?php echo $page - 1; ?>" class="pagination-btn prev">Trước</a>
                         <?php endif; ?>
                         <?php for ($i = max(1, $page - 2); $i <= min($total_pages, $page + 2); $i++): ?>
-                            <a href="<?= $base_url ?>&p=<?= $i ?>"
-                                class="pagination-btn <?= $i === $page ? 'active' : '' ?>"><?= $i ?></a>
+                            <a href="<?php echo $base_url; ?>&p=<?php echo $i; ?>"
+                                class="pagination-btn <?php echo $i === $page ? 'active' : ''; ?>"><?php echo $i; ?></a>
                         <?php endfor; ?>
                         <?php if ($page < $total_pages): ?>
-                            <a href="<?= $base_url ?>&p=<?= $page + 1 ?>" class="pagination-btn next">Sau</a>
+                            <a href="<?php echo $base_url; ?>&p=<?php echo $page + 1; ?>" class="pagination-btn next">Sau</a>
                         <?php endif; ?>
                     </div>
                 <?php endif; ?>
             <?php endif; ?>
         </div>
 
-        <!-- Modal xác nhận xóa -->
+        <!-- Delete Confirmation Modal -->
         <div class="delete-modal" id="delete-promo-modal" style="display: none;">
             <div class="delete-modal-content">
                 <h3>Xác nhận xóa mã giảm giá</h3>

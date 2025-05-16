@@ -59,11 +59,6 @@ $order_items = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <?php include 'header.php'; ?>
     <div class="container">
         <h1>Xác nhận đơn hàng</h1>
-        <?php if (isset($_GET['success'])): ?>
-            <div class="form-message success"><?= htmlspecialchars($_GET['success']) ?></div>
-        <?php elseif (isset($_GET['error'])): ?>
-            <div class="form-message error"><?= htmlspecialchars($_GET['error']) ?></div>
-        <?php endif; ?>
 
         <h2>Đơn hàng #<?= htmlspecialchars($order['id']) ?></h2>
         <table class="orders-table">
@@ -133,10 +128,53 @@ $order_items = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <button type="submit" class="btn btn-confirm">Xác nhận</button>
                 </form>
             <?php endif; ?>
+
+            <?php if (in_array($order['status'], ['pending', 'confirmed', 'processing'])): ?>
+                <form action="processes/cancel_order.php" method="POST" style="display:inline;">
+                    <input type="hidden" name="order_id" value="<?= htmlspecialchars($order['id']) ?>">
+                    <button type="submit" class="btn btn-cancel">Hủy đơn hàng</button>
+                </form>
+            <?php endif; ?>
+
             <a href="index.php?page=products" class="btn btn-primary">Tiếp tục mua sắm</a>
             <a href="index.php?page=orders" class="btn btn-secondary">Xem tất cả đơn hàng</a>
         </div>
     </div>
+
+    <!-- Modal xác nhận đơn hàng -->
+    <div class="confirm-modal" id="confirm-order-modal">
+        <div class="modal-content">
+            <h3>Xác nhận đơn hàng</h3>
+            <p>Bạn có chắc muốn xác nhận đơn hàng này?</p>
+            <div class="modal-buttons">
+                <button class="confirm-btn" id="confirm-order-btn">Xác nhận</button>
+                <button class="cancel-btn" id="cancel-confirm-btn">Hủy</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal hủy đơn hàng -->
+    <div class="cancel-modal" id="cancel-order-modal">
+        <div class="modal-content">
+            <h3>Hủy đơn hàng</h3>
+            <p>Bạn có chắc muốn hủy đơn hàng này?</p>
+            <div class="modal-buttons">
+                <button class="confirm-btn" id="confirm-cancel-btn">Xác nhận</button>
+                <button class="cancel-btn" id="cancel-cancel-btn">Hủy</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Truyền thông báo từ PHP sang JavaScript -->
+    <?php if (isset($_GET['success']) || isset($_GET['error'])): ?>
+        <script>
+            window.orderMessage = {
+                message: <?= json_encode(isset($_GET['success']) ? $_GET['success'] : $_GET['error']) ?>,
+                type: <?= json_encode(isset($_GET['success']) ? 'success' : 'error') ?>
+            };
+        </script>
+    <?php endif; ?>
+    <script src="assets/js/orders.js?v=<?= time() ?>"></script>
 </body>
 
 </html>
