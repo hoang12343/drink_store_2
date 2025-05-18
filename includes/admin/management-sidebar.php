@@ -36,6 +36,12 @@ if (!defined('APP_START')) {
                 <li><a href="?page=admin&subpage=admin-reports"
                         class="<?php echo $admin_subpage === 'admin-reports' ? 'active' : ''; ?>"><i
                             class="fas fa-chart-bar"></i> Báo cáo</a></li>
+                <li>
+                    <a href="?page=admin&subpage=admin-comments"
+                        class="<?php echo $admin_subpage === 'admin-comments' ? 'active' : ''; ?>">
+                        <i class="fas fa-comment"></i> Quản lý bình luận
+                    </a>
+                </li>
                 <li><a href="?page=admin&subpage=admin-settings"
                         class="<?php echo $admin_subpage === 'admin-settings' ? 'active' : ''; ?>"><i
                             class="fas fa-cog"></i> Cài đặt</a></li>

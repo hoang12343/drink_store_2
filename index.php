@@ -67,7 +67,8 @@ function route_request($default = 'home'): string
             'admin-reports',
             'admin-settings',
             'reply_contact',
-            'admin-promo-codes'
+            'admin-promo-codes',
+            'admin-comments'
         ];
 
         // Xử lý request AJAX cho reply_contact
@@ -210,6 +211,8 @@ if ($page === 'cart') {
         $js_files[] = ROOT_PATH . '/assets/js/admin/admin-products.js';
     } elseif ($page === 'admin/admin-contacts') {
         $js_files[] = ROOT_PATH . '/assets/js/admin/admin-contacts.js';
+    } elseif ($page === 'admin/admin-comments') {
+        $js_files[] = ROOT_PATH . '/assets/js/admin/admin-comments.js';
     }
 }
 // Add JavaScript for product-detail page

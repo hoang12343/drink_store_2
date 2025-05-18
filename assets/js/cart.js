@@ -373,8 +373,6 @@ function applyPromoCode(code, selectedItems) {
         } else if (discountRow && data.discount === "0 VNĐ") {
           discountRow.style.display = "none";
         }
-
-        alert("Mã giảm giá đã được áp dụng thành công!");
       } else {
         alert(data.message || "Mã giảm giá không hợp lệ.");
       }
