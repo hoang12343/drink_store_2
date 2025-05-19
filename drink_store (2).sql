@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th5 15, 2025 lúc 03:50 AM
+-- Thời gian đã tạo: Th5 19, 2025 lúc 06:19 PM
 -- Phiên bản máy phục vụ: 8.0.32
 -- Phiên bản PHP: 8.0.30
 
@@ -32,6 +32,7 @@ CREATE TABLE `cart_items` (
   `user_id` int NOT NULL,
   `product_id` int NOT NULL,
   `quantity` int NOT NULL,
+  `subtotal` decimal(10,2) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -40,11 +41,12 @@ CREATE TABLE `cart_items` (
 -- Đang đổ dữ liệu cho bảng `cart_items`
 --
 
-INSERT INTO `cart_items` (`id`, `user_id`, `product_id`, `quantity`, `created_at`, `updated_at`) VALUES
-(49, 9, 62, 1, '2025-05-11 03:26:22', '2025-05-11 03:26:22'),
-(128, 6, 71, 1, '2025-05-15 00:52:25', '2025-05-15 00:52:25'),
-(129, 6, 75, 1, '2025-05-15 01:28:05', '2025-05-15 01:28:05'),
-(130, 6, 79, 1, '2025-05-15 01:40:31', '2025-05-15 01:40:31');
+INSERT INTO `cart_items` (`id`, `user_id`, `product_id`, `quantity`, `subtotal`, `created_at`, `updated_at`) VALUES
+(49, 9, 62, 1, NULL, '2025-05-11 03:26:22', '2025-05-11 03:26:22'),
+(138, 6, 80, 1, NULL, '2025-05-16 02:15:37', '2025-05-16 02:15:37'),
+(139, 6, 79, 3, NULL, '2025-05-18 15:15:40', '2025-05-18 15:36:01'),
+(140, 6, 109, 1, NULL, '2025-05-18 15:22:30', '2025-05-18 15:22:30'),
+(141, 6, 108, 2, NULL, '2025-05-18 15:32:13', '2025-05-18 15:32:31');
 
 -- --------------------------------------------------------
 
@@ -74,6 +76,20 @@ INSERT INTO `categories` (`id`, `name`, `display_name`, `description`, `created_
 (7, 'beer', 'Bia', 'Bia nhập khẩu từ Bỉ, Hà Lan và bia nội địa', '2025-04-17 02:43:25'),
 (8, 'cocktail', 'Cocktail', 'Đồ uống cocktail pha sẵn hoặc nguyên liệu cocktail', '2025-04-17 02:43:25'),
 (9, 'gift', 'Quà tặng', 'Hộp quà rượu sang trọng, phù hợp làm quà tặng', '2025-04-17 02:43:25');
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `chat_logs`
+--
+
+CREATE TABLE `chat_logs` (
+  `id` int NOT NULL,
+  `user_id` int DEFAULT NULL,
+  `message` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `response` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -341,13 +357,13 @@ INSERT INTO `orders` (`id`, `user_id`, `total_amount`, `status`, `zalopay_trans_
 (40, 6, 150000.00, 'pending', '250511_40', '2025-05-11 01:25:32', '2025-05-11 01:25:33', 'zalopay', 0.00, 0.00, NULL),
 (41, 6, 880000.00, 'pending', '250511_41', '2025-05-11 01:37:25', '2025-05-11 01:37:25', 'zalopay', 0.00, 0.00, NULL),
 (42, 6, 1700000.00, 'pending', '250511_42', '2025-05-11 01:56:56', '2025-05-11 01:56:57', 'zalopay', 0.00, 0.00, NULL),
-(43, 6, 930000.00, 'pending', '250511_43', '2025-05-11 02:06:04', '2025-05-11 02:06:05', 'zalopay', 0.00, 0.00, NULL),
+(43, 6, 930000.00, 'cancelled', '250511_43', '2025-05-11 02:06:04', '2025-05-16 00:47:33', 'zalopay', 0.00, 0.00, NULL),
 (44, 6, 1700000.00, 'pending', '250511_44', '2025-05-11 02:08:04', '2025-05-11 02:08:04', 'zalopay', 0.00, 0.00, NULL),
 (45, 6, 2800000.00, 'pending', '250511_45', '2025-05-11 02:13:51', '2025-05-11 02:13:52', 'zalopay', 0.00, 0.00, NULL),
 (46, 6, 390000.00, 'completed', '250511_46', '2025-05-11 02:20:07', '2025-05-11 03:04:54', 'zalopay', 0.00, 0.00, NULL),
 (47, 6, 2000000.00, 'completed', '250511_47', '2025-05-11 02:28:15', '2025-05-11 03:04:41', 'zalopay', 0.00, 0.00, NULL),
 (48, 6, 880000.00, 'completed', '250511_48', '2025-05-11 02:33:24', '2025-05-11 03:04:37', 'zalopay', 0.00, 0.00, NULL),
-(50, 6, 790000.00, 'pending', '250511_50', '2025-05-11 09:35:36', '2025-05-11 09:35:37', 'zalopay', 0.00, 0.00, NULL),
+(50, 6, 790000.00, 'cancelled', '250511_50', '2025-05-11 09:35:36', '2025-05-16 01:05:22', 'zalopay', 0.00, 0.00, NULL),
 (51, 6, 1200000.00, 'pending', '250511_51', '2025-05-11 09:38:16', '2025-05-11 09:38:16', 'zalopay', 0.00, 0.00, NULL),
 (52, 6, 880000.00, 'pending', '250513_52', '2025-05-12 18:49:20', '2025-05-12 18:49:21', 'zalopay', 0.00, 0.00, NULL),
 (53, 6, 1500000.00, 'pending', NULL, '2025-05-12 19:00:22', '2025-05-12 19:00:22', 'zalopay', 0.00, 0.00, NULL),
@@ -355,9 +371,9 @@ INSERT INTO `orders` (`id`, `user_id`, `total_amount`, `status`, `zalopay_trans_
 (55, 6, 980000.00, 'pending', NULL, '2025-05-12 19:04:42', '2025-05-12 19:04:42', 'zalopay', 0.00, 0.00, NULL),
 (56, 6, 390000.00, 'pending', NULL, '2025-05-12 19:12:23', '2025-05-12 19:12:23', 'zalopay', 0.00, 0.00, NULL),
 (57, 6, 1700000.00, 'pending', NULL, '2025-05-12 19:15:04', '2025-05-12 19:15:04', 'zalopay', 0.00, 0.00, NULL),
-(59, 6, 1700000.00, 'pending', NULL, '2025-05-12 19:17:04', '2025-05-12 19:17:04', 'zalopay', 0.00, 0.00, NULL),
+(59, 6, 1700000.00, 'cancelled', NULL, '2025-05-12 19:17:04', '2025-05-16 00:47:04', 'zalopay', 0.00, 0.00, NULL),
 (60, 6, 1100000.00, 'pending', '250513_60', '2025-05-12 19:32:26', '2025-05-12 19:32:27', 'zalopay', 0.00, 0.00, NULL),
-(61, 6, 1800000.00, 'pending', '250513_61', '2025-05-12 19:34:19', '2025-05-12 19:34:20', 'zalopay', 0.00, 0.00, NULL),
+(61, 6, 1800000.00, 'cancelled', '250513_61', '2025-05-12 19:34:19', '2025-05-16 00:55:52', 'zalopay', 0.00, 0.00, NULL),
 (62, 6, 1400000.00, 'pending', '250513_62', '2025-05-13 03:51:33', '2025-05-13 03:51:34', 'zalopay', 0.00, 0.00, NULL),
 (63, 6, 930000.00, 'pending', '250513_63', '2025-05-13 03:51:47', '2025-05-13 03:51:47', 'zalopay', 0.00, 0.00, NULL),
 (64, 6, 1400000.00, 'completed', NULL, '2025-05-13 04:04:34', '2025-05-13 04:08:01', 'cod', 0.00, 0.00, NULL),
@@ -393,16 +409,19 @@ INSERT INTO `orders` (`id`, `user_id`, `total_amount`, `status`, `zalopay_trans_
 (108, 6, 2900000.00, 'completed', NULL, '2025-05-14 15:59:06', '2025-05-14 16:01:50', 'cod', 0.00, 0.00, NULL),
 (109, 6, 1870000.00, 'confirmed', NULL, '2025-05-14 16:02:03', '2025-05-14 16:02:03', 'cod', 0.00, 0.00, NULL),
 (110, 6, 1000000.00, 'confirmed', NULL, '2025-05-14 16:06:48', '2025-05-14 16:06:48', 'cod', 0.00, 0.00, NULL),
-(111, 6, 480000.00, 'confirmed', NULL, '2025-05-14 16:06:59', '2025-05-14 16:06:59', 'cod', 0.00, 30000.00, NULL),
-(112, 6, 2130000.00, 'confirmed', NULL, '2025-05-14 16:08:27', '2025-05-14 16:08:27', 'cod', 0.00, 30000.00, NULL),
+(111, 6, 480000.00, 'completed', NULL, '2025-05-14 16:06:59', '2025-05-16 01:05:11', 'cod', 0.00, 30000.00, NULL),
+(112, 6, 2130000.00, 'completed', NULL, '2025-05-14 16:08:27', '2025-05-16 00:49:48', 'cod', 0.00, 30000.00, NULL),
 (113, 6, 1700000.00, 'confirmed', NULL, '2025-05-14 16:16:28', '2025-05-14 16:16:28', 'cod', 0.00, 0.00, NULL),
-(114, 6, 930000.00, 'confirmed', NULL, '2025-05-14 16:16:49', '2025-05-14 16:16:49', 'cod', 0.00, 30000.00, NULL),
+(114, 6, 930000.00, 'completed', NULL, '2025-05-14 16:16:49', '2025-05-16 00:47:23', 'cod', 0.00, 30000.00, NULL),
 (115, 6, 2100000.00, 'confirmed', NULL, '2025-05-14 16:19:03', '2025-05-14 16:19:03', 'cod', 0.00, 0.00, NULL),
-(118, 6, 930000.00, 'pending', '250514_118', '2025-05-14 16:26:01', '2025-05-14 16:26:03', 'zalopay', 0.00, 0.00, NULL),
+(118, 6, 930000.00, 'cancelled', '250514_118', '2025-05-14 16:26:01', '2025-05-16 00:46:57', 'zalopay', 0.00, 0.00, NULL),
 (119, 6, 930000.00, 'pending', '250514_119', '2025-05-14 16:32:38', '2025-05-14 16:32:38', 'zalopay', 0.00, 0.00, NULL),
-(120, 6, 1800000.00, 'confirmed', NULL, '2025-05-14 16:33:10', '2025-05-14 16:33:10', 'cod', 0.00, 0.00, NULL),
+(120, 6, 1800000.00, 'completed', NULL, '2025-05-14 16:33:10', '2025-05-16 00:41:28', 'cod', 0.00, 0.00, NULL),
 (121, 6, 2500000.00, 'completed', NULL, '2025-05-15 00:05:29', '2025-05-15 00:05:46', 'cod', 0.00, 0.00, NULL),
-(122, 6, 930000.00, 'completed', NULL, '2025-05-15 00:52:01', '2025-05-15 01:17:07', 'cod', 0.00, 30000.00, NULL);
+(122, 6, 930000.00, 'completed', NULL, '2025-05-15 00:52:01', '2025-05-15 01:17:07', 'cod', 0.00, 30000.00, NULL),
+(123, 6, 2160000.00, 'pending', '250515_123', '2025-05-15 04:42:40', '2025-05-15 04:42:41', 'zalopay', 0.00, 0.00, NULL),
+(124, 6, 8230000.00, 'completed', NULL, '2025-05-15 04:42:52', '2025-05-15 04:44:12', 'cod', 0.00, 30000.00, NULL),
+(125, 6, 4830000.00, 'confirmed', NULL, '2025-05-16 02:15:30', '2025-05-16 02:15:30', 'cod', 0.00, 30000.00, NULL);
 
 -- --------------------------------------------------------
 
@@ -533,7 +552,17 @@ INSERT INTO `order_items` (`id`, `order_id`, `product_id`, `quantity`, `price`) 
 (170, 119, 90, 1, 900000.00),
 (171, 120, 90, 2, 900000.00),
 (172, 121, 78, 1, 2500000.00),
-(173, 122, 80, 1, 900000.00);
+(173, 122, 80, 1, 900000.00),
+(174, 123, 109, 2, 1200000.00),
+(175, 124, 71, 2, 850000.00),
+(176, 124, 75, 1, 1100000.00),
+(177, 124, 79, 4, 1000000.00),
+(178, 124, 108, 1, 950000.00),
+(179, 124, 7, 1, 450000.00),
+(180, 125, 80, 2, 900000.00),
+(181, 125, 109, 1, 1200000.00),
+(182, 125, 108, 1, 950000.00),
+(183, 125, 71, 1, 850000.00);
 
 -- --------------------------------------------------------
 
@@ -575,7 +604,7 @@ INSERT INTO `products` (`id`, `code`, `name`, `category_id`, `price`, `old_price
 (4, 'CH001', 'Champagne Pháp', 2, 2100000.00, NULL, NULL, 9, '/api/placeholder/220/300', 'Pinot Noir', 'Rượu vang sủi', 'San Marzano', 'Pháp', '12.5%', '750ml', 'Champagne Pháp cao cấp, lý tưởng cho các dịp lễ.', 4.8, 12, '2025-04-17 02:43:25', '2025-05-14 16:19:03'),
 (5, 'RV023', 'Rượu vang Chile', 2, 640000.00, 800000.00, '-20%', 27, 'https://winecellar.vn/wp-content/uploads/2016/05/vistana-cabernet-sauvignon-1.jpg', 'Syrah', 'Rượu vang đỏ', 'San Marzano', 'Chile', '13.5%', '750ml', 'Rượu vang Chile đậm đ&agrave;, gi&aacute; trị tốt.', 4.3, 15, '2025-04-17 02:43:25', '2025-05-14 15:25:12'),
 (6, 'RV056', 'Rượu vang Úc', 2, 550000.00, 690000.00, '-20%', 20, '/api/placeholder/220/300', 'Sauvignon Blanc', 'Rượu vang trắng', 'San Marzano', 'Úc', '12%', '750ml', 'Rượu vang Úc tươi mát, dễ uống.', 4.1, 7, '2025-04-17 02:43:25', '2025-04-17 02:43:25'),
-(7, 'VK001', 'Vodka Nga Absolut', 6, 450000.00, NULL, '', 26, 'https://sanhruou.com/media/12111/catalog/Vodka-Absolut.jpg', '', 'Vodka', 'Absolut', 'Nga', '40%', '700ml', 'Vodka tinh khiết từ Nga, l&yacute; tưởng cho cocktail.', 4.0, 6, '2025-04-17 02:43:25', '2025-05-14 16:06:59'),
+(7, 'VK001', 'Vodka Nga Absolut', 6, 450000.00, NULL, '', 25, 'https://sanhruou.com/media/12111/catalog/Vodka-Absolut.jpg', '', 'Vodka', 'Absolut', 'Nga', '40%', '700ml', 'Vodka tinh khiết từ Nga, l&yacute; tưởng cho cocktail.', 4.0, 6, '2025-04-17 02:43:25', '2025-05-15 04:42:52'),
 (8, 'BR001', 'Bia Bỉ Hoegaarden', 7, 60000.00, NULL, '', 50, 'https://douongnhapkhau.com/wp-content/uploads/2020/01/5cc189ada3015a5f0310.jpg', '', 'Bia trắng', 'Hoegaarden', 'Bỉ', '4.9%', '330ml', 'Bia trắng Bỉ, tươi m&aacute;t với hương cam qu&yacute;t.', 4.5, 20, '2025-04-17 02:43:25', '2025-04-24 01:52:13'),
 (9, 'CK001', 'Cocktail Mojito Pha Sẵn', 8, 120000.00, NULL, NULL, 15, '/api/placeholder/220/300', NULL, 'Cocktail', 'Bacardi', 'Cuba', '5%', '250ml', 'Cocktail Mojito pha sẵn, tiện lợi và sảng khoái.', 4.2, 10, '2025-04-17 02:43:25', '2025-04-17 02:43:25'),
 (10, 'GT001', 'Hộp quà rượu vang Ý', 9, 2500000.00, NULL, '', 8, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQhV6e9ne-3jhNzyNNk8k3G8W6Q4Yl7DfAYsw&s', '', 'Hộp quà', 'San Marzano', 'Vang Ý (Italy)', '', '750ml', 'Hộp quà sang trọng gồm 2 chai vang Ý và ly pha lê.', 4.7, 5, '2025-04-17 02:43:25', '2025-05-13 17:28:59'),
@@ -589,16 +618,16 @@ INSERT INTO `products` (`id`, `code`, `name`, `category_id`, `price`, `old_price
 (68, 'RV008', 'Rượu vang trắng Ý Santa Margherita', 1, 950000.00, NULL, '', 43, 'https://sanhruou.com/media/6262/catalog/Santa-Margherita-Pinot-Grigio.jpg', 'Pinot Grigio', 'White Wine', 'Santa Margherita', 'Italy', '12.5%', '750ml', 'Rượu vang trắng với hương táo xanh và hoa trắng.', 4.6, 70, '2025-04-18 15:33:52', '2025-05-14 14:52:35'),
 (69, 'CH009', 'Champagne Brut Veuve Clicquot', 1, 2800000.00, NULL, NULL, 25, '/images/ch009.jpg', NULL, 'Champagne', 'Veuve Clicquot', 'France', '12%', '750ml', 'Champagne với bọt mịn và hương vị trái cây tươi.', 4.8, 110, '2025-04-18 15:33:52', '2025-04-18 15:33:52'),
 (70, 'TQ010', 'Tequila Blanco Patrón', 1, 1300000.00, NULL, NULL, 35, '/images/tq010.jpg', NULL, 'Tequila', 'Patrón', 'Mexico', '40%', '750ml', 'Tequila tinh khiết với hương agave và cam quýt.', 4.4, 65, '2025-04-18 15:33:52', '2025-04-18 15:33:52'),
-(71, 'RM011', 'Rum Trắng Mount Gay', 1, 850000.00, NULL, NULL, 47, '/images/rm011.jpg', NULL, 'Rum', 'Mount Gay', 'Barbados', '40%', '700ml', 'Rum trắng mượt mà, lý tưởng cho cocktail.', 4.3, 55, '2025-04-18 15:33:52', '2025-05-14 16:16:28'),
+(71, 'RM011', 'Rum Trắng Mount Gay', 1, 850000.00, NULL, NULL, 44, '/images/rm011.jpg', NULL, 'Rum', 'Mount Gay', 'Barbados', '40%', '700ml', 'Rum trắng mượt mà, lý tưởng cho cocktail.', 4.3, 55, '2025-04-18 15:33:52', '2025-05-16 02:15:30'),
 (72, 'WJ012', 'Whisky Nhật Bản Hibiki 17 năm', 2, 3000000.00, NULL, NULL, 30, '/images/wj012.jpg', NULL, 'Whisky', 'Hibiki', 'Japan', '43%', '700ml', 'Whisky blend với hương hoa và gỗ sồi.', 4.8, 130, '2025-04-18 15:33:52', '2025-04-18 15:33:52'),
 (73, 'RV013', 'Rượu vang đỏ Chile Carmenère', 2, 1100000.00, NULL, NULL, 60, '/images/rv013.jpg', 'Carmenère', 'Red Wine', 'Concha y Toro', 'Chile', '13.5%', '750ml', 'Rượu vang đỏ đậm đà với hương ớt chuông và mâm xôi.', 4.5, 90, '2025-04-18 15:33:52', '2025-04-18 15:33:52'),
 (74, 'VD014', 'Vodka Beluga Gold Line', 2, 2000000.00, NULL, NULL, 24, '/images/vd014.jpg', NULL, 'Vodka', 'Beluga', 'Russia', '40%', '750ml', 'Vodka siêu cao cấp với thiết kế sang trọng.', 4.7, 100, '2025-04-18 15:33:52', '2025-05-14 15:10:33'),
-(75, 'GN015', 'Gin Hendrick&rsquo;s', 2, 1100000.00, NULL, '', 49, 'https://sanhruou.com/media/13076/catalog/Hendricks-Gin-1-Lit.jpg', '', 'Gin', 'Hendrick&rsquo;s', 'Scotland', '41.4%', '700ml', 'Gin với hương dưa chuột v&agrave; hoa hồng.', 4.6, 80, '2025-04-18 15:33:52', '2025-05-14 15:59:06'),
+(75, 'GN015', 'Gin Hendrick&rsquo;s', 2, 1100000.00, NULL, '', 48, 'https://sanhruou.com/media/13076/catalog/Hendricks-Gin-1-Lit.jpg', '', 'Gin', 'Hendrick&rsquo;s', 'Scotland', '41.4%', '700ml', 'Gin với hương dưa chuột v&agrave; hoa hồng.', 4.6, 80, '2025-04-18 15:33:52', '2025-05-15 04:42:52'),
 (76, 'BS016', 'Bia thủ công Stout Ireland', 2, 200000.00, NULL, NULL, 68, '/images/bs016.jpg', NULL, 'Beer', 'Guinness', 'Ireland', '4.2%', '500ml', 'Bia stout đậm đà với hương cà phê và sô-cô-la.', 4.4, 120, '2025-04-18 15:33:52', '2025-05-14 15:43:38'),
 (77, 'RM017', 'Rum N&acirc;u Appleton Estate 12 năm', 2, 1400000.00, NULL, '', 40, 'https://ruoungoaiald.com/wp-content/uploads/rum-Appleton-Estate-12-nam.jpg', '', 'Rum', 'Appleton Estate', 'Jamaica', '43%', '700ml', 'Rum n&acirc;u với hương vani v&agrave; tr&aacute;i c&acirc;y nhiệt đới.', 4.5, 85, '2025-04-18 15:33:52', '2025-04-24 01:51:25'),
 (78, 'CH018', 'Champagne Moët &amp; Chandon Rosé', 2, 2500000.00, NULL, '', 29, 'https://topruou.com/Image/Picture/Hinh%20nen_Vang/Ruou_Champagne_Moet_Chandon_Rose_Imperial.jpg', '', 'Champagne', 'Moët & Chandon', 'France', '12%', '750ml', 'Champagne hồng phấn với hương dâu tây.', 4.8, 140, '2025-04-18 15:33:52', '2025-05-15 00:05:29'),
-(79, 'RV019', 'Rượu vang trắng New Zealand Sauvignon Blanc', 2, 1000000.00, NULL, '', 47, 'https://product.hstatic.net/1000358764/product/vidal_estate_sauvignon_blanc__new_zealand_87e6033ed38f4048b751e1f5f4377a05.png', 'Sauvignon Blanc', 'White Wine', 'Cloudy Bay', 'New Zealand', '13%', '750ml', 'Rượu vang trắng tươi m&aacute;t với hương chanh d&acirc;y.', 4.6, 95, '2025-04-18 15:33:52', '2025-05-14 16:06:48'),
-(80, 'WI020', 'Whisky Ireland Jameson', 2, 900000.00, NULL, '', 56, 'https://mcgrocer.com/cdn/shop/files/jameson-triple-distilled-blended-irish-whiskey-1l-41369596756206.jpg?v=1742217485', '', 'Whisky', 'Jameson', 'Ireland', '40%', '700ml', 'Whisky mượt m&agrave; với hương vani v&agrave; tr&aacute;i c&acirc;y.', 4.3, 75, '2025-04-18 15:33:52', '2025-05-15 00:52:01'),
+(79, 'RV019', 'Rượu vang trắng New Zealand Sauvignon Blanc', 2, 1000000.00, NULL, '', 43, 'https://product.hstatic.net/1000358764/product/vidal_estate_sauvignon_blanc__new_zealand_87e6033ed38f4048b751e1f5f4377a05.png', 'Sauvignon Blanc', 'White Wine', 'Cloudy Bay', 'New Zealand', '13%', '750ml', 'Rượu vang trắng tươi m&aacute;t với hương chanh d&acirc;y.', 4.6, 95, '2025-04-18 15:33:52', '2025-05-15 04:42:52'),
+(80, 'WI020', 'Whisky Ireland Jameson', 2, 900000.00, NULL, '', 54, 'https://mcgrocer.com/cdn/shop/files/jameson-triple-distilled-blended-irish-whiskey-1l-41369596756206.jpg?v=1742217485', '', 'Whisky', 'Jameson', 'Ireland', '40%', '700ml', 'Whisky mượt m&agrave; với hương vani v&agrave; tr&aacute;i c&acirc;y.', 4.3, 75, '2025-04-18 15:33:52', '2025-05-16 02:15:30'),
 (81, 'RV021', 'Rượu vang đỏ Tây Ban Nha Tempranillo', 3, 650000.00, 850000.00, '-24%', 80, 'https://product.hstatic.net/200000311137/product/n-nha-bayanegra-red-tempranillo-750ml_9a02e77ca82649f990ccf04000690d9f_e9a4ab099ded4d5985d7d1a6c0b151a7.jpg', 'Tempranillo', 'Red Wine', 'Bodegas Faustino', 'Spain', '13.5%', '750ml', 'Rượu vang đỏ với hương anh đào và gỗ sồi.', 4.2, 60, '2025-04-18 15:33:52', '2025-04-24 02:17:09'),
 (83, 'TQ023', 'Tequila Gold Jose Cuervo', 3, 750000.00, 950000.00, '-21%', 70, '/images/tq023.jpg', NULL, 'Tequila', 'Jose Cuervo', 'Mexico', '38%', '750ml', 'Tequila vàng với hương caramel và agave.', 4.1, 55, '2025-04-18 15:33:52', '2025-04-18 15:33:52'),
 (84, 'RM024', 'Rum Spiced Captain Morgan', 3, 500000.00, 650000.00, '-23%', 85, '/images/rm024.jpg', NULL, 'Rum', 'Captain Morgan', 'Jamaica', '35%', '700ml', 'Rum gia vị với hương vani và quế.', 4.0, 45, '2025-04-18 15:33:52', '2025-04-18 15:33:52'),
@@ -625,8 +654,8 @@ INSERT INTO `products` (`id`, `code`, `name`, `category_id`, `price`, `old_price
 (105, 'TQ044', 'Tequila Don Julio Añejo', 5, 1600000.00, NULL, '', 45, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTzma-4CWbcRl_ocrsddIImDveehJwPagJBxg&s', '', 'Tequila', 'Don Julio', 'Mexico', '40%', '750ml', 'Tequila ủ với hương vani và caramel.', 4.6, 80, '2025-04-18 15:33:52', '2025-04-24 02:16:41'),
 (106, 'SK045', 'Rượu Sake Nhật Bản Hakkaisan Junmai', 5, 1100000.00, NULL, '', 58, 'https://cdn.ruoutuongvy.com/files/2024/05/21/100221-ruou-sake-nhat-ban-hakkaisan-junmai-daiginjo.webp', '', 'Sake', 'Hakkaisan', 'Japan', '15.5%', '720ml', 'Sake tinh khiết với hương gạo v&agrave; hoa.', 4.5, 75, '2025-04-18 15:33:52', '2025-05-14 15:32:27'),
 (107, 'WS046', 'Whisky Nhật Bản Nikka From The Barrel', 5, 1700000.00, NULL, '', 49, 'https://topruou.com/Image/Picture/Whisky-Nhat/Nikka/Ruou-Nikka-From-Barrel.jpg', '', 'Whisky', 'Nikka', 'Japan', '51.4%', '500ml', 'Whisky đậm đ&agrave; với hương gia vị v&agrave; tr&aacute;i c&acirc;y.', 4.8, 95, '2025-04-18 15:33:52', '2025-05-14 15:44:32'),
-(108, 'VD047', 'Vodka Ketel One', 5, 950000.00, NULL, '', 63, 'https://sanhruou.com/media/12303/catalog/Ketel-One.jpg', '', 'Vodka', 'Ketel One', 'Netherlands', '40%', '750ml', 'Vodka mượt m&agrave; với hương cam qu&yacute;t nhẹ.', 4.4, 60, '2025-04-18 15:33:52', '2025-05-14 15:45:14'),
-(109, 'GN048', 'Gin The Botanist', 5, 1200000.00, NULL, '', 77, 'https://sanhruou.com/media/5028/catalog/The-Botanist-Gin.jpg', '', 'Gin', 'The Botanist', 'Scotland', '46%', '700ml', 'Gin với 22 loại thảo mộc từ đảo Islay.', 4.7, 90, '2025-04-18 15:33:52', '2025-05-14 15:43:38');
+(108, 'VD047', 'Vodka Ketel One', 5, 950000.00, NULL, '', 61, 'https://sanhruou.com/media/12303/catalog/Ketel-One.jpg', '', 'Vodka', 'Ketel One', 'Netherlands', '40%', '750ml', 'Vodka mượt m&agrave; với hương cam qu&yacute;t nhẹ.', 4.4, 60, '2025-04-18 15:33:52', '2025-05-16 02:15:30'),
+(109, 'GN048', 'Gin The Botanist', 5, 1200000.00, NULL, '', 76, 'https://sanhruou.com/media/5028/catalog/The-Botanist-Gin.jpg', '', 'Gin', 'The Botanist', 'Scotland', '46%', '700ml', 'Gin với 22 loại thảo mộc từ đảo Islay.', 4.7, 90, '2025-04-18 15:33:52', '2025-05-16 02:15:30');
 
 -- --------------------------------------------------------
 
@@ -639,51 +668,58 @@ CREATE TABLE `product_comments` (
   `product_id` int NOT NULL,
   `user_id` int NOT NULL,
   `comment_text` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
+  `rating` int DEFAULT NULL,
+  `status` enum('pending','approved','rejected') COLLATE utf8mb4_unicode_ci DEFAULT 'pending',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Đang đổ dữ liệu cho bảng `product_comments`
 --
 
-INSERT INTO `product_comments` (`id`, `product_id`, `user_id`, `comment_text`, `created_at`) VALUES
-(1, 109, 6, 'abc', '2025-05-11 03:58:41'),
-(2, 109, 6, 'abc', '2025-05-11 03:58:41'),
-(3, 109, 6, 'hello', '2025-05-11 03:59:18'),
-(4, 109, 6, 'hello', '2025-05-11 03:59:18'),
-(5, 109, 6, 'hi', '2025-05-11 04:01:26'),
-(6, 109, 6, 'hi', '2025-05-11 04:01:26'),
-(7, 109, 6, 'bvfvsva', '2025-05-11 04:02:28'),
-(8, 109, 6, 'bvfvsva', '2025-05-11 04:02:28'),
-(9, 109, 6, 'qfvsfdnf', '2025-05-11 04:03:55'),
-(10, 109, 6, 'qfvsfdnf', '2025-05-11 04:03:55'),
-(11, 109, 6, 'ghngf', '2025-05-11 04:04:13'),
-(12, 109, 6, 'ghngf', '2025-05-11 04:04:13'),
-(13, 109, 6, 'cadvad', '2025-05-11 04:04:21'),
-(14, 109, 6, 'cadvad', '2025-05-11 04:04:28'),
-(15, 109, 6, 'cadvad', '2025-05-11 04:04:33'),
-(16, 109, 6, 'cadvad', '2025-05-11 04:04:33'),
-(17, 109, 6, 'cadvadvd', '2025-05-11 04:04:33'),
-(18, 109, 6, 'cadvadvd', '2025-05-11 04:04:33'),
-(19, 109, 6, 'bfsfs', '2025-05-11 04:04:36'),
-(20, 109, 6, 'bfsfs', '2025-05-11 04:04:36'),
-(21, 71, 6, 'abc', '2025-05-11 04:51:34'),
-(22, 71, 6, 'abc', '2025-05-11 04:51:34'),
-(23, 71, 6, 'cadf', '2025-05-11 04:51:36'),
-(24, 71, 6, 'cadf', '2025-05-11 04:51:36'),
-(25, 71, 6, 'fvfs', '2025-05-11 04:51:38'),
-(26, 71, 6, 'fvfs', '2025-05-11 04:51:38'),
-(27, 71, 6, 'sdfsd', '2025-05-11 04:51:39'),
-(28, 71, 6, 'sdfsd', '2025-05-11 04:51:39'),
-(29, 71, 6, 'rwgwr', '2025-05-11 04:51:40'),
-(30, 71, 6, 'rwgwr', '2025-05-11 04:51:40'),
-(33, 79, 6, 'absscxz', '2025-05-15 00:14:13'),
-(34, 79, 6, 'dsava', '2025-05-15 00:14:22'),
-(36, 79, 6, 'fvfz', '2025-05-15 00:24:24'),
-(43, 80, 6, 'abc', '2025-05-15 00:45:48'),
-(44, 78, 6, 'hello', '2025-05-15 00:46:26'),
-(45, 79, 6, 'abdfb', '2025-05-15 00:51:45'),
-(46, 71, 6, 'vdfs', '2025-05-15 01:04:15');
+INSERT INTO `product_comments` (`id`, `product_id`, `user_id`, `comment_text`, `rating`, `status`, `created_at`, `updated_at`) VALUES
+(1, 109, 6, 'abc', NULL, 'pending', '2025-05-11 03:58:41', NULL),
+(2, 109, 6, 'abc', NULL, 'pending', '2025-05-11 03:58:41', NULL),
+(3, 109, 6, 'hello', NULL, 'pending', '2025-05-11 03:59:18', NULL),
+(4, 109, 6, 'hello', NULL, 'pending', '2025-05-11 03:59:18', NULL),
+(5, 109, 6, 'hi', NULL, 'pending', '2025-05-11 04:01:26', NULL),
+(6, 109, 6, 'hi', NULL, 'pending', '2025-05-11 04:01:26', NULL),
+(7, 109, 6, 'bvfvsva', NULL, 'pending', '2025-05-11 04:02:28', NULL),
+(8, 109, 6, 'bvfvsva', NULL, 'pending', '2025-05-11 04:02:28', NULL),
+(9, 109, 6, 'qfvsfdnf', NULL, 'pending', '2025-05-11 04:03:55', NULL),
+(10, 109, 6, 'qfvsfdnf', NULL, 'pending', '2025-05-11 04:03:55', NULL),
+(11, 109, 6, 'ghngf', NULL, 'pending', '2025-05-11 04:04:13', NULL),
+(12, 109, 6, 'ghngf', NULL, 'pending', '2025-05-11 04:04:13', NULL),
+(13, 109, 6, 'cadvad', NULL, 'pending', '2025-05-11 04:04:21', NULL),
+(14, 109, 6, 'cadvad', NULL, 'pending', '2025-05-11 04:04:28', NULL),
+(15, 109, 6, 'cadvad', NULL, 'pending', '2025-05-11 04:04:33', NULL),
+(16, 109, 6, 'cadvad', NULL, 'pending', '2025-05-11 04:04:33', NULL),
+(17, 109, 6, 'cadvadvd', NULL, 'pending', '2025-05-11 04:04:33', NULL),
+(18, 109, 6, 'cadvadvd', NULL, 'pending', '2025-05-11 04:04:33', NULL),
+(20, 109, 6, 'bfsfs', NULL, 'pending', '2025-05-11 04:04:36', NULL),
+(21, 71, 6, 'abc', NULL, 'pending', '2025-05-11 04:51:34', NULL),
+(22, 71, 6, 'abc', NULL, 'pending', '2025-05-11 04:51:34', NULL),
+(23, 71, 6, 'cadf', NULL, 'pending', '2025-05-11 04:51:36', NULL),
+(24, 71, 6, 'cadf', NULL, 'pending', '2025-05-11 04:51:36', NULL),
+(25, 71, 6, 'fvfs', NULL, 'pending', '2025-05-11 04:51:38', NULL),
+(26, 71, 6, 'fvfs', NULL, 'pending', '2025-05-11 04:51:38', NULL),
+(27, 71, 6, 'sdfsd', NULL, 'pending', '2025-05-11 04:51:39', NULL),
+(28, 71, 6, 'sdfsd', NULL, 'pending', '2025-05-11 04:51:39', NULL),
+(29, 71, 6, 'rwgwr', NULL, 'pending', '2025-05-11 04:51:40', NULL),
+(30, 71, 6, 'rwgwr', NULL, 'pending', '2025-05-11 04:51:40', NULL),
+(33, 79, 6, 'absscxz', NULL, 'pending', '2025-05-15 00:14:13', NULL),
+(36, 79, 6, 'fvfz', NULL, 'pending', '2025-05-15 00:24:24', NULL),
+(44, 78, 6, 'hello', NULL, 'pending', '2025-05-15 00:46:26', NULL),
+(45, 79, 6, 'abdfb', NULL, 'pending', '2025-05-15 00:51:45', NULL),
+(46, 71, 6, 'vdfs', NULL, 'pending', '2025-05-15 01:04:15', NULL),
+(47, 108, 6, 'A', NULL, 'pending', '2025-05-18 15:36:53', NULL),
+(48, 108, 6, 'Ssa', NULL, 'pending', '2025-05-18 15:37:05', '2025-05-18 15:39:06'),
+(49, 80, 6, 'abc', NULL, 'pending', '2025-05-18 16:08:29', NULL),
+(50, 80, 6, 'hello', NULL, 'pending', '2025-05-19 16:04:45', NULL),
+(51, 80, 6, 'hello', NULL, 'pending', '2025-05-19 16:10:03', NULL),
+(52, 80, 6, 's', NULL, 'pending', '2025-05-19 16:13:58', NULL),
+(53, 80, 6, 'hi', 3, 'pending', '2025-05-19 16:18:03', NULL);
 
 -- --------------------------------------------------------
 
@@ -725,6 +761,15 @@ CREATE TABLE `promo_codes` (
   `is_active` tinyint(1) DEFAULT '1',
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `promo_codes`
+--
+
+INSERT INTO `promo_codes` (`id`, `code`, `discount_percentage`, `start_date`, `end_date`, `min_order_value`, `max_discount_value`, `is_active`, `created_at`) VALUES
+(1, 'SUMMER25', 25.00, '2025-05-15 00:00:00', '2025-06-15 23:59:59', 500000.00, 200000.00, 1, '2025-05-15 02:13:34'),
+(2, 'WINTER10', 10.00, '2025-05-01 00:00:00', '2025-05-31 23:59:59', 300000.00, NULL, 1, '2025-05-15 02:13:34'),
+(3, 'SAVE20', 20.00, '2025-05-15 10:11:00', '2025-05-30 10:11:00', 0.00, NULL, 1, '2025-05-15 03:11:51');
 
 -- --------------------------------------------------------
 
@@ -784,6 +829,13 @@ ALTER TABLE `categories`
   ADD UNIQUE KEY `name` (`name`);
 
 --
+-- Chỉ mục cho bảng `chat_logs`
+--
+ALTER TABLE `chat_logs`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `user_id` (`user_id`);
+
+--
 -- Chỉ mục cho bảng `contacts`
 --
 ALTER TABLE `contacts`
@@ -807,7 +859,8 @@ ALTER TABLE `inventory`
 --
 ALTER TABLE `orders`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `fk_orders_user_id` (`user_id`);
+  ADD KEY `fk_orders_user_id` (`user_id`),
+  ADD KEY `idx_orders_status` (`status`);
 
 --
 -- Chỉ mục cho bảng `order_items`
@@ -837,7 +890,9 @@ ALTER TABLE `product_comments`
 -- Chỉ mục cho bảng `promotions`
 --
 ALTER TABLE `promotions`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_promotions_product_id` (`product_id`),
+  ADD KEY `idx_promotions_dates` (`start_date`,`end_date`);
 
 --
 -- Chỉ mục cho bảng `promo_codes`
@@ -861,7 +916,13 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT cho bảng `cart_items`
 --
 ALTER TABLE `cart_items`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=131;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=142;
+
+--
+-- AUTO_INCREMENT cho bảng `chat_logs`
+--
+ALTER TABLE `chat_logs`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT cho bảng `contacts`
@@ -885,31 +946,31 @@ ALTER TABLE `inventory`
 -- AUTO_INCREMENT cho bảng `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=123;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=126;
 
 --
 -- AUTO_INCREMENT cho bảng `order_items`
 --
 ALTER TABLE `order_items`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=174;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=184;
 
 --
 -- AUTO_INCREMENT cho bảng `product_comments`
 --
 ALTER TABLE `product_comments`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=47;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=54;
 
 --
 -- AUTO_INCREMENT cho bảng `promotions`
 --
 ALTER TABLE `promotions`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT cho bảng `promo_codes`
 --
 ALTER TABLE `promo_codes`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT cho bảng `users`
@@ -929,6 +990,18 @@ ALTER TABLE `cart_items`
   ADD CONSTRAINT `cart_items_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE;
 
 --
+-- Các ràng buộc cho bảng `chat_logs`
+--
+ALTER TABLE `chat_logs`
+  ADD CONSTRAINT `chat_logs_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL;
+
+--
+-- Các ràng buộc cho bảng `inventory`
+--
+ALTER TABLE `inventory`
+  ADD CONSTRAINT `fk_inventory_product_id` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE;
+
+--
 -- Các ràng buộc cho bảng `orders`
 --
 ALTER TABLE `orders`
@@ -946,6 +1019,12 @@ ALTER TABLE `order_items`
 --
 ALTER TABLE `products`
   ADD CONSTRAINT `products_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE RESTRICT;
+
+--
+-- Các ràng buộc cho bảng `promotions`
+--
+ALTER TABLE `promotions`
+  ADD CONSTRAINT `fk_promotions_product_id` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

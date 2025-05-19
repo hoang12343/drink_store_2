@@ -137,6 +137,22 @@ $total_pages = ceil($total_comments / $comments_per_page);
         <?php if (isset($_SESSION['logged_in']) && $_SESSION['logged_in']): ?>
             <form id="comment-form" action="processes/add_comment.php" method="POST">
                 <input type="hidden" name="product_id" value="<?= htmlspecialchars($product['id']) ?>">
+
+                <!-- Rating Stars -->
+                <div class="rating-stars">
+                    <input type="radio" id="star5" name="rating" value="5" />
+                    <label for="star5" class="star-icon"><i class="fas fa-star"></i></label>
+                    <input type="radio" id="star4" name="rating" value="4" />
+                    <label for="star4" class="star-icon"><i class="fas fa-star"></i></label>
+                    <input type="radio" id="star3" name="rating" value="3" />
+                    <label for="star3" class="star-icon"><i class="fas fa-star"></i></label>
+                    <input type="radio" id="star2" name="rating" value="2" />
+                    <label for="star2" class="star-icon"><i class="fas fa-star"></i></label>
+                    <input type="radio" id="star1" name="rating" value="1" />
+                    <label for="star1" class="star-icon"><i class="fas fa-star"></i></label>
+                    <span class="rating-text">Đánh giá sản phẩm</span>
+                </div>
+
                 <div class="comment-input">
                     <textarea name="comment_text" placeholder="Viết bình luận của bạn..." required></textarea>
                     <button type="submit" class="submit-comment-btn">Gửi bình luận</button>
@@ -151,7 +167,7 @@ $total_pages = ceil($total_comments / $comments_per_page);
         <!-- Comments List -->
         <div class="comments-list">
             <?php if (empty($comments)): ?>
-                <p>Chưa có bình luận nào-cho sản phẩm này.</p>
+                <p>Chưa có bình luận nào cho sản phẩm này.</p>
             <?php else: ?>
                 <?php
                 $displayed_comments = []; // Prevent duplicate comments
@@ -162,7 +178,18 @@ $total_pages = ceil($total_comments / $comments_per_page);
                 ?>
                         <div class="comment-item" data-comment-id="<?= htmlspecialchars($comment['id']) ?>">
                             <div class="comment-header">
-                                <span class="comment-user"><?= htmlspecialchars($comment['full_name']) ?></span>
+                                <div class="comment-user-info">
+                                    <span class="comment-user"><?= htmlspecialchars($comment['full_name']) ?></span>
+                                    <?php if (!empty($comment['rating'])): ?>
+                                        <div class="comment-rating">
+                                            <?php for ($i = 1; $i <= 5; $i++): ?>
+                                                <span class="star <?= $i <= $comment['rating'] ? '' : 'empty' ?>">
+                                                    <i class="fas fa-star"></i>
+                                                </span>
+                                            <?php endfor; ?>
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
                                 <span class="comment-date"><?= date('d/m/Y H:i', strtotime($comment['created_at'])) ?></span>
                             </div>
                             <p class="comment-text"><?= htmlspecialchars($comment['comment_text']) ?></p>

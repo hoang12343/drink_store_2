@@ -539,9 +539,27 @@ function loadComments(page, productId) {
             const commentItem = document.createElement("div");
             commentItem.className = "comment-item";
             commentItem.setAttribute("data-comment-id", comment.id);
+
+            // Tạo HTML cho đánh giá sao
+            let ratingHTML = "";
+            if (comment.rating) {
+              ratingHTML = '<div class="comment-rating">';
+              for (let i = 1; i <= 5; i++) {
+                ratingHTML += `<span class="star ${
+                  i <= comment.rating ? "" : "empty"
+                }">
+                  <i class="fas fa-star"></i>
+                </span>`;
+              }
+              ratingHTML += "</div>";
+            }
+
             commentItem.innerHTML = `
               <div class="comment-header">
-                <span class="comment-user">${comment.full_name}</span>
+                <div class="comment-user-info">
+                  <span class="comment-user">${comment.full_name}</span>
+                  ${ratingHTML}
+                </div>
                 <span class="comment-date">${new Date(
                   comment.created_at
                 ).toLocaleString("vi-VN", {
@@ -557,6 +575,33 @@ function loadComments(page, productId) {
             commentsList.appendChild(commentItem);
           }
         });
+      }
+
+      // Hiển thị đánh giá trung bình nếu có
+      if (data.avg_rating && data.rating_count) {
+        const ratingElement = document.querySelector(".product-rating");
+        if (ratingElement) {
+          // Cập nhật đánh giá trung bình
+          const stars = ratingElement.querySelectorAll(".fa-star");
+          stars.forEach((star, index) => {
+            if (index < Math.floor(data.avg_rating)) {
+              star.className = "fas fa-star filled";
+            } else if (
+              index < data.avg_rating &&
+              index >= Math.floor(data.avg_rating)
+            ) {
+              star.className = "fas fa-star-half-alt filled";
+            } else {
+              star.className = "fas fa-star";
+            }
+          });
+
+          // Cập nhật số lượng đánh giá
+          const ratingCount = ratingElement.querySelector("span");
+          if (ratingCount) {
+            ratingCount.textContent = `(${data.rating_count} bình chọn)`;
+          }
+        }
       }
 
       if (paginationContainer) {

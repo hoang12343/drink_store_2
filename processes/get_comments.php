@@ -25,7 +25,7 @@ try {
     // Lấy bình luận cho trang hiện tại
     $offset = ($page - 1) * $comments_per_page;
     $stmt = $pdo->prepare("
-        SELECT pc.id, pc.comment_text, pc.created_at, u.full_name
+        SELECT pc.id, pc.comment_text, pc.created_at, pc.rating, u.full_name, u.id as user_id
         FROM product_comments pc
         JOIN users u ON pc.user_id = u.id
         WHERE pc.product_id = :product_id
@@ -38,11 +38,25 @@ try {
     $stmt->execute();
     $comments = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+    // Tính điểm đánh giá trung bình
+    $stmt = $pdo->prepare("
+        SELECT AVG(rating) as avg_rating, COUNT(*) as rating_count 
+        FROM product_comments 
+        WHERE product_id = :product_id AND rating > 0
+    ");
+    $stmt->execute(['product_id' => $product_id]);
+    $rating_data = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    $avg_rating = $rating_data['avg_rating'] ? round($rating_data['avg_rating'], 1) : 0;
+    $rating_count = $rating_data['rating_count'] ? intval($rating_data['rating_count']) : 0;
+
     echo json_encode([
         'success' => true,
         'comments' => $comments,
         'total_pages' => $total_pages,
-        'current_page' => $page
+        'current_page' => $page,
+        'avg_rating' => $avg_rating,
+        'rating_count' => $rating_count
     ]);
 } catch (PDOException $e) {
     echo json_encode(['success' => false, 'message' => 'Lỗi khi lấy bình luận: ' . $e->getMessage()]);
