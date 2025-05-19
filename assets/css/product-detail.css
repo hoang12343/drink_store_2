@@ -451,6 +451,13 @@
     transition: color 0.2s ease;
 }
 
+.rating-text {
+    margin-left: 10px;
+    font-size: 14px;
+    color: #666;
+    align-self: center;
+}
+
 .comment-input textarea {
     flex: 1;
     padding: 10px;
@@ -499,13 +506,13 @@
 
 .comment-user-info {
     display: flex;
-    flex-direction: column;
-    gap: 5px;
+    align-items: center;
 }
 
 .comment-rating {
     display: flex;
     gap: 2px;
+    margin-left: 10px;
 }
 
 .comment-rating .star {

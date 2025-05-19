@@ -235,7 +235,7 @@ function get_product_comments($product_id, $page = 1, $limit = 10)
 
         // Fetch comments for the current page
         $stmt = $pdo->prepare("
-            SELECT pc.id, pc.product_id, pc.user_id, pc.comment_text, pc.created_at, u.full_name
+            SELECT pc.id, pc.product_id, pc.user_id, pc.comment_text, pc.rating, pc.created_at, u.full_name
             FROM product_comments pc
             JOIN users u ON pc.user_id = u.id
             WHERE pc.product_id = :product_id

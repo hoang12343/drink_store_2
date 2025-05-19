@@ -292,6 +292,16 @@ function initCommentForm() {
     return;
   }
 
+  // Xử lý sự kiện khi người dùng chọn đánh giá sao
+  const ratingInputs = commentForm.querySelectorAll('input[name="rating"]');
+  ratingInputs.forEach((input) => {
+    input.addEventListener("change", function () {
+      // Hiển thị thông báo khi người dùng chọn đánh giá
+      const ratingValue = this.value;
+      showNotification(`Bạn đã chọn đánh giá ${ratingValue} sao`);
+    });
+  });
+
   const newForm = commentForm.cloneNode(true);
   commentForm.replaceWith(newForm);
   newForm.addEventListener("submit", function (e) {
@@ -299,7 +309,7 @@ function initCommentForm() {
 
     const commentText = newForm.querySelector("textarea").value.trim();
     if (!commentText) {
-      alert("Bình luận không được để trống");
+      showNotification("Bình luận không được để trống", "error");
       return;
     }
 
@@ -314,21 +324,17 @@ function initCommentForm() {
         return response.json();
       })
       .then((data) => {
-        if (data.success && data.comment && data.comment.comment_text) {
-          newForm.querySelector("textarea").value = "";
-          loadComments(1, formData.get("product_id"));
+        console.log("Comment response:", data); // Thêm log để debug
 
-          const notification = document.createElement("div");
-          notification.className = "cart-notification";
-          notification.textContent = data.message;
-          notification.style.cssText = `
-            position: fixed; top: 20px; right: 20px; background: #8B0000; color: white;
-            padding: 10px 20px; border-radius: 5px; z-index: 1000;
-          `;
-          document.body.appendChild(notification);
-          setTimeout(() => notification.remove(), 3000);
+        // Hiển thị thông báo
+        showNotification(data.message || "Đã gửi bình luận thành công");
+
+        if (data.success) {
+          // Đợi 1 giây để người dùng thấy thông báo, sau đó reload trang
+          setTimeout(() => {
+            window.location.reload();
+          }, 1000);
         } else {
-          alert(data.message || "Lỗi khi gửi bình luận.");
           if (data.message === "Vui lòng đăng nhập để gửi bình luận") {
             window.location.href =
               "index.php?page=login&redirect=" +
@@ -338,7 +344,7 @@ function initCommentForm() {
       })
       .catch((error) => {
         console.error("Error submitting comment:", error);
-        alert("Lỗi hệ thống. Vui lòng thử lại sau.");
+        showNotification("Lỗi hệ thống. Vui lòng thử lại sau.", "error");
       });
   });
 }
@@ -363,6 +369,7 @@ function initCommentActions() {
   const editButtons = document.querySelectorAll(".edit-comment-btn");
   const deleteButtons = document.querySelectorAll(".delete-comment-btn");
 
+  // Xử lý nút sửa bình luận
   editButtons.forEach((button) => {
     // Xóa sự kiện cũ nếu có
     const newButton = button.cloneNode(true);
@@ -373,8 +380,9 @@ function initCommentActions() {
       const commentItem = document.querySelector(
         `.comment-item[data-comment-id="${commentId}"]`
       );
-      const commentText =
-        commentItem.querySelector(".comment-text").textContent;
+      const commentText = commentItem
+        .querySelector(".comment-text")
+        .textContent.trim();
 
       // Replace comment text with edit form
       commentItem.innerHTML = `
@@ -392,7 +400,7 @@ function initCommentActions() {
         e.preventDefault();
         const newCommentText = editForm.querySelector("textarea").value.trim();
         if (!newCommentText) {
-          alert("Bình luận không được để trống");
+          showNotification("Bình luận không được để trống", "error");
           return;
         }
 
@@ -408,16 +416,16 @@ function initCommentActions() {
         })
           .then((response) => response.json())
           .then((data) => {
-            // Luôn hiển thị thông báo nếu có
+            console.log("Edit response:", data); // Thêm log để debug
+
+            // Hiển thị thông báo
             showNotification(data.message || "Đã cập nhật bình luận");
 
             if (data.success) {
-              const productId = document
-                .querySelector(".pagination-btn")
-                ?.getAttribute("data-product-id");
-              if (productId) {
-                loadComments(1, productId);
-              }
+              // Đợi 1 giây để người dùng thấy thông báo, sau đó reload trang
+              setTimeout(() => {
+                window.location.reload();
+              }, 1000);
             } else {
               if (data.message === "Vui lòng đăng nhập để sửa bình luận") {
                 window.location.href =
@@ -436,12 +444,8 @@ function initCommentActions() {
         ".cancel-edit-comment-btn"
       );
       cancelButton.addEventListener("click", function () {
-        const productId = document
-          .querySelector(".pagination-btn")
-          ?.getAttribute("data-product-id");
-        if (productId) {
-          loadComments(1, productId);
-        }
+        // Reload trang để hủy chỉnh sửa
+        window.location.reload();
       });
     });
   });
@@ -457,6 +461,8 @@ function initCommentActions() {
       }
 
       const commentId = newButton.getAttribute("data-comment-id");
+      console.log("Deleting comment ID:", commentId); // Thêm log để debug
+
       fetch("processes/delete_comment.php", {
         method: "POST",
         headers: {
@@ -468,16 +474,16 @@ function initCommentActions() {
       })
         .then((response) => response.json())
         .then((data) => {
-          // Luôn hiển thị thông báo
+          console.log("Delete response:", data); // Thêm log để debug
+
+          // Hiển thị thông báo
           showNotification(data.message || "Đã xóa bình luận");
 
           if (data.success) {
-            const productId = document
-              .querySelector(".pagination-btn")
-              ?.getAttribute("data-product-id");
-            if (productId) {
-              loadComments(1, productId);
-            }
+            // Đợi 1 giây để người dùng thấy thông báo, sau đó reload trang
+            setTimeout(() => {
+              window.location.reload();
+            }, 1000);
           } else {
             if (data.message === "Vui lòng đăng nhập để xóa bình luận") {
               window.location.href =
@@ -495,16 +501,32 @@ function initCommentActions() {
 }
 
 // Show notification
-function showNotification(message) {
+function showNotification(message, type = "success") {
   const notification = document.createElement("div");
-  notification.className = "cart-notification";
+  notification.className = `notification ${type}`;
   notification.textContent = message;
   notification.style.cssText = `
-    position: fixed; top: 20px; right: 20px; background: #8B0000; color: white;
-    padding: 10px 20px; border-radius: 5px; z-index: 1000;
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 10px 20px;
+    border-radius: 5px;
+    z-index: 1000;
+    background-color: ${type === "success" ? "#4CAF50" : "#F44336"};
+    color: white;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
   `;
+
   document.body.appendChild(notification);
-  setTimeout(() => notification.remove(), 3000);
+
+  // Tự động xóa thông báo sau 3 giây
+  setTimeout(() => {
+    notification.style.opacity = "0";
+    notification.style.transition = "opacity 0.5s";
+    setTimeout(() => {
+      notification.remove();
+    }, 500);
+  }, 3000);
 }
 
 // Load comments via API
@@ -572,6 +594,21 @@ function loadComments(page, productId) {
               </div>
               <p class="comment-text">${comment.comment_text}</p>
             `;
+
+            // Thêm nút sửa/xóa nếu người dùng là chủ bình luận
+            const currentUserId = document.querySelector(
+              'meta[name="user-id"]'
+            )?.content;
+            if (currentUserId && comment.user_id == currentUserId) {
+              const actionsDiv = document.createElement("div");
+              actionsDiv.className = "comment-actions";
+              actionsDiv.innerHTML = `
+                <button class="edit-comment-btn" data-comment-id="${comment.id}">Sửa</button>
+                <button class="delete-comment-btn" data-comment-id="${comment.id}">Xóa</button>
+              `;
+              commentItem.appendChild(actionsDiv);
+            }
+
             commentsList.appendChild(commentItem);
           }
         });

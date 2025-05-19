@@ -26,6 +26,13 @@ $total_pages = ceil($total_comments / $comments_per_page);
 <link rel="stylesheet" href="assets/css/product-detail.css?v=<?= time() ?>">
 <script src="assets/js/product-detail.js?v=<?= time() ?>" defer></script>
 
+<head>
+    <!-- Các thẻ meta khác -->
+    <?php if (isset($_SESSION['user_id'])): ?>
+        <meta name="user-id" content="<?= $_SESSION['user_id'] ?>">
+    <?php endif; ?>
+</head>
+
 <section class="content product-detail-page">
     <div class="product-detail-layout">
         <!-- Product Images -->
@@ -40,12 +47,30 @@ $total_pages = ceil($total_comments / $comments_per_page);
         <div class="product-info">
             <h1 class="product-name"><?= htmlspecialchars($product['name'] ?? 'Sản phẩm') ?></h1>
 
-            <!-- Rating -->
+            <!-- Product Rating -->
             <div class="product-rating">
-                <?php for ($i = 0; $i < 5; $i++): ?>
-                    <i class="fas fa-star <?= $i < ($product['rating'] ?? 5) ? 'filled' : '' ?>"></i>
-                <?php endfor; ?>
-                <span>(<?= $product['reviews'] ?? 0 ?> bình chọn)</span>
+                <div class="rating-stars-display">
+                    <?php
+                    $rating = $product['rating'] ?? 0;
+                    $full_stars = floor($rating);
+                    $half_star = $rating - $full_stars >= 0.5;
+                    $empty_stars = 5 - $full_stars - ($half_star ? 1 : 0);
+
+                    for ($i = 0; $i < $full_stars; $i++) {
+                        echo '<i class="fas fa-star"></i>';
+                    }
+
+                    if ($half_star) {
+                        echo '<i class="fas fa-star-half-alt"></i>';
+                    }
+
+                    for ($i = 0; $i < $empty_stars; $i++) {
+                        echo '<i class="far fa-star"></i>';
+                    }
+                    ?>
+                    <span class="rating-value"><?= number_format($rating, 1) ?></span>
+                    <span class="rating-count">(<?= $product['reviews'] ?? 0 ?> đánh giá)</span>
+                </div>
             </div>
 
             <!-- Product Labels -->
@@ -135,7 +160,7 @@ $total_pages = ceil($total_comments / $comments_per_page);
 
         <!-- Comment Form -->
         <?php if (isset($_SESSION['logged_in']) && $_SESSION['logged_in']): ?>
-            <form id="comment-form" action="processes/add_comment.php" method="POST">
+            <form id="comment-form" action="processes/add_comment.php" method="POST" accept-charset="UTF-8">
                 <input type="hidden" name="product_id" value="<?= htmlspecialchars($product['id']) ?>">
 
                 <!-- Rating Stars -->
